@@ -86,13 +86,14 @@ def "复杂类型白名单测试"() {
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
 #### 更复杂的结构
-测试结构 WhiteCEntity 
+测试结构 WhiteCEntity 对应的对象
 ```java
 @Data
 @TypeCheck
 @Accessors(chain = true)
 public class WhiteCEntity {
 
+    // 下面复杂结构添加 @FieldCheck 注解用于建立下一级CEntity中的数据，如果不添加，则下一级无法核查
     @FieldCheck
     private List<CEntity> cEntities;
     @FieldCheck
@@ -164,6 +165,6 @@ def "复杂类型白名单集合复杂结构"() {
 ```
 ###### 输出
 ```text
-数据校验失败-->属性[name]的值[c]不在白名单[a, b, [a, b]]中-->自定义类型[BEntity]核查失败-->自定义类型[CEntity]的属性[bEntities]核查失败-->自定义类型[CEntity]核查失败-->自定义类型[WhiteCEntity]的属性[cEntities]核查失败-->自定义类型[WhiteCEntity]核查失败
+数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[CEntity]的属性[bEntities]核查失败-->自定义类型[CEntity]核查失败-->自定义类型[WhiteCEntity]的属性[cEntities]核查失败-->自定义类型[WhiteCEntity]核查失败
 ```
 更全面的测试详见类MikilinTest

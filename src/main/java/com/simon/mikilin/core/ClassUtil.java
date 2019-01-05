@@ -3,11 +3,11 @@ package com.simon.mikilin.core;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 
@@ -21,20 +21,20 @@ public class ClassUtil {
     /**
      * 获取一个对象类的所有属性，包括继承的
      */
-    public List<Field> allFieldsOfClass(Class<?> cls){
-        List<Field> fieldList = new ArrayList<>();
+    public Set<Field> allFieldsOfClass(Class<?> cls){
+        Set<Field> fieldSet = new HashSet<>();
         while (cls != null){
-            fieldList.addAll(Arrays.asList(cls.getDeclaredFields()));
+            fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
             cls = cls.getSuperclass();
         }
-        return fieldList;
+        return fieldSet;
     }
 
     /**
      * 获取一个对象类的所有属性（包括继承的）的类
      */
-    public List<Class<?>> allFieldsClassOfClass(Class<?> cls){
-        return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toList());
+    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
+        return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toSet());
     }
 
     /**

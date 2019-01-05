@@ -3,14 +3,14 @@ package com.simon.mikilin.core;
 import com.alibaba.fastjson.JSON;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +39,7 @@ class CheckDelegate {
         }
 
         if(ClassUtil.isBaseField(object.getClass())){
-            return available(object, Collections.emptyList(), Collections.emptyList());
+            return available(object, Collections.emptySet(), Collections.emptySet());
         }else{
             return available(object, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
         }
@@ -50,7 +50,7 @@ class CheckDelegate {
      * @param object 待校验对象（复杂自定义对象）
      * @param objectFieldMap 对象的待测属性映射：key：类的simpleName，value：属性的名字
      */
-    boolean available(Object object, Map<String, List<String>> objectFieldMap){
+    boolean available(Object object, Map<String, Set<String>> objectFieldMap){
         initErrMsg();
         if(isEmpty(object)){
             append("数据为空");
@@ -58,7 +58,7 @@ class CheckDelegate {
         }
 
         if(ClassUtil.isBaseField(object.getClass())){
-            return available(object, Collections.emptyList(), Collections.emptyList());
+            return available(object, Collections.emptySet(), Collections.emptySet());
         }else{
             return available(object, objectFieldMap, Collections.emptyMap(), Collections.emptyMap());
         }
@@ -67,90 +67,90 @@ class CheckDelegate {
     /**
      * 对象可用性校验
      * @param object 待校验对象（复杂自定义对象）
-     * @param whiteList 对象的属性的可用值列表
-     * @param blackList 对象的属性的禁用值列表
+     * @param whiteSet 对象的属性的可用值列表
+     * @param blackSet 对象的属性的禁用值列表
      */
-    boolean available(Object object, Map<String, Map<String, List<Object>>> whiteList,
-        Map<String, Map<String, List<Object>>> blackList){
+    boolean available(Object object, Map<String, Map<String, Set<Object>>> whiteSet,
+        Map<String, Map<String, Set<Object>>> blackSet){
         // 黑白名单都有的话，则按照白名单
-        return available(object, generateObjectFieldMap(whiteList, blackList), whiteList, blackList);
+        return available(object, generateObjectFieldMap(whiteSet, blackSet), whiteSet, blackSet);
     }
 
     /**
      * 对象值是否在不可用列表中
      * @param object 待校验对象（基本对象）
-     * @param valueList 对象的属性的禁用值列表
+     * @param valueSet 对象的属性的禁用值列表
      */
-    boolean availableBlack(Object object, List<Object> valueList){
-        return available(object, Collections.emptyList(), valueList);
+    boolean availableBlack(Object object, Set<Object> valueSet){
+        return available(object, Collections.emptySet(), valueSet);
     }
 
     /**
      * 对象值是否在不可用列表中
      * @param object 待校验对象（复杂对象）
-     * @param blackList 对象的属性的禁用值列表
+     * @param blackSet 对象的属性的禁用值列表
      */
-    boolean availableBlack(Object object, Map<String, Map<String, List<Object>>> blackList){
-        return available(object, generateObjectFieldMap(blackList), Collections.emptyMap(), blackList);
+    boolean availableBlack(Object object, Map<String, Map<String, Set<Object>>> blackSet){
+        return available(object, generateObjectFieldMap(blackSet), Collections.emptyMap(), blackSet);
     }
 
     /**
      * 对象值是否在不可用列表中
      * @param object 待校验对象
      * @param objectFieldMap 对象的待测属性映射：key：类的simpleName，value：属性的名字
-     * @param blackList 对象的属性的禁用值列表
+     * @param blackSet 对象的属性的禁用值列表
      */
-    boolean availableBlack(Object object, Map<String, List<String>> objectFieldMap,
-        Map<String, Map<String, List<Object>>> blackList){
-        return available(object, objectFieldMap, Collections.emptyMap(), blackList);
+    boolean availableBlack(Object object, Map<String, Set<String>> objectFieldMap,
+        Map<String, Map<String, Set<Object>>> blackSet){
+        return available(object, objectFieldMap, Collections.emptyMap(), blackSet);
     }
 
     /**
      * 对象值是否在可用列表中
      * @param object 待校验对象（基本对象）
-     * @param valueList 对象的属性的可用值列表
+     * @param valueSet 对象的属性的可用值列表
      */
-    <T> boolean availableWhite(T object, List<T> valueList){
-        return available(object, valueList, Collections.emptyList());
+    <T> boolean availableWhite(T object, Set<T> valueSet){
+        return available(object, valueSet, Collections.emptySet());
     }
 
     /**
      * 对象值是否在不可用列表中
      * @param object 待校验对象（复杂对象）
-     * @param whiteList 对象的属性的可用值列表
+     * @param whiteSet 对象的属性的可用值列表
      */
-    boolean availableWhite(Object object, Map<String, Map<String, List<Object>>> whiteList){
-        return available(object, generateObjectFieldMap(whiteList), whiteList, Collections.emptyMap());
+    boolean availableWhite(Object object, Map<String, Map<String, Set<Object>>> whiteSet){
+        return available(object, generateObjectFieldMap(whiteSet), whiteSet, Collections.emptyMap());
     }
 
     /**
      * 对象值是否在不可用列表中
      * @param object 待校验对象
      * @param objectFieldMap 对象的待测属性映射：key：类的simpleName，value：属性的名字
-     * @param whiteList 对象的属性的可用值列表
+     * @param whiteSet 对象的属性的可用值列表
      */
-    boolean availableWhite(Object object, Map<String, List<String>> objectFieldMap,
-        Map<String, Map<String, List<Object>>> whiteList){
-        return available(object, objectFieldMap, whiteList, Collections.emptyMap());
+    boolean availableWhite(Object object, Map<String, Set<String>> objectFieldMap,
+        Map<String, Map<String, Set<Object>>> whiteSet){
+        return available(object, objectFieldMap, whiteSet, Collections.emptyMap());
     }
 
     /**
      * 判断基本类型的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      * @param object 基本类型的数据对象，如果是复杂对象，则直接放过
-     * @param whiteList 可用值列表
-     * @param blackList 不可用值列表
+     * @param whiteSet 可用值列表
+     * @param blackSet 不可用值列表
      */
-    <T> boolean available(T object, List<T> whiteList, List<T> blackList){
+    <T> boolean available(T object, Set<T> whiteSet, Set<T> blackSet){
         initErrMsg();
         if(null == object){
             // 1.（黑名单不空且包含）则不放过
-            if (null != blackList && !blackList.isEmpty() && blackList.contains(null)){
+            if (null != blackSet && !blackSet.isEmpty() && blackSet.contains(null)){
                 append("对象为null，命中黑名单");
                 return false;
             }
 
             // 2.（白名单不空且不包含）则不放过
-            if (null != whiteList && !whiteList.isEmpty() && !whiteList.contains(null)){
+            if (null != whiteSet && !whiteSet.isEmpty() && !whiteSet.contains(null)){
                 append("对象为null，不在白名单");
                 return false;
             }
@@ -160,12 +160,12 @@ class CheckDelegate {
         Class cls = object.getClass();
         if(ClassUtil.isBaseField(cls)){
             // 底层基本校验类型，则放过
-            return baseAvailable(object, whiteList, blackList);
+            return baseAvailable(object, whiteSet, blackSet);
         } else if(Collection.class.isAssignableFrom(cls)){
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection<T> collection = Collection.class.cast(object);
             if (!CollectionUtil.isEmpty(collection)){
-                return collection.stream().allMatch(c-> available(c, whiteList, blackList));
+                return collection.stream().allMatch(c-> available(c, whiteSet, blackSet));
             }else{
                 // 集合空类型，认为不可用
                 append("集合类型为空");
@@ -175,7 +175,7 @@ class CheckDelegate {
             // Map 结构中的数据的判断，剥离key和value，只判断value的值
             Map<String, T> map = Map.class.cast(object);
             if (!CollectionUtil.isEmpty(map)) {
-                return map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, whiteList, blackList));
+                return map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, whiteSet, blackSet));
             } else {
                 append("Map类型为空");
                 return false;
@@ -183,13 +183,13 @@ class CheckDelegate {
         } else {
             // 自定义类型，这里不拦截自定义类型
             // 1.（黑名单不空且包含）则不放过
-            if (null != blackList && !blackList.isEmpty() && blackList.contains(object)){
+            if (null != blackSet && !blackSet.isEmpty() && blackSet.contains(object)){
                 append("对象为[{0}]，命中黑名单", object);
                 return false;
             }
 
             // 2.（白名单不空且不包含）则不放过
-            if (null != whiteList && !whiteList.isEmpty() && !whiteList.contains(object)){
+            if (null != whiteSet && !whiteSet.isEmpty() && !whiteSet.contains(object)){
                 append("对象为[{0}]，不在白名单", object);
                 return false;
             }
@@ -200,8 +200,8 @@ class CheckDelegate {
     /**
      * 判断基本类型的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      * @param object 基本类型的数据对象，如果是复杂对象，则直接放过
-     * @param whiteList 可用值列表
-     * @param blackList 不可用值列表
+     * @param whiteSet 可用值列表
+     * @param blackSet 不可用值列表
      * @return
      * 1.黑白名单都有空，则不核查该参数，放过
      * 2.对象为空
@@ -212,9 +212,9 @@ class CheckDelegate {
      *      2.如果（白名单不空且不包含）则不放过
      *      3.其他都放过
      */
-    private <T> boolean baseAvailable(T object, List<T> whiteList, List<T> blackList){
-        boolean whiteEmpty = CollectionUtil.isEmpty(whiteList);
-        boolean blackEmpty = CollectionUtil.isEmpty(blackList);
+    private <T> boolean baseAvailable(T object, Set<T> whiteSet, Set<T> blackSet){
+        boolean whiteEmpty = CollectionUtil.isEmpty(whiteSet);
+        boolean blackEmpty = CollectionUtil.isEmpty(blackSet);
 
         // 1.黑白名单都有空，则不核查该参数，放过
         if(whiteEmpty && blackEmpty){
@@ -224,13 +224,13 @@ class CheckDelegate {
         // 2.对象为空
         if(isEmpty(object)){
             // 1.（黑名单不空且包含）则不放过
-            if (!blackEmpty && blackList.contains(object)){
+            if (!blackEmpty && blackSet.contains(object)){
                 append("对象为空，命中黑名单");
                 return false;
             }
 
             // 2.（白名单不空且不包含）则不放过
-            if (!whiteEmpty && !whiteList.contains(object)){
+            if (!whiteEmpty && !whiteSet.contains(object)){
                 append("对象为空，不在白名单");
                 return false;
             }
@@ -246,14 +246,14 @@ class CheckDelegate {
             }
 
             // 1.如果（黑名单不空且包含）则不放过
-            if (!blackEmpty && blackList.contains(object)){
-                append("对象值[{0}]位于黑名单{1}", JSON.toJSONString(object), blackList);
+            if (!blackEmpty && blackSet.contains(object)){
+                append("对象值[{0}]位于黑名单{1}", JSON.toJSONString(object), blackSet);
                 return false;
             }
 
             // 2.如果（白名单不空且不包含）则不放过
-            if(!whiteEmpty && !whiteList.contains(object)){
-                append("对象值[{0}]不在白名单{1}中", JSON.toJSONString(object), whiteList);
+            if(!whiteEmpty && !whiteSet.contains(object)){
+                append("对象值[{0}]不在白名单{1}中", JSON.toJSONString(object), whiteSet);
                 return false;
             }
 
@@ -266,14 +266,14 @@ class CheckDelegate {
      * 判断自定义结构的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      * @param object 为集合、Map和自定义结构，其中基本类型，为另外一个重载函数
      * @param objectFieldMap 自定义对象属性的核查影射，key为类的名字，value为类中对应的属性名字
-     * @param whiteList 对象属性集合的可用值列表
-     * @param blackList 对象属性集合的不可用值列表
+     * @param whiteSet 对象属性集合的可用值列表
+     * @param blackSet 对象属性集合的不可用值列表
      * @return
      * false：如果对象中有某个属性不可用
      * true：所有属性都可用
      */
-    boolean available(Object object, Map<String, List<String>> objectFieldMap,
-        Map<String, Map<String, List<Object>>> whiteList, Map<String, Map<String, List<Object>>> blackList){
+    boolean available(Object object, Map<String, Set<String>> objectFieldMap,
+        Map<String, Map<String, Set<Object>>> whiteSet, Map<String, Map<String, Set<Object>>> blackSet){
         initErrMsg();
         if (null == object) {
             // 对于对象中的其他属性不核查
@@ -288,7 +288,7 @@ class CheckDelegate {
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection collection = Collection.class.cast(object);
             if (!CollectionUtil.isEmpty(collection)){
-                return collection.stream().allMatch(c-> available(c, objectFieldMap, whiteList, blackList));
+                return collection.stream().allMatch(c-> available(c, objectFieldMap, whiteSet, blackSet));
             }else{
                 // 为空则忽略
                 return true;
@@ -297,7 +297,7 @@ class CheckDelegate {
             // Map 结构中的数据的判断，目前只判断value中的值
             Map map = Map.class.cast(object);
             if (!CollectionUtil.isEmpty(map)) {
-                if(map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, objectFieldMap, whiteList, blackList))){
+                if(map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, objectFieldMap, whiteSet, blackSet))){
                     return true;
                 }
                 append("Map的value中有不合法");
@@ -313,7 +313,7 @@ class CheckDelegate {
             }
 
             // 自定义类型，如果对象中任何一个属性不可用，则对象不可用
-            if(ClassUtil.allFieldsOfClass(object.getClass()).stream().allMatch(f-> available(object, f, objectFieldMap, whiteList, blackList))){
+            if(ClassUtil.allFieldsOfClass(object.getClass()).stream().allMatch(f-> available(object, f, objectFieldMap, whiteSet, blackSet))){
                 return true;
             }
 
@@ -326,21 +326,21 @@ class CheckDelegate {
      * 根据属性的类型，判断属性的值是否在对应的值列表中
      * @param object 对象
      * @param field 属性
-     * @param whiteList 属性值可用值列表
-     * @param blackList 属性值的不用值列表
+     * @param whiteSet 属性值可用值列表
+     * @param blackSet 属性值的不用值列表
      * @param objectFieldMap 对象核查的属性映射
      */
-    private boolean available(Object object, Field field,  Map<String, List<String>> objectFieldMap,
-        Map<String, Map<String, List<Object>>> whiteList,Map<String, Map<String, List<Object>>> blackList) {
+    private boolean available(Object object, Field field,  Map<String, Set<String>> objectFieldMap,
+        Map<String, Map<String, Set<Object>>> whiteSet,Map<String, Map<String, Set<Object>>> blackSet) {
         Class cls = field.getType();
         if(ClassUtil.isBaseField(cls)){
             // 基本类型，则直接校验
-            return primaryFieldAvailable(object, field, whiteList, blackList);
+            return primaryFieldAvailable(object, field, whiteSet, blackSet);
         } else {
             // 不是基本类型，则按照复杂类型处理
             try {
                 field.setAccessible(true);
-                if(available(field.get(object), objectFieldMap, whiteList, blackList)){
+                if(available(field.get(object), objectFieldMap, whiteSet, blackSet)){
                     return true;
                 }
 
@@ -357,8 +357,8 @@ class CheckDelegate {
      * 判断对象的一个基本属性是否可用
      * @param object 属性的对象
      * @param field 属性
-     * @param whiteList 属性的可用值列表
-     * @param blackList 属性的不可用值列表
+     * @param whiteSet 属性的可用值列表
+     * @param blackSet 属性的不可用值列表
      * @return
      * 1.黑白名单都有空，则不核查该参数，放过
      * 2.对象为空
@@ -369,10 +369,10 @@ class CheckDelegate {
      *      2.如果（白名单不空且不包含）则不放过
      *      3.其他都放过
      */
-    private boolean primaryFieldAvailable(Object object, Field field, Map<String, Map<String, List<Object>>> whiteList,
-        Map<String, Map<String, List<Object>>> blackList) {
-        boolean blackEmpty = fieldListIsEmpty(object, field, blackList);
-        boolean whiteEmpty = fieldListIsEmpty(object, field, whiteList);
+    private boolean primaryFieldAvailable(Object object, Field field, Map<String, Map<String, Set<Object>>> whiteSet,
+        Map<String, Map<String, Set<Object>>> blackSet) {
+        boolean blackEmpty = fieldSetIsEmpty(object, field, blackSet);
+        boolean whiteEmpty = fieldSetIsEmpty(object, field, whiteSet);
         // 1.黑白名单都有空，则不核查该参数，放过
         if(whiteEmpty && blackEmpty){
             return true;
@@ -384,13 +384,13 @@ class CheckDelegate {
             if (isEmpty(field.get(object))) {
 
                 // 1.（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldListContain(object, field, blackList)){
+                if (!blackEmpty && fieldSetContain(object, field, blackSet)){
                     append("属性[{0}]为空，命中黑名单", field.getName());
                     return false;
                 }
 
                 // 2.（白名单不空且不包含）则不放过
-                if (!whiteEmpty && !fieldListContain(object, field, whiteList)){
+                if (!whiteEmpty && !fieldSetContain(object, field, whiteSet)){
                     append("属性[{0}]为空，不在白名单", field.getName());
                     return false;
                 }
@@ -399,16 +399,16 @@ class CheckDelegate {
             // 3.对象不空
             else {
                 // 1.如果（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldListContain(object, field, blackList)) {
+                if (!blackEmpty && fieldSetContain(object, field, blackSet)) {
                     append("属性[{0}]的值[{1}]位于黑名单中{2}", field.getName(), field.get(object),
-                        fieldList(object, field, blackList));
+                        fieldSet(object, field, blackSet));
                     return false;
                 }
 
                 // 2.如果（白名单不空且不包含）则不放过
-                if(!whiteEmpty && !fieldListContain(object, field, whiteList)){
+                if(!whiteEmpty && !fieldSetContain(object, field, whiteSet)){
                     append("属性[{0}]的值[{1}]不在白名单{2}中", field.getName(), field.get(object),
-                        fieldList(object, field, whiteList));
+                        fieldSet(object, field, whiteSet));
                     return false;
                 }
 
@@ -427,7 +427,7 @@ class CheckDelegate {
      * true 对象需要继续核查
      * false 对象不需要通过黑白名单核查
      */
-    private boolean objectNeedCheck(Object object,  Map<String, List<String>> objectFieldMap){
+    private boolean objectNeedCheck(Object object,  Map<String, Set<String>> objectFieldMap){
         if(!CollectionUtil.isEmpty(objectFieldMap)){
             return objectFieldMap.containsKey(object.getClass().getSimpleName());
         }
@@ -439,13 +439,13 @@ class CheckDelegate {
      * 对象的某个属性列表为空
      * @param object 对象
      * @param field 对象的属性
-     * @param valueList 可用或者不可用数据
+     * @param valueSet 可用或者不可用数据
      */
-    private boolean fieldListIsEmpty(Object object, Field field, Map<String, Map<String, List<Object>>> valueList){
-        Map<String, List<Object>> fieldValueListMap = valueList.get(object.getClass().getSimpleName());
-        if(!CollectionUtil.isEmpty(fieldValueListMap)){
-            List<Object> fieldValueList = fieldValueListMap.get(field.getName());
-            return CollectionUtil.isEmpty(fieldValueList);
+    private boolean fieldSetIsEmpty(Object object, Field field, Map<String, Map<String, Set<Object>>> valueSet){
+        Map<String, Set<Object>> fieldValueSetMap = valueSet.get(object.getClass().getSimpleName());
+        if(!CollectionUtil.isEmpty(fieldValueSetMap)){
+            Set<Object> fieldValueSet = fieldValueSetMap.get(field.getName());
+            return CollectionUtil.isEmpty(fieldValueSet);
         }
         return true;
     }
@@ -454,14 +454,14 @@ class CheckDelegate {
      * 对象的某个属性列表包含，前提是这个列表存在
      * @param object 对象
      * @param field 对象的属性
-     * @param valueList 可用或者不可用数据
+     * @param valueSet 可用或者不可用数据
      */
-    private boolean fieldListContain(Object object, Field field, Map<String, Map<String, List<Object>>> valueList){
-        List<Object> fieldList = fieldList(object, field, valueList);
+    private boolean fieldSetContain(Object object, Field field, Map<String, Map<String, Set<Object>>> valueSet){
+        Set<Object> fieldSet = fieldSet(object, field, valueSet);
         try {
             field.setAccessible(true);
             Object data = field.get(object);
-            if (fieldList.contains(data)){
+            if (fieldSet.contains(data)){
                 return true;
             }
         } catch (IllegalAccessException e) {
@@ -470,16 +470,16 @@ class CheckDelegate {
         return false;
     }
 
-    private List<Object> fieldList(Object object, Field field, Map<String, Map<String, List<Object>>> valueList){
-        return valueList.get(object.getClass().getSimpleName()).get(field.getName());
+    private Set<Object> fieldSet(Object object, Field field, Map<String, Map<String, Set<Object>>> valueSet){
+        return valueSet.get(object.getClass().getSimpleName()).get(field.getName());
     }
 
     /**
      * 根据传入的自动构造映射树
      */
-    private Map<String, List<String>> generateObjectFieldMap(Map<String, Map<String, List<Object>>> valueList){
-        if(!CollectionUtil.isEmpty(valueList)){
-            return valueList.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet())));
+    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, Set<Object>>> valueSet){
+        if(!CollectionUtil.isEmpty(valueSet)){
+            return valueSet.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new HashSet<>(d.getValue().keySet())));
         }
         return Collections.emptyMap();
     }
@@ -487,20 +487,20 @@ class CheckDelegate {
     /**
      * 根据传入的黑白名单一起构造映射树
      */
-    private Map<String, List<String>> generateObjectFieldMap(Map<String, Map<String, List<Object>>> whiteList,
-        Map<String, Map<String, List<Object>>> blackList){
-        Map<String, List<String>> dataMap = new HashMap<>(12);
-        if (!CollectionUtil.isEmpty(whiteList)){
-            dataMap.putAll(whiteList.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet()))));
+    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, Set<Object>>> whiteSet,
+        Map<String, Map<String, Set<Object>>> blackSet){
+        Map<String, Set<String>> dataMap = new HashMap<>(12);
+        if (!CollectionUtil.isEmpty(whiteSet)){
+            dataMap.putAll(whiteSet.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new HashSet<>(d.getValue().keySet()))));
         }
 
         // map 合并
-        if (!CollectionUtil.isEmpty(blackList)){
-            Map<String, List<String>> blackMap = blackList.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet())));
+        if (!CollectionUtil.isEmpty(blackSet)){
+            Map<String, Set<String>> blackMap = blackSet.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, d->new HashSet<>(d.getValue().keySet())));
             blackMap.forEach((key, value) -> dataMap.compute(key, (k, v) -> {
                 if (v == null) {
-                    return new ArrayList<>();
+                    return new HashSet<>();
                 } else {
                     v.addAll(value);
                     return v;

@@ -10,6 +10,12 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Objects {
 
+    /**
+     * 将对象的数据，按照cls类型进行转换
+     * @param cls 待转换的Class类型
+     * @param data 数据
+     * @return Class类型对应的对象
+     */
     public Object cast(Class<?> cls, String data){
         if(cls.equals(String.class)) {
             // 针对data为null的情况进行转换

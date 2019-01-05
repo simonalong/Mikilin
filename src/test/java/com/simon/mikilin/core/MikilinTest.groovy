@@ -11,7 +11,7 @@ class MikilinTest extends Specification {
 
     def "基本类型白名单测试"() {
         expect:
-        Assert.assertEquals(result, Checks.checkWhite(name, Arrays.asList("a", "b", null)))
+        Assert.assertEquals(result, Checks.checkWhite(name, "a", "b", null))
         if (!Checks.check(result)) {
             println Checks.getErrMsg()
         }
@@ -26,7 +26,7 @@ class MikilinTest extends Specification {
 
     def "基本类型黑名单测试"() {
         expect:
-        Assert.assertEquals(result, Checks.checkBlack(name, Arrays.asList("a", "b", null)))
+        Assert.assertEquals(result, Checks.checkBlack(name, "a", "b", null))
         if (!Checks.check(result)) {
             println Checks.getErrMsg()
         }
