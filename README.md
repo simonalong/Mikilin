@@ -14,9 +14,9 @@
 - @TypeCheck：用于修饰要核查的类
 - @FieldCheck：用于核查要核查的类的属性，需要属性所在的类有TypeCheck修饰
 ```
-#### TypeCheck
+#### @TypeCheck
 该注解只有一个属性disable 用于是否启动核查
-#### FieldCheck 
+#### @FieldCheck 
 该注解可修饰所有属性，但是修饰的属性类型不同处理也不一样，只有修饰基本类型（Boolean Byte Character Short Integer Long Double Float）和 String类型，
 下面的includes和excludes才会起作用。如果修饰的是复杂类型（自定义类型、集合和Map类型）则该属性仅仅是起到一个排查复杂类型中包含的基本类型的作用，
 因此，如果要核查的基本类型位于比较深层嵌套，那么需要将嵌套的路径上的所有复杂类型属性都加上FieldCheck
