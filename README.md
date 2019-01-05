@@ -27,8 +27,15 @@
 
 
 复杂类型主要是自定义的复杂类型，也包括集合和Map结构（Map结构只核查value为复杂类型）。
-该核查只有一个函数Checks.check，如果核查失败，则返回false，同时也可以返回核查失败的调用路径，比如：
-Checks.getErrMsg
+该核查只有一个函数
+``` java
+boolean check(Object object)
+```
+如果核查失败，则返回false，同时也可以返回核查失败的调用路径
+```
+String getErrMsg()
+```
+输出如下，比如：
 ##### 核查失败的信息定位
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[WhiteBEntity]的属性[bEntity]核查失败-->自定义类型[WhiteBEntity]核查失败
