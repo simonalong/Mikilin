@@ -1,8 +1,11 @@
-# mikilin
+# Mikilin
 在业务开发中，类的属性有些时候我们需要这个属性不允许有某些值，有些时候只要某些值，通常情况下在使用的时候，会进行单独核查。这里开发一个工具用于核查这样类的属性的可用和不可用值，同时在出现不符合要求的时候，也能够定位到类的某个属性。
 ## 实例
 #### 用法：
-我们这里有两个注解：TypeCheck和FieldCheck
+我们这里有两个注解：
+```angular2html
+TypeCheck和FieldCheck
+```
 TypeCheck用于修饰要核查的类
 FieldCheck用于核查要核查的类的属性，需要属性所在的类有TypeCheck修饰
 ##### TypeCheck
@@ -27,7 +30,7 @@ Checks.getErrMsg
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[WhiteBEntity]的属性[bEntity]核查失败-->自定义类型[WhiteBEntity]核查失败
 ```
-```angular2html
+```java
 @Data
 @TypeCheck
 @Accessors(chain = true)
@@ -38,7 +41,7 @@ public class WhiteBEntity {
     private String name;
 }
 ```
-```angular2html
+```java
 @Data
 @TypeCheck
 @Accessors(chain = true)
@@ -50,7 +53,7 @@ public class BEntity {
     private AEntity aEntity;
 }
 ```
-```angular2html
+```java
 @Data
 @TypeCheck
 @Accessors(chain = true)
@@ -64,4 +67,40 @@ public class AEntity {
 ```
 可以根据异常信息定位到哪个类的哪个属性的哪个值是不合法的
 ## 测试
+这里我们放一个复杂类型的黑名单测试
+```java
+@Data
+@TypeCheck
+@Accessors(chain = true)
+public class AEntity {
+    @FieldCheck(includes = {"a","b","c","null"})
+    private String name;
+    @FieldCheck(excludes = {"null"})
+    private Integer age;
+    private String address;
+}
+```
+```groovy
+def "黑名单测试"() {
+    given:
+    AEntity entity = new AEntity().setName(name).setAge(age)
+
+    expect:
+    Assert.assertEquals(result, Checks.checkBlack(entity,
+            Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
+    if (!Checks.check(result)) {
+        println Checks.getErrMsg()
+    }
+
+    where:
+    name | age  || result
+    "a"  | 12   || false
+    "a"  | 13   || false
+    "b"  | 12   || true
+    "b"  | 13   || true
+    "c"  | 12   || true
+    "d"  | 12   || true
+    "d"  | null || true
+}
+```
 具体使用和测试可查看测试类MikilinTest

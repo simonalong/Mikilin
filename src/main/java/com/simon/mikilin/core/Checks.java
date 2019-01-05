@@ -58,8 +58,16 @@ public class Checks {
         if(ClassUtil.isBaseField(object.getClass())){
             return true;
         }else{
-            return delegate.available(object, getObjFieldMap(object), getWhiteMap(object), getBlackMap(object));
+            return check(object, getObjFieldMap(object), getWhiteMap(object), getBlackMap(object));
         }
+    }
+
+    /**
+     * 开放接口，用于用户自定义索引列表和黑白名单列表
+     */
+    public boolean check(Object object, Map<String, List<String>> objectFieldMap,
+        Map<String, Map<String, List<Object>>> whiteList, Map<String, Map<String, List<Object>>> blackList){
+        return delegate.available(object, objectFieldMap, whiteList, blackList);
     }
 
     /**
