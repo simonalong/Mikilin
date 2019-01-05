@@ -27,32 +27,12 @@ Checks.checkWhite 和 Checks.checkBlack
 复杂类型主要是自定义的复杂类型，也包括集合和Map结构（Map结构只核查value为复杂类型）。
 该核查只有一个函数Checks.check，如果核查失败，则返回false，同时也可以返回核查失败的调用路径，比如：
 Checks.getErrMsg
+##### 
+核查失败的信息定位
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[WhiteBEntity]的属性[bEntity]核查失败-->自定义类型[WhiteBEntity]核查失败
 ```
-```java
-@Data
-@TypeCheck
-@Accessors(chain = true)
-public class WhiteBEntity {
-
-    private BEntity bEntity;
-    @FieldCheck(includes = {"a", "b"})
-    private String name;
-}
-```
-```java
-@Data
-@TypeCheck
-@Accessors(chain = true)
-public class BEntity {
-
-    @FieldCheck(includes = {"a","b"})
-    private String name;
-    @FieldCheck
-    private AEntity aEntity;
-}
-```
+##### 用法
 ```java
 @Data
 @TypeCheck
@@ -81,26 +61,109 @@ public class AEntity {
 }
 ```
 ```groovy
-def "黑名单测试"() {
+def "复杂类型白名单测试"() {
     given:
-    AEntity entity = new AEntity().setName(name).setAge(age)
+    WhiteAEntity entity = new WhiteAEntity()
+    entity.setName(name as String)
 
     expect:
-    Assert.assertEquals(result, Checks.checkBlack(entity,
-            Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
-    if (!Checks.check(result)) {
+    Assert.assertEquals(result, Checks.check(entity))
+    if (!Checks.check(entity)) {
         println Checks.getErrMsg()
     }
 
     where:
-    name | age  || result
-    "a"  | 12   || false
-    "a"  | 13   || false
-    "b"  | 12   || true
-    "b"  | 13   || true
-    "c"  | 12   || true
-    "d"  | 12   || true
-    "d"  | null || true
+    name || result
+    "a"  || true
+    "b"  || true
+    "c"  || true
+    null || true
+    "d"  || false
 }
 ```
-具体使用和测试可查看测试类MikilinTest
+###### 输出
+```
+数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
+```
+#### 更复杂的结构
+测试结构 WhiteCEntity 
+```java
+@Data
+@TypeCheck
+@Accessors(chain = true)
+public class WhiteCEntity {
+
+    @FieldCheck
+    private List<CEntity> cEntities;
+    @FieldCheck
+    private BEntity bEntity;
+}
+```
+```java
+@Data
+@TypeCheck
+@Accessors(chain = true)
+public class
+CEntity {
+
+    @FieldCheck(includes = {"a", "b"})
+    private String name;
+    @FieldCheck
+    private List<BEntity> bEntities;
+}
+```
+```java
+@Data
+@TypeCheck
+@Accessors(chain = true)
+public class BEntity {
+
+    @FieldCheck(includes = {"a","b"})
+    private String name;
+    @FieldCheck
+    private AEntity aEntity;
+}
+```
+```java
+@Data
+@TypeCheck
+@Accessors(chain = true)
+public class AEntity {
+    @FieldCheck(includes = {"a","b","c","null"})
+    private String name;
+    @FieldCheck(excludes = {"null"})
+    private Integer age;
+    private String address;
+}
+```
+###### 测试
+```groovy
+def "复杂类型白名单集合复杂结构"() {
+    given:
+    WhiteCEntity entity = new WhiteCEntity();
+    entity.setCEntities(Arrays.asList(new CEntity().setName(ccName)
+            .setBEntities(Arrays.asList(new BEntity().setName(cb1Name), new BEntity().setName(cb2Name)))))
+            .setBEntity(new BEntity().setName(cName).setAEntity(new AEntity().setName(cbaName).setAge(12)))
+
+    Assert.assertEquals(result, Checks.check(entity))
+    if (!Checks.check(entity)) {
+        println Checks.getErrMsg()
+    }
+
+    expect:
+    where:
+    ccName | cb1Name | cb2Name | cName | cbaName || result
+    "a"    | "a"     | "a"     | "a"   | "a"     || true
+    "a"    | "a"     | "a"     | "a"   | "b"     || true
+    "a"    | "a"     | "a"     | "a"   | "c"     || true
+    "a"    | "a"     | "b"     | "a"   | "a"     || true
+    "b"    | "a"     | "b"     | "a"   | "a"     || true
+    "b"    | "c"     | "b"     | "a"   | "a"     || false
+    "b"    | "a"     | "b"     | "a"   | null    || true
+}
+```
+###### 输出
+```text
+数据校验失败-->属性[name]的值[c]不在白名单[a, b, [a, b]]中-->自定义类型[BEntity]核查失败-->自定义类型[CEntity]的属性[bEntities]核查失败-->自定义类型[CEntity]核查失败-->自定义类型[WhiteCEntity]的属性[cEntities]核查失败-->自定义类型[WhiteCEntity]核查失败
+```
+更全面的测试详见类MikilinTest
