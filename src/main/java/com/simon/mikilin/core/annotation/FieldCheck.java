@@ -16,11 +16,13 @@ public @interface FieldCheck {
 
     /**
      * 可用的值
+     * 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      */
     String[] includes() default {};
 
     /**
      * 不可用的值，只有includes 为空才会判断下面这个
+     * 如果不允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      */
     String[] excludes() default {};
 

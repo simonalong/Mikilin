@@ -143,12 +143,18 @@ class CheckDelegate {
     <T> boolean available(T object, List<T> whiteList, List<T> blackList){
         initErrMsg();
         if(null == object){
-            if((!CollectionUtil.isEmpty(whiteList)) && whiteList.contains(null)){
-                return true;
+            // 1.（黑名单不空且包含）则不放过
+            if (null != blackList && !blackList.isEmpty() && blackList.contains(null)){
+                append("对象为null，命中黑名单");
+                return false;
             }
 
-            append("对象为null，且不在白名单{0}", whiteList);
-            return false;
+            // 2.（白名单不空且不包含）则不放过
+            if (null != whiteList && !whiteList.isEmpty() && !whiteList.contains(null)){
+                append("对象为null，不在白名单");
+                return false;
+            }
+            return true;
         }
 
         Class cls = object.getClass();
@@ -176,6 +182,17 @@ class CheckDelegate {
             }
         } else {
             // 自定义类型，这里不拦截自定义类型
+            // 1.（黑名单不空且包含）则不放过
+            if (null != blackList && !blackList.isEmpty() && blackList.contains(object)){
+                append("对象为[{0}]，命中黑名单", object);
+                return false;
+            }
+
+            // 2.（白名单不空且不包含）则不放过
+            if (null != whiteList && !whiteList.isEmpty() && !whiteList.contains(object)){
+                append("对象为[{0}]，不在白名单", object);
+                return false;
+            }
             return true;
         }
     }
@@ -206,14 +223,18 @@ class CheckDelegate {
 
         // 2.对象为空
         if(isEmpty(object)){
-            // 2.只有（白名单不空且包含）则放过
-            if (!whiteEmpty && whiteList.contains(object)){
-                return true;
+            // 1.（黑名单不空且包含）则不放过
+            if (!blackEmpty && blackList.contains(object)){
+                append("对象为空，命中黑名单");
+                return false;
             }
 
-            // 2.其他都不放过
-            append("数据有空");
-            return false;
+            // 2.（白名单不空且不包含）则不放过
+            if (!whiteEmpty && !whiteList.contains(object)){
+                append("对象为空，不在白名单");
+                return false;
+            }
+            return true;
         }
         // 3.对象不空
         else{

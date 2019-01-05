@@ -63,21 +63,24 @@ public class Checks {
     }
 
     /**
-     * 基本类型的核查
+     * 类型白名单核查
+     * 注意：
+     * 建议基本类型使用，自定义类型、集合和Map类型不建议使用
      */
-    public boolean baseCheck(Object object){
-        return baseCheck(object, Collections.emptyList(), Collections.emptyList());
+    public <T> boolean checkWhite(T object, List<T> whiteList){
+        return check(object, whiteList, Collections.emptyList());
     }
 
-    public <T> boolean baseCheckWhite(T object, List<T> whiteList){
-        return baseCheck(object, whiteList, Collections.emptyList());
+    /**
+     * 类型黑名单核查
+     * 注意：
+     * 建议基本类型使用，自定义类型、集合和Map类型不建议使用
+     */
+    public <T> boolean checkBlack(T object, List<T> blackList){
+        return check(object, Collections.emptyList(), blackList);
     }
 
-    public <T> boolean baseCheckBlack(T object, List<T> blackList){
-        return baseCheck(object, Collections.emptyList(), blackList);
-    }
-
-    public <T> boolean baseCheck(T object, List<T> whiteList, List<T> blackList){
+    private <T> boolean check(T object, List<T> whiteList, List<T> blackList){
         return delegate.available(object, whiteList, blackList);
     }
 

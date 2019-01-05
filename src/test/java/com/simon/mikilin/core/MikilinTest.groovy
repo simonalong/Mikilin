@@ -9,7 +9,87 @@ import spock.lang.Specification
  */
 class MikilinTest extends Specification {
 
+    def "基本类型白名单测试"() {
+        expect:
+        Assert.assertEquals(result, Checks.checkWhite(name, Arrays.asList("a", "b", null)))
+        if (!Checks.check(result)) {
+            println Checks.getErrMsg()
+        }
+
+        where:
+        name | result
+        "a"  | true
+        "b"  | true
+        null | true
+        "c"  | false
+    }
+
+    def "基本类型黑名单测试"() {
+        expect:
+        Assert.assertEquals(result, Checks.checkBlack(name, Arrays.asList("a", "b", null)))
+        if (!Checks.check(result)) {
+            println Checks.getErrMsg()
+        }
+
+        where:
+        name | result
+        "a"  | false
+        "b"  | false
+        null | false
+        "c"  | true
+    }
+
+    /**
+     * 复杂类型，不建议使用该方法
+     */
+    def "黑名单测试"() {
+        given:
+        AEntity entity = new AEntity().setName(name).setAge(age)
+
+        expect:
+        Assert.assertEquals(result, Checks.checkBlack(entity,
+                Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
+        if (!Checks.check(result)) {
+            println Checks.getErrMsg()
+        }
+
+        where:
+        name | age  || result
+        "a"  | 12   || false
+        "a"  | 13   || false
+        "b"  | 12   || true
+        "b"  | 13   || true
+        "c"  | 12   || true
+        "d"  | 12   || true
+        "d"  | null || true
+    }
+
+    /**
+     * 复杂类型，不建议使用该方法
+     */
     def "白名单测试"() {
+        given:
+        AEntity entity = new AEntity().setName(name).setAge(age)
+
+        expect:
+        Assert.assertEquals(result, Checks.checkWhite(entity,
+                Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
+        if (!Checks.check(result)) {
+            println Checks.getErrMsg()
+        }
+
+        where:
+        name | age || result
+        "a"  | 12  || true
+        "a"  | 13  || true
+        "b"  | 12  || false
+        "b"  | 13  || false
+        "c"  | 12  || false
+        null | 12  || false
+    }
+
+
+    def "复杂类型白名单测试"() {
         given:
         WhiteAEntity entity = new WhiteAEntity()
         entity.setName(name as String)
@@ -29,7 +109,7 @@ class MikilinTest extends Specification {
         "d"  || false
     }
 
-    def "黑名单测试"() {
+    def "复杂类型黑名单测试"() {
         given:
         BlackAEntity entity = new BlackAEntity()
         entity.setName(name as String)
@@ -49,10 +129,10 @@ class MikilinTest extends Specification {
         "d"  || true
     }
 
-    def "黑白名单测试"() {
+    def "复杂类型黑白名单测试"() {
         given:
         BlackWhiteAEntity entity = new BlackWhiteAEntity()
-        entity.setName(name as String).setAge(age)
+        entity.setName(name).setAge(age)
 
         expect:
         Assert.assertEquals(result, Checks.check(entity))
@@ -70,11 +150,11 @@ class MikilinTest extends Specification {
         "c"  | 3    || false
         "c"  | 4    || false
         "a"  | null || true
-        null | 3    || true
-        null | null || true
+        null | 3    || false
+        null | null || false
     }
 
-    def "白名单复杂结构"() {
+    def "复杂类型白名单复杂结构"() {
         given:
         WhiteBEntity entity = new WhiteBEntity();
         entity.setName(whiteBName).setBEntity(new BEntity().setName(whiteBBName)
@@ -102,7 +182,7 @@ class MikilinTest extends Specification {
         null       | "a"         | null        | 12  || false
     }
 
-    def "白名单复杂结构2"(){
+    def "复杂类型白名单复杂结构2"() {
         given:
         BEntity entity = new BEntity()
         entity.setName(bName).setAEntity(new AEntity().setName(baName).setAge(12))
@@ -123,7 +203,7 @@ class MikilinTest extends Specification {
     /**
      * 测试在复杂结构为空的情况
      */
-    def "白名单复杂结构3"(){
+    def "复杂类型白名单复杂结构3"() {
         given:
         BEntity entity = new BEntity()
         entity.setName(bName)
@@ -136,12 +216,12 @@ class MikilinTest extends Specification {
 
         where:
         bName || result
-        "a"    || true
+        "a"   || true
         "b"   || true
-        "c"    || false
+        "c"   || false
     }
 
-    def "白名单集合复杂结构"() {
+    def "复杂类型白名单集合复杂结构"() {
         given:
         WhiteCEntity entity = new WhiteCEntity();
         entity.setCEntities(Arrays.asList(new CEntity().setName(ccName)
@@ -156,12 +236,12 @@ class MikilinTest extends Specification {
         expect:
         where:
         ccName | cb1Name | cb2Name | cName | cbaName || result
-        "a"   | "a"     | "a"    | "a"     | "a"     || true
-        "a"   | "a"     | "a"    | "a"     | "b"     || true
-        "a"   | "a"     | "a"    | "a"     | "c"     || true
-        "a"   | "a"     | "b"    | "a"     | "a"     || true
-        "b"   | "a"     | "b"    | "a"     | "a"     || true
-        "b"   | "c"     | "b"    | "a"     | "a"     || false
-        "b"   | "a"     | "b"    | "a"     | null     || true
+        "a"    | "a"     | "a"     | "a"   | "a"     || true
+        "a"    | "a"     | "a"     | "a"   | "b"     || true
+        "a"    | "a"     | "a"     | "a"   | "c"     || true
+        "a"    | "a"     | "b"     | "a"   | "a"     || true
+        "b"    | "a"     | "b"     | "a"   | "a"     || true
+        "b"    | "c"     | "b"     | "a"   | "a"     || false
+        "b"    | "a"     | "b"     | "a"   | null    || true
     }
 }
