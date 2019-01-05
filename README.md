@@ -19,7 +19,7 @@
 #### @FieldCheck 
 该注解可修饰所有属性，但是修饰的属性类型不同处理也不一样，只有修饰基本类型（Boolean Byte Character Short Integer Long Double Float）和 String类型，
 下面的includes和excludes才会起作用。如果修饰的是复杂类型（自定义类型、集合和Map类型）则该属性仅仅是起到一个排查复杂类型中包含的基本类型的作用，
-因此，如果要核查的基本类型位于比较深层嵌套，那么需要将嵌套的路径上的所有复杂类型属性都加上FieldCheck
+因此，如果要核查的基本类型位于比较深层嵌套，那么需要将嵌套的路径上的所有复杂类型属性都加上FieldCheck。
 该注解有三个属性：
 - includes：白名单，用于表示当前属性只允许的值
 - excludes：黑名单，用于表示当前属性不允许的值
@@ -38,8 +38,9 @@ String getErrMsg()
 输出如下，比如：
 ##### 核查失败的信息定位
 ```
-数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
+数据校验失败-->对象值["c"]不在白名单[null, a, b]中
 ```
+上面是一层结构，对于更复杂的结构输出可继续看后面复杂结构
 ##### 用法
 ```java
 @Data

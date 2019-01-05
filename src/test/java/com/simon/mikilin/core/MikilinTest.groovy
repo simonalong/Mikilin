@@ -11,8 +11,8 @@ class MikilinTest extends Specification {
 
     def "基本类型白名单测试"() {
         expect:
-        Assert.assertEquals(result, Checks.checkWhite(name, "a", "b", null))
-        if (!Checks.check(result)) {
+        Assert.assertEquals(result, Checks.checkWhite(name, Arrays.asList("a", "b", null)))
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -27,7 +27,7 @@ class MikilinTest extends Specification {
     def "基本类型黑名单测试"() {
         expect:
         Assert.assertEquals(result, Checks.checkBlack(name, "a", "b", null))
-        if (!Checks.check(result)) {
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -49,7 +49,7 @@ class MikilinTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.checkBlack(entity,
                 Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
-        if (!Checks.check(result)) {
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -74,7 +74,7 @@ class MikilinTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.checkWhite(entity,
                 Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
-        if (!Checks.check(result)) {
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -96,7 +96,7 @@ class MikilinTest extends Specification {
 
         expect:
         Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        if (!result) {
             println Checks.getErrMsg()
         }
 
