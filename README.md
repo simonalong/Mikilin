@@ -38,7 +38,7 @@ String getErrMsg()
 输出如下，比如：
 ##### 核查失败的信息定位
 ```
-数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[WhiteBEntity]的属性[bEntity]核查失败-->自定义类型[WhiteBEntity]核查失败
+数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
 ```
 ##### 用法
 ```java
@@ -173,6 +173,6 @@ def "复杂类型白名单集合复杂结构"() {
 ```
 ###### 输出
 ```text
-数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->自定义类型[BEntity]核查失败-->自定义类型[CEntity]的属性[bEntities]核查失败-->自定义类型[CEntity]核查失败-->自定义类型[WhiteCEntity]的属性[cEntities]核查失败-->自定义类型[WhiteCEntity]核查失败
+数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
 ```
 更全面的测试详见类MikilinTest

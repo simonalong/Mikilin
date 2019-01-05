@@ -317,7 +317,7 @@ class CheckDelegate {
                 return true;
             }
 
-            append("自定义类型[{0}]核查失败", object.getClass().getSimpleName());
+            append("类型[{0}]核查失败", object.getClass().getSimpleName());
             return false;
         }
     }
@@ -344,7 +344,7 @@ class CheckDelegate {
                     return true;
                 }
 
-                append("自定义类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
+                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
                 return false;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
