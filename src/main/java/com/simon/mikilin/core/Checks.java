@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * @author zhouzhenyong
@@ -94,7 +92,7 @@ public class Checks {
 
         String objKey = object.getClass().getSimpleName();
         List<String> fields = objectFieldCheckMap.get(objKey);
-        if (!CollectionUtils.isEmpty(fields)){
+        if (!CollectionUtil.isEmpty(fields)){
             return objectFieldCheckMap;
         }
 
@@ -125,9 +123,9 @@ public class Checks {
             String objectClsName = cls.getSimpleName();
 
             List<Field> fieldList = ClassUtil.allFieldsOfClass(cls);
-            if (!CollectionUtils.isEmpty(fieldList)){
+            if (!CollectionUtil.isEmpty(fieldList)){
                 // 基本类型用于获取注解的属性
-                fieldList.stream().filter(f->ClassUtil.isBaseField(f.getType())).forEach(f->{
+                fieldList.forEach(f->{
                     FieldCheck fieldCheck = f.getAnnotation(FieldCheck.class);
                     if(null != fieldCheck && !fieldCheck.disable()){
                         addObjectFieldMap(objectClsName, f.getName());
@@ -187,7 +185,7 @@ public class Checks {
 
     private List<Object> getObjectList(Field field, String[] valueList){
         return Arrays.stream(valueList).map(i->{
-            if(!StringUtils.isEmpty(i)){
+            if(null != i && !"".equals(i)){
                 return Objects.cast(field.getType(), i);
             }else{
                 return null;

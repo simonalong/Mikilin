@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 修饰基本类型可以添加黑白名单，但是，自定义、集合和Map类型不需要添加黑白名单，只是用于路径检索
  * @author zhouzhenyong
  * @since 2018/12/20 下午1:58
  */

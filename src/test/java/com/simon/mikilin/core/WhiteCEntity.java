@@ -2,20 +2,21 @@ package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
 import com.simon.mikilin.core.annotation.TypeCheck;
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2018/12/26 下午10:58
+ * @since 2019/1/5 下午7:04
  */
 @Data
 @TypeCheck
 @Accessors(chain = true)
-public class BEntity {
+public class WhiteCEntity {
 
-    @FieldCheck(includes = {"a","b"})
-    private String name;
     @FieldCheck
-    private AEntity aEntity;
+    private List<CEntity> cEntities;
+    @FieldCheck
+    private BEntity bEntity;
 }

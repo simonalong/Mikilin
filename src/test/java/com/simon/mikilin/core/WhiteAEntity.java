@@ -7,15 +7,13 @@ import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2018/12/26 下午10:58
+ * @since 2019/1/5 下午6:18
  */
 @Data
 @TypeCheck
 @Accessors(chain = true)
-public class BEntity {
-
-    @FieldCheck(includes = {"a","b"})
+public class WhiteAEntity {
+    @FieldCheck(includes = {"a","b","c","null"})
     private String name;
-    @FieldCheck
-    private AEntity aEntity;
+    private String address;
 }

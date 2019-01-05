@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.util.CollectionUtils;
 
 /**
  * @author zhouzhenyong
@@ -144,7 +143,7 @@ class CheckDelegate {
     <T> boolean available(T object, List<T> whiteList, List<T> blackList){
         initErrMsg();
         if(null == object){
-            if((!CollectionUtils.isEmpty(whiteList)) && whiteList.contains(null)){
+            if((!CollectionUtil.isEmpty(whiteList)) && whiteList.contains(null)){
                 return true;
             }
 
@@ -159,7 +158,7 @@ class CheckDelegate {
         } else if(Collection.class.isAssignableFrom(cls)){
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection<T> collection = Collection.class.cast(object);
-            if (!CollectionUtils.isEmpty(collection)){
+            if (!CollectionUtil.isEmpty(collection)){
                 return collection.stream().allMatch(c-> available(c, whiteList, blackList));
             }else{
                 // 集合空类型，认为不可用
@@ -169,7 +168,7 @@ class CheckDelegate {
         } else if(Map.class.isAssignableFrom(cls)) {
             // Map 结构中的数据的判断，剥离key和value，只判断value的值
             Map<String, T> map = Map.class.cast(object);
-            if (!CollectionUtils.isEmpty(map)) {
+            if (!CollectionUtil.isEmpty(map)) {
                 return map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, whiteList, blackList));
             } else {
                 append("Map类型为空");
@@ -197,8 +196,8 @@ class CheckDelegate {
      *      3.其他都放过
      */
     private <T> boolean baseAvailable(T object, List<T> whiteList, List<T> blackList){
-        boolean whiteEmpty = CollectionUtils.isEmpty(whiteList);
-        boolean blackEmpty = CollectionUtils.isEmpty(blackList);
+        boolean whiteEmpty = CollectionUtil.isEmpty(whiteList);
+        boolean blackEmpty = CollectionUtil.isEmpty(blackList);
 
         // 1.黑白名单都有空，则不核查该参数，放过
         if(whiteEmpty && blackEmpty){
@@ -267,7 +266,7 @@ class CheckDelegate {
         } else if(Collection.class.isAssignableFrom(cls)){
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection collection = Collection.class.cast(object);
-            if (!CollectionUtils.isEmpty(collection)){
+            if (!CollectionUtil.isEmpty(collection)){
                 return collection.stream().allMatch(c-> available(c, objectFieldMap, whiteList, blackList));
             }else{
                 // 为空则忽略
@@ -276,7 +275,7 @@ class CheckDelegate {
         } else if(Map.class.isAssignableFrom(cls)) {
             // Map 结构中的数据的判断，目前只判断value中的值
             Map map = Map.class.cast(object);
-            if (!CollectionUtils.isEmpty(map)) {
+            if (!CollectionUtil.isEmpty(map)) {
                 if(map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, objectFieldMap, whiteList, blackList))){
                     return true;
                 }
@@ -362,14 +361,19 @@ class CheckDelegate {
             field.setAccessible(true);
             // 2.对象为空
             if (isEmpty(field.get(object))) {
-                // 1.只有（白名单不空且包含）则放过
-                if (!whiteEmpty && fieldListContain(object, field, whiteList)){
-                    return true;
+
+                // 1.（黑名单不空且包含）则不放过
+                if (!blackEmpty && fieldListContain(object, field, blackList)){
+                    append("属性[{0}]为空，命中黑名单", field.getName());
+                    return false;
                 }
 
-                // 2.其他都不放过
-                append("属性[{0}]为空", field.getName());
-                return false;
+                // 2.（白名单不空且不包含）则不放过
+                if (!whiteEmpty && !fieldListContain(object, field, whiteList)){
+                    append("属性[{0}]为空，不在白名单", field.getName());
+                    return false;
+                }
+                return true;
             }
             // 3.对象不空
             else {
@@ -403,7 +407,7 @@ class CheckDelegate {
      * false 对象不需要通过黑白名单核查
      */
     private boolean objectNeedCheck(Object object,  Map<String, List<String>> objectFieldMap){
-        if(!CollectionUtils.isEmpty(objectFieldMap)){
+        if(!CollectionUtil.isEmpty(objectFieldMap)){
             return objectFieldMap.containsKey(object.getClass().getSimpleName());
         }
         return false;
@@ -418,9 +422,9 @@ class CheckDelegate {
      */
     private boolean fieldListIsEmpty(Object object, Field field, Map<String, Map<String, List<Object>>> valueList){
         Map<String, List<Object>> fieldValueListMap = valueList.get(object.getClass().getSimpleName());
-        if(!CollectionUtils.isEmpty(fieldValueListMap)){
+        if(!CollectionUtil.isEmpty(fieldValueListMap)){
             List<Object> fieldValueList = fieldValueListMap.get(field.getName());
-            return CollectionUtils.isEmpty(fieldValueList);
+            return CollectionUtil.isEmpty(fieldValueList);
         }
         return true;
     }
@@ -453,7 +457,7 @@ class CheckDelegate {
      * 根据传入的自动构造映射树
      */
     private Map<String, List<String>> generateObjectFieldMap(Map<String, Map<String, List<Object>>> valueList){
-        if(!CollectionUtils.isEmpty(valueList)){
+        if(!CollectionUtil.isEmpty(valueList)){
             return valueList.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet())));
         }
         return Collections.emptyMap();
@@ -465,12 +469,12 @@ class CheckDelegate {
     private Map<String, List<String>> generateObjectFieldMap(Map<String, Map<String, List<Object>>> whiteList,
         Map<String, Map<String, List<Object>>> blackList){
         Map<String, List<String>> dataMap = new HashMap<>(12);
-        if (!CollectionUtils.isEmpty(whiteList)){
+        if (!CollectionUtil.isEmpty(whiteList)){
             dataMap.putAll(whiteList.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet()))));
         }
 
         // map 合并
-        if (!CollectionUtils.isEmpty(blackList)){
+        if (!CollectionUtil.isEmpty(blackList)){
             Map<String, List<String>> blackMap = blackList.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, d->new ArrayList<>(d.getValue().keySet())));
             blackMap.forEach((key, value) -> dataMap.compute(key, (k, v) -> {
@@ -507,10 +511,10 @@ class CheckDelegate {
             return "".equals(str) || "null".equals(str) || "undefined".equals(str);
         } else if (object instanceof Map) {
             Map map = (Map) object;
-            return CollectionUtils.isEmpty(map);
+            return CollectionUtil.isEmpty(map);
         } else if (object instanceof Collection) {
             Collection collection = (Collection) object;
-            return CollectionUtils.isEmpty(collection);
+            return CollectionUtil.isEmpty(collection);
         } else {
             return object == null;
         }
