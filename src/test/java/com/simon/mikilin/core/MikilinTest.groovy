@@ -1,6 +1,5 @@
 package com.simon.mikilin.core
 
-import org.junit.Assert
 import spock.lang.Specification
 
 /**
@@ -11,7 +10,7 @@ class MikilinTest extends Specification {
 
     def "基本类型白名单测试"() {
         expect:
-        Assert.assertEquals(result, Checks.checkWhite(name, Arrays.asList("a", "b", null)))
+        result == Checks.checkWhite(name, Arrays.asList("a", "b", null))
         if (!result) {
             println Checks.getErrMsg()
         }
@@ -26,7 +25,7 @@ class MikilinTest extends Specification {
 
     def "基本类型黑名单测试"() {
         expect:
-        Assert.assertEquals(result, Checks.checkBlack(name, "a", "b", null))
+        result == Checks.checkBlack(name, "a", "b", null)
         if (!result) {
             println Checks.getErrMsg()
         }
@@ -47,8 +46,8 @@ class MikilinTest extends Specification {
         AEntity entity = new AEntity().setName(name).setAge(age)
 
         expect:
-        Assert.assertEquals(result, Checks.checkBlack(entity,
-                Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
+        result == Checks.checkBlack(entity, Arrays.asList(new AEntity().setName("a").setAge(12),
+                new AEntity().setName("a").setAge(13), null))
         if (!result) {
             println Checks.getErrMsg()
         }
@@ -72,8 +71,8 @@ class MikilinTest extends Specification {
         AEntity entity = new AEntity().setName(name).setAge(age)
 
         expect:
-        Assert.assertEquals(result, Checks.checkWhite(entity,
-                Arrays.asList(new AEntity().setName("a").setAge(12), new AEntity().setName("a").setAge(13), null)))
+        result == Checks.checkWhite(entity, Arrays.asList(new AEntity().setName("a").setAge(12),
+                new AEntity().setName("a").setAge(13), null))
         if (!result) {
             println Checks.getErrMsg()
         }
@@ -95,7 +94,7 @@ class MikilinTest extends Specification {
         entity.setName(name as String)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
+        result == Checks.check(entity)
         if (!result) {
             println Checks.getErrMsg()
         }
@@ -115,8 +114,8 @@ class MikilinTest extends Specification {
         entity.setName(name as String)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -135,8 +134,8 @@ class MikilinTest extends Specification {
         entity.setName(name).setAge(age)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -160,8 +159,8 @@ class MikilinTest extends Specification {
         entity.setName(whiteBName).setBEntity(new BEntity().setName(whiteBBName)
                 .setAEntity(new AEntity().setName(whiteBAName).setAge(age)))
 
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -188,8 +187,8 @@ class MikilinTest extends Specification {
         entity.setName(bName).setAEntity(new AEntity().setName(baName).setAge(12))
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -209,8 +208,8 @@ class MikilinTest extends Specification {
         entity.setName(bName)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
@@ -228,8 +227,8 @@ class MikilinTest extends Specification {
                 .setBEntities(Arrays.asList(new BEntity().setName(cb1Name), new BEntity().setName(cb2Name)))))
                 .setBEntity(new BEntity().setName(cName).setAEntity(new AEntity().setName(cbaName).setAge(12)))
 
-        Assert.assertEquals(result, Checks.check(entity))
-        if (!Checks.check(entity)) {
+        result == Checks.check(entity)
+        if (!result) {
             println Checks.getErrMsg()
         }
 
