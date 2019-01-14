@@ -1,5 +1,8 @@
 # Mikilin
 在业务开发中，类的属性有些时候我们需要这个属性不允许有某些值，有些时候只要某些值，通常情况下在使用的时候，会进行单独核查。这里开发一个工具用于核查这样类的属性的可用和不可用值，同时在出现不符合要求的时候，也能够定位到类的某个属性，不管结构有多复杂都可以定位出来。
+
+注意：
+后来发现该框架跟hibernate-validator有点像，实现了其中的嵌套核查机制，算是简化版的hibernate-validator，就当学习了
 ## 实例
 ### 用法：
 该工具可以核查基本类型（Boolean Byte Character Short Integer Long Double Float）和类型String和复杂类型。
