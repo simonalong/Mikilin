@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * @since 2018/12/24 下午10:31
  */
 @SuppressWarnings("unchecked")
-class CheckDelegate {
+final class CheckDelegate {
 
     private ThreadLocal<StringBuilder> errMsg;
 

@@ -19,7 +19,7 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 @SuppressWarnings("unchecked")
-public class Checks {
+public final class Checks {
 
     /**
      * 对象属性值白名单
