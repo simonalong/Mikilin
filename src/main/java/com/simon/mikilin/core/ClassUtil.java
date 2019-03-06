@@ -16,12 +16,12 @@ import lombok.experimental.UtilityClass;
  * @since 2018/12/25 下午5:17
  */
 @UtilityClass
-public class ClassUtil {
+class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性，包括继承的
      */
-    public Set<Field> allFieldsOfClass(Class<?> cls){
+    Set<Field> allFieldsOfClass(Class<?> cls){
         Set<Field> fieldSet = new HashSet<>();
         while (cls != null){
             fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
@@ -33,7 +33,7 @@ public class ClassUtil {
     /**
      * 获取一个对象类的所有属性（包括继承的）的类
      */
-    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
+    Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
         return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toSet());
     }
 
@@ -44,7 +44,7 @@ public class ClassUtil {
      * 注意:
      * 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      */
-    public boolean isBaseField(Class<?> cls) {
+    boolean isBaseField(Class<?> cls) {
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class)) || cls.equals(String.class);
         if (baseFlag) {
             return true;
@@ -66,7 +66,7 @@ public class ClassUtil {
      * 注意：
      * 当前集合泛型只处理基本的 ParameterizedType，其他暂时不支持（TypeVariable, WildcardType, GenericArrayType）
      */
-    public Class<?> peel(Type type) {
+    Class<?> peel(Type type) {
         if (type instanceof Class<?>) {
             return Class.class.cast(type);
         } else if (type instanceof ParameterizedType) {
@@ -84,7 +84,7 @@ public class ClassUtil {
     /**
      * 将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类
      */
-    public Class<?> peel(Object object) {
+    Class<?> peel(Object object) {
         if (object instanceof Collection) {
             Collection collection = Collection.class.cast(object);
             if (!collection.isEmpty()) {

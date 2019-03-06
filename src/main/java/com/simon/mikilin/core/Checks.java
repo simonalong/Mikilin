@@ -64,6 +64,12 @@ public final class Checks {
 
     /**
      * 开放接口，用于用户自定义索引列表和黑白名单列表
+     * @param object 待核查的对象
+     * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合
+     * @param whiteSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的可用值
+     * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @return 核查结果
+     * true：核查成功；false：核查失败
      */
     public boolean check(Object object, Map<String, Set<String>> objectFieldMap,
         Map<String, Map<String, Set<Object>>> whiteSet, Map<String, Map<String, Set<Object>>> blackSet){
@@ -86,7 +92,6 @@ public final class Checks {
     public <T> boolean checkWhite(T object, T... whiteSet){
         return check(object, new HashSet<>(Arrays.asList(whiteSet)), Collections.emptySet());
     }
-
 
     /**
      * 类型黑名单核查
@@ -118,9 +123,8 @@ public final class Checks {
             return Collections.emptyMap();
         }
 
-        String objKey = object.getClass().getSimpleName();
-        Set<String> fields = objectFieldCheckMap.get(objKey);
-        if (!CollectionUtil.isEmpty(fields)){
+        // 若对象已经创建属性索引树，则直接返回
+        if (objectFieldCheckMap.containsKey(object.getClass().getSimpleName())){
             return objectFieldCheckMap;
         }
 

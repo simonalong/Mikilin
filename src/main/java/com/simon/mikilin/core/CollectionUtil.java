@@ -10,12 +10,12 @@ import lombok.experimental.UtilityClass;
  * @since 2019/1/5 下午1:21
  */
 @UtilityClass
-public class CollectionUtil {
-    public static boolean isEmpty(Collection<?> collection) {
+class CollectionUtil {
+    static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
-    public static boolean isEmpty(Map<?, ?> map) {
+    static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 }
