@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
  * @since 2019/1/5 下午6:18
  */
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class WhiteAEntity {
     @FieldCheck(includes = {"a","b","c","null"})

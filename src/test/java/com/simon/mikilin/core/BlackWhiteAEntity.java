@@ -1,7 +1,6 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.TypeCheck;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -10,7 +9,6 @@ import lombok.experimental.Accessors;
  * @since 2019/1/5 下午6:24
  */
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class BlackWhiteAEntity {
 

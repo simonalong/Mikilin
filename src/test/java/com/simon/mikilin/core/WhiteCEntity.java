@@ -11,7 +11,6 @@ import lombok.experimental.Accessors;
  * @since 2019/1/5 下午7:04
  */
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class WhiteCEntity {
 

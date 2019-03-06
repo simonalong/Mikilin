@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
  * @since 2018/12/26 下午10:58
  */
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class BEntity {
 

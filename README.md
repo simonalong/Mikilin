@@ -11,14 +11,10 @@
 * Checks.checkBlack
 <a name="104274b6"></a>
 ### 复杂类型核查
-针对自定义类型我们这里引入两个注解（主要用于核查复杂结构（自定义类型、集合类型和Map类型（Map结构只解析value，key不考虑）））：
+针对自定义类型我们这里引入一个注解（主要可以核查各种结构（基本类型、自定义类型、集合类型和Map类型（Map结构只解析value，key不考虑）））：
 ```
-@TypeCheck：用于修饰要核查的类
-@FieldCheck：用于核查要核查的类的属性，需要属性所在的类有TypeCheck修饰
+@FieldCheck：用于核查要核查的类的属性
 ```
-<a name="92cd9a81"></a>
-#### @TypeCheck
-该注解只有一个属性disable 用于是否启动核查
 <a name="4fe3d024"></a>
 #### @FieldCheck
 该注解可修饰所有属性，但是修饰的属性类型不同处理也不一样，只有修饰基本类型（Boolean Byte Character Short Integer Long Double Float）和 String类型，<br />
@@ -50,7 +46,6 @@ String getErrMsg()
 用法非常简单，只需一个函数即可
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class AEntity {
     @FieldCheck(includes = {"a","b","c","null"})
@@ -71,7 +66,6 @@ if (!Checks.check(aEntity)) {
 这里我们放一个复杂类型的黑名单测试
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class AEntity {
     @FieldCheck(includes = {"a","b","c","null"})
@@ -110,7 +104,6 @@ def "复杂类型白名单测试"() {
 测试结构 WhiteCEntity 对应的对象
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class WhiteCEntity {
     // 下面复杂结构添加 @FieldCheck 注解用于建立下一级CEntity中的数据，如果不添加，则下一级无法核查
@@ -122,7 +115,6 @@ public class WhiteCEntity {
 ```
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class
 CEntity {
@@ -134,7 +126,6 @@ CEntity {
 ```
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class BEntity {
     @FieldCheck(includes = {"a","b"})
@@ -145,7 +136,6 @@ public class BEntity {
 ```
 ```java
 @Data
-@TypeCheck
 @Accessors(chain = true)
 public class AEntity {
     @FieldCheck(includes = {"a","b","c","null"})

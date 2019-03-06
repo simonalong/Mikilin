@@ -1,7 +1,6 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.TypeCheck;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -147,33 +146,23 @@ public final class Checks {
             return;
         }
         // 剥离外部的一些壳之后类的类型
-        TypeCheck typeCheck = cls.getAnnotation(TypeCheck.class);
-        if (null != typeCheck && !typeCheck.disable()){
-            String objectClsName = cls.getSimpleName();
+        String objectClsName = cls.getSimpleName();
 
-            Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
-            if (!CollectionUtil.isEmpty(fieldSet)){
-                // 基本类型用于获取注解的属性
-                fieldSet.forEach(f->{
-                    FieldCheck fieldCheck = f.getAnnotation(FieldCheck.class);
-                    if(null != fieldCheck && !fieldCheck.disable()){
-                        addObjectFieldMap(objectClsName, f.getName());
-                        addValueMap(whiteMapFieldMap, objectClsName, f, fieldCheck.includes());
-                        addValueMap(blackMapFieldMap, objectClsName, f, fieldCheck.excludes());
-                    }
-                });
+        Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
+        if (!CollectionUtil.isEmpty(fieldSet)) {
+            // 基本类型用于获取注解的属性
+            fieldSet.forEach(f -> {
+                FieldCheck fieldCheck = f.getAnnotation(FieldCheck.class);
+                if (null != fieldCheck && !fieldCheck.disable()) {
+                    addObjectFieldMap(objectClsName, f.getName());
+                    addValueMap(whiteMapFieldMap, objectClsName, f, fieldCheck.includes());
+                    addValueMap(blackMapFieldMap, objectClsName, f, fieldCheck.excludes());
+                }
+            });
 
-                // 非基本类型拆分开进行迭代分析
-                fieldSet.stream().filter(f->!ClassUtil.isBaseField(f.getType())).forEach(f->{
-
-                    Class<?> fClass = ClassUtil.peel(f.getGenericType());
-                    // 该属性对应的类型是否添加了注解 TypeCheck
-                    TypeCheck fieldObjectType = cls.getAnnotation(TypeCheck.class);
-                    if (null != fieldObjectType && !fieldObjectType.disable()) {
-                        createObjectFieldMap(fClass);
-                    }
-                });
-            }
+            // 非基本类型拆分开进行迭代分析
+            fieldSet.stream().filter(f -> !ClassUtil.isBaseField(f.getType()))
+                .forEach(f -> createObjectFieldMap(ClassUtil.peel(f.getGenericType())));
         }
     }
 
