@@ -45,7 +45,8 @@ public class ClassUtil {
      * 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      */
     public boolean isBaseField(Class<?> cls) {
-        if ((cls.isPrimitive() && !cls.equals(void.class)) || cls.equals(String.class)) {
+        boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class)) || cls.equals(String.class);
+        if (baseFlag) {
             return true;
         } else {
             try{
