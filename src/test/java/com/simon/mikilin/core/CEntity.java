@@ -1,7 +1,6 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.TypeCheck;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
