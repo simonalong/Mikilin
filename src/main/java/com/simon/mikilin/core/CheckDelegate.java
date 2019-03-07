@@ -317,7 +317,7 @@ final class CheckDelegate {
                 return true;
             }
 
-            append("类型[{0}]核查失败", object.getClass().getSimpleName());
+            append("类型[{0}]核查失败", object.getClass().getCanonicalName());
             return false;
         }
     }
@@ -344,7 +344,7 @@ final class CheckDelegate {
                     return true;
                 }
 
-                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
+                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getCanonicalName(), field.getName());
                 return false;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -429,7 +429,7 @@ final class CheckDelegate {
      */
     private boolean objectNeedCheck(Object object,  Map<String, Set<String>> objectFieldMap){
         if(!CollectionUtil.isEmpty(objectFieldMap)){
-            return objectFieldMap.containsKey(object.getClass().getSimpleName());
+            return objectFieldMap.containsKey(object.getClass().getCanonicalName());
         }
         return false;
     }
@@ -442,7 +442,7 @@ final class CheckDelegate {
      * @param valueSet 可用或者不可用数据
      */
     private boolean fieldSetIsEmpty(Object object, Field field, Map<String, Map<String, Set<Object>>> valueSet){
-        Map<String, Set<Object>> fieldValueSetMap = valueSet.get(object.getClass().getSimpleName());
+        Map<String, Set<Object>> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
         if(!CollectionUtil.isEmpty(fieldValueSetMap)){
             Set<Object> fieldValueSet = fieldValueSetMap.get(field.getName());
             return CollectionUtil.isEmpty(fieldValueSet);
@@ -471,7 +471,7 @@ final class CheckDelegate {
     }
 
     private Set<Object> fieldSet(Object object, Field field, Map<String, Map<String, Set<Object>>> valueSet){
-        return valueSet.get(object.getClass().getSimpleName()).get(field.getName());
+        return valueSet.get(object.getClass().getCanonicalName()).get(field.getName());
     }
 
     /**

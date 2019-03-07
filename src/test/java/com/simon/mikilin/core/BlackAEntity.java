@@ -1,6 +1,7 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
+import com.simon.mikilin.core.annotation.FieldExcludeCheck;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,7 +12,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class BlackAEntity {
-    @FieldCheck(excludes = {"a","b","c","null"})
+    @FieldExcludeCheck({"a","b","c","null"})
     private String name;
     private Integer age;
 }

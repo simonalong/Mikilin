@@ -1,6 +1,8 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.FieldCheck;
+import com.simon.mikilin.core.annotation.FieldExcludeCheck;
+import com.simon.mikilin.core.annotation.FieldIncludeCheck;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,9 +13,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AEntity {
-    @FieldCheck(includes = {"a","b","c","null"})
+    @FieldIncludeCheck({"a", "b", "c", "null"})
     private String name;
-    @FieldCheck(excludes = {"null"})
+    @FieldExcludeCheck({"null"})
     private Integer age;
     private String address;
 }

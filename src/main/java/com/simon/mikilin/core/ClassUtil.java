@@ -83,6 +83,9 @@ class ClassUtil {
 
     /**
      * 将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类
+     * 例如：
+     * {@Code Map<String, AEntity>} -> {@Code Class<AEntity>}
+     * {@Code List<BEntity>} -> {@Code Class<BEntity>}
      */
     Class<?> peel(Object object) {
         if (object instanceof Collection) {

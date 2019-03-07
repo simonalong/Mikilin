@@ -1,5 +1,6 @@
 package com.simon.mikilin.core;
 
+import com.simon.mikilin.core.annotation.Check;
 import com.simon.mikilin.core.annotation.FieldCheck;
 import java.util.List;
 import lombok.Data;
@@ -13,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class WhiteCEntity {
 
-    @FieldCheck
+    @Check
     private List<CEntity> cEntities;
-    @FieldCheck
+    @Check
     private BEntity bEntity;
 }
