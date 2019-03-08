@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 import lombok.Data;
 
 /**
+ * 下面的所有类型校验核查都是可以允许的
+ *
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:50
  */
@@ -25,6 +27,12 @@ public @interface FieldExcludeCheck {
      * 可用的值对应的类型
      */
     FieldEnum type() default FieldEnum.DEFAULT;
+
+    /**
+     * 内部类的判断的调用
+     * 比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，如参为当前修饰的Field的类型或者子类
+     */
+    String judge() default "";
 
     /**
      * 是否可用
