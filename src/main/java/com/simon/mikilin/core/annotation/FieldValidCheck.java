@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 属性的所有可用的值
+ * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）和 String类型，属性的所有可用的值
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:47
  */

@@ -1,22 +1,14 @@
-package com.simon.mikilin.core
+package com.simon.mikilin.core.value
 
-import com.simon.mikilin.core.judge.JudgeEntity
-import com.simon.mikilin.core.value.AEntity
-import com.simon.mikilin.core.value.BEntity
-import com.simon.mikilin.core.value.BlackAEntity
-import com.simon.mikilin.core.value.BlackWhiteAEntity
-import com.simon.mikilin.core.value.CEntity
-import com.simon.mikilin.core.white.WhiteAEntity
-import com.simon.mikilin.core.white.WhiteBEntity
-import com.simon.mikilin.core.white.WhiteCEntity
+import com.simon.mikilin.core.Checks
 import org.junit.Assert
 import spock.lang.Specification
 
 /**
  * @author zhouzhenyong
- * @since 2019/1/5 下午1:13
+ * @since 2019/3/10 下午10:11
  */
-class MikilinTest extends Specification {
+class FieldValueTest extends Specification {
 
     def "基本类型白名单测试"() {
         expect:
@@ -73,30 +65,7 @@ class MikilinTest extends Specification {
         "d"  | null || true
     }
 
-    /**
-     * 测试外部判断的调用
-     */
-    def "外部调用测试"() {
-        given:
-        JudgeEntity entity = new JudgeEntity().setName(name).setAge(age)
 
-        expect:
-        boolean actResult = Checks.check(entity)
-        if (!actResult) {
-            println Checks.getErrMsg()
-        }
-        Assert.assertEquals(result, actResult)
-
-        where:
-        name    | age  || result
-        "women" | 12   || false
-        "haode" | 13   || false
-        "b"     | -1   || false
-        "b"     | 200  || false
-        "c"     | 12   || true
-        "d"     | null || false
-        null    | 32   || false
-    }
 
     /**
      * 复杂类型，不建议使用该方法
@@ -121,7 +90,6 @@ class MikilinTest extends Specification {
         "c"  | 12  || false
         null | 12  || false
     }
-
 
     def "复杂类型白名单测试"() {
         given:

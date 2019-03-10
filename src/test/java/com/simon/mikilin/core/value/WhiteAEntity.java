@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.white;
+package com.simon.mikilin.core.value;
 
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
