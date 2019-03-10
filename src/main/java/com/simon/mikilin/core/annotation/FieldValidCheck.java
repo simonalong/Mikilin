@@ -1,18 +1,18 @@
 package com.simon.mikilin.core.annotation;
 
-import com.simon.mikilin.core.FieldEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 属性的所有可用的值
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:47
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldIncludeCheck {
+public @interface FieldValidCheck {
 
     /**
      * 可用的值
@@ -26,7 +26,18 @@ public @interface FieldIncludeCheck {
     FieldEnum type() default FieldEnum.DEFAULT;
 
     /**
-     * 是否可用
+     * 禁用的值对应的类型
+     */
+    String regex() default "";
+
+    /**
+     * 内部类的判断的调用
+     * 比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
+     */
+    String judge() default "";
+
+    /**
+     * 是否不可用
      */
     boolean disable() default false;
 }

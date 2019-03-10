@@ -1,8 +1,7 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.value;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.FieldIncludeCheck;
+import com.simon.mikilin.core.annotation.FieldValidCheck;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -16,7 +15,7 @@ import lombok.experimental.Accessors;
 public class
 CEntity {
 
-    @FieldIncludeCheck({"a", "b"})
+    @FieldValidCheck({"a", "b"})
     private String name;
     @Check
     private List<BEntity> bEntities;

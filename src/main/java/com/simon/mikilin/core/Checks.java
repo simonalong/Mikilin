@@ -1,9 +1,12 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldExcludeCheck;
-import com.simon.mikilin.core.annotation.FieldIncludeCheck;
+import com.simon.mikilin.core.annotation.FieldEnum;
+import com.simon.mikilin.core.annotation.FieldInvalidCheck;
+import com.simon.mikilin.core.annotation.FieldValidCheck;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -25,11 +33,11 @@ public final class Checks {
     /**
      * 对象属性值白名单
      */
-    private Map<String, Map<String, Set<Object>>> whiteFieldValueMap;
+    private Map<String, Map<String, FieldValue>> whiteFieldValueMap;
     /**
      * 对象属性值黑名单
      */
-    private Map<String, Map<String, Set<Object>>> blackFieldValueMap;
+    private Map<String, Map<String, FieldValue>> blackFieldValueMap;
     /**
      * 对象属性核查映射
      */
@@ -74,7 +82,7 @@ public final class Checks {
      * @return 核查结果 true：核查成功；false：核查失败
      */
     public boolean check(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, Set<Object>>> whiteSet, Map<String, Map<String, Set<Object>>> blackSet) {
+        Map<String, Map<String, FieldValue>> whiteSet, Map<String, Map<String, FieldValue>> blackSet) {
         return delegate.available(object, objectFieldMap, whiteSet, blackSet);
     }
 
@@ -132,11 +140,11 @@ public final class Checks {
         return objectFieldCheckMap;
     }
 
-    private Map<String, Map<String, Set<Object>>> getWhiteMap(Object object) {
+    private Map<String, Map<String, FieldValue>> getWhiteMap(Object object) {
         return whiteFieldValueMap;
     }
 
-    private Map<String, Map<String, Set<Object>>> getBlackMap(Object object) {
+    private Map<String, Map<String, FieldValue>> getBlackMap(Object object) {
         return blackFieldValueMap;
     }
 
@@ -154,16 +162,16 @@ public final class Checks {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 基本类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                FieldIncludeCheck includeCheck = f.getAnnotation(FieldIncludeCheck.class);
+                FieldValidCheck includeCheck = f.getAnnotation(FieldValidCheck.class);
                 if (null != includeCheck && !includeCheck.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    addValueMap(whiteFieldValueMap, objectClsName, f, includeCheck.value());
+                    addWhiteValueMap(whiteFieldValueMap, objectClsName, f, includeCheck);
                 }
 
-                FieldExcludeCheck excludeCheck = f.getAnnotation(FieldExcludeCheck.class);
+                FieldInvalidCheck excludeCheck = f.getAnnotation(FieldInvalidCheck.class);
                 if (null != excludeCheck && !excludeCheck.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    addValueMap(blackFieldValueMap, objectClsName, f, excludeCheck.value());
+                    addBlackValueMap(blackFieldValueMap, objectClsName, f, excludeCheck);
                 }
             });
 
@@ -192,24 +200,25 @@ public final class Checks {
         });
     }
 
-    private void addValueMap(Map<String, Map<String, Set<Object>>> fieldMap, String objectName, Field field,
-        String[] values) {
-        if (values.length == 0) {
-            return;
-        }
-
+    private void addWhiteValueMap(Map<String, Map<String, FieldValue>> fieldMap, String objectName, Field field,
+        FieldValidCheck validValue) {
         fieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
-                return Maps.builder().add(field.getName(), new HashSet<>(getObjectSet(field, values))).build();
+                return Maps.builder().add(field.getName(), FieldValue.buildFromValid(field, validValue)).build();
             } else {
-                v.compute(field.getName(), (bk, bv) -> {
-                    if (null == bv) {
-                        return new HashSet<>(getObjectSet(field, values));
-                    } else {
-                        bv.addAll(getObjectSet(field, values));
-                        return bv;
-                    }
-                });
+                v.put(field.getName(), FieldValue.buildFromValid(field, validValue));
+                return v;
+            }
+        });
+    }
+
+    private void addBlackValueMap(Map<String, Map<String, FieldValue>> fieldMap, String objectName, Field field,
+        FieldInvalidCheck invalidValue) {
+        fieldMap.compute(objectName, (k, v) -> {
+            if (null == v) {
+                return Maps.builder().add(field.getName(), FieldValue.buildFromInvalid(field, invalidValue)).build();
+            } else {
+                v.put(field.getName(), FieldValue.buildFromInvalid(field, invalidValue));
                 return v;
             }
         });
@@ -230,5 +239,95 @@ public final class Checks {
                 return null;
             }
         }).collect(Collectors.toSet());
+    }
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    static class FieldValue{
+
+        /**
+         * 属性名字
+         */
+        private String name;
+        private Set<Object> values;
+        private FieldEnum fieldEnum;
+        private Pattern pattern;
+        private Predicate<Object> predicate;
+        /**
+         * 属性核查禁用标示
+         */
+        private Boolean disable;
+
+        public static FieldValue buildFromValid(Field field, FieldValidCheck validCheck){
+            return new FieldValue()
+                .setName(field.getName())
+                .setValues(getObjectSet(field, validCheck.value()))
+                .setFieldEnum(buildFieldEnum(validCheck.type()))
+                .setPattern(buildPattern(validCheck.regex()))
+                .setPredicate(buildPredicate(field, validCheck.judge()))
+                .setDisable(validCheck.disable());
+        }
+
+        public static FieldValue buildFromInvalid(Field field, FieldInvalidCheck invalidCheck){
+            return new FieldValue()
+                .setName(field.getName())
+                .setValues(getObjectSet(field, invalidCheck.value()))
+                .setFieldEnum(buildFieldEnum(invalidCheck.type()))
+                .setPattern(buildPattern(invalidCheck.regex()))
+                .setPredicate(buildPredicate(field, invalidCheck.judge()))
+                .setDisable(invalidCheck.disable());
+        }
+
+        private static FieldEnum buildFieldEnum(FieldEnum fieldEnum){
+            if (fieldEnum.equals(FieldEnum.DEFAULT)){
+                return null;
+            }
+            return fieldEnum;
+        }
+
+        private static Pattern buildPattern(String regex){
+            if (null == regex || regex.equals("")){
+                return null;
+            }
+            return Pattern.compile(regex);
+        }
+
+        /**
+         * 将一个类中的函数转换为一个过滤器
+         * @return com.xxx.ACls#isValid -> predicate
+         */
+        @SuppressWarnings("all")
+        private static Predicate<Object> buildPredicate(Field field, String judge){
+            if (null == judge || judge.isEmpty() || !judge.contains("#")){
+               return null;
+            }
+            Integer index = judge.indexOf("#");
+            String classStr = judge.substring(0, index);
+            String funStr = judge.substring(index + 1);
+
+            try {
+                Class<?> cls = Class.forName(classStr);
+                Method method = cls.getDeclaredMethod(funStr, field.getType());
+                Object object = cls.newInstance();
+                Class<?> returnType = method.getReturnType();
+
+                if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
+                    || returnType.getSimpleName().equals("boolean")){
+                    return obj -> {
+                        try {
+                            method.setAccessible(true);
+                            return (boolean) method.invoke(object, obj);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        return false;
+                    };
+                }
+            } catch (ClassNotFoundException | InstantiationException | NoSuchMethodException | IllegalAccessException e ) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }

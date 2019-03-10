@@ -1,7 +1,6 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.white;
 
-import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.FieldIncludeCheck;
+import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,7 +11,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class WhiteAEntity {
-    @FieldIncludeCheck({"a","b","c","null"})
+    @FieldValidCheck({"a","b","c","null"})
     private String name;
     private String address;
 }

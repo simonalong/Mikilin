@@ -1,7 +1,8 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.white;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldCheck;
+import com.simon.mikilin.core.value.BEntity;
+import com.simon.mikilin.core.value.CEntity;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;

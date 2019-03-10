@@ -1,8 +1,8 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.white;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldCheck;
-import com.simon.mikilin.core.annotation.FieldIncludeCheck;
+import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.value.BEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -16,6 +16,6 @@ public class WhiteBEntity {
 
     @Check
     private BEntity bEntity;
-    @FieldIncludeCheck({"a", "b"})
+    @FieldValidCheck({"a", "b"})
     private String name;
 }

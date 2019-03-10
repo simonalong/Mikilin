@@ -1,6 +1,5 @@
 package com.simon.mikilin.core.annotation;
 
-import com.simon.mikilin.core.FieldEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
