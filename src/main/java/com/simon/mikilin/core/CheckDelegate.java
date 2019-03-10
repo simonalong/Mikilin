@@ -321,7 +321,7 @@ final class CheckDelegate {
                 return true;
             }
 
-            append("类型[{0}]核查失败", object.getClass().getCanonicalName());
+            append("类型[{0}]核查失败", object.getClass().getSimpleName());
             return false;
         }
     }
@@ -348,7 +348,7 @@ final class CheckDelegate {
                     return true;
                 }
 
-                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getCanonicalName(), field.getName());
+                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
                 return false;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -498,31 +498,31 @@ final class CheckDelegate {
      * @param valueSet 可用或者不可用数据
      */
     private boolean fieldContain(Object object, Field field, Map<String, Map<String, FieldValue>> valueSet){
-        if (checkDisable(object, field, valueSet)){
+        if (checkDisable(object, field, valueSet)) {
             return false;
         }
 
         Map<String, FieldValue> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
-        if(!CollectionUtil.isEmpty(fieldValueSetMap)){
+        if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
             FieldValue fieldValue = fieldValueSetMap.get(field.getName());
-            if(null != fieldValue) {
+            if (null != fieldValue) {
                 // 注解中的value是否包含
-                if (valuesContain(object, field, fieldValue)){
-                   return true;
+                if (valuesContain(object, field, fieldValue)) {
+                    return true;
                 }
 
                 // 属性类型是否匹配
-                if(typeContain(object, field, fieldValue)){
+                if (typeContain(object, field, fieldValue)) {
                     return true;
                 }
 
                 // 正则表达式是否匹配
-                if(regexContain(object, field, fieldValue)){
+                if (regexContain(object, field, fieldValue)) {
                     return true;
                 }
 
                 // 外部判决是否匹配
-                if (judgeContain(object, field, fieldValue)){
+                if (judgeContain(object, field, fieldValue)) {
                     return true;
                 }
             }
@@ -542,6 +542,7 @@ final class CheckDelegate {
             field.setAccessible(true);
             Object data = field.get(object);
             if (!CollectionUtil.isEmpty(fieldSet) && fieldSet.contains(data)){
+                append("属性[{0}]的值[{1}]位于名单中{2}", field.getName(), data, fieldSet);
                 return true;
             }
         } catch (IllegalAccessException e) {
@@ -579,8 +580,11 @@ final class CheckDelegate {
         try {
             Object data = field.get(object);
             FieldEnum fieldEnum = fieldValue.getFieldEnum();
-            if(null != fieldEnum){
-                return fieldEnum.valid((String) (data));
+            if(null != fieldEnum) {
+                if (fieldEnum.valid((String) (data))) {
+                    append("属性[{0}]的值[{1}]命中[FieldEnum-{2}]", field.getName(), data, fieldEnum.name());
+                    return true;
+                }
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -599,8 +603,12 @@ final class CheckDelegate {
         try {
             Object data = field.get(object);
             Pattern pattern = fieldValue.getPattern();
-            if(null != pattern){
-                return pattern.matcher((String) (data)).matches();
+            if (null != pattern) {
+                boolean result = pattern.matcher((String) (data)).matches();
+                if (pattern.matcher((String) (data)).matches()) {
+                    append("属性[{0}]的值[{1}]命中正则表达式[{2}]", field.getName(), data, pattern.pattern());
+                    return true;
+                }
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -620,7 +628,10 @@ final class CheckDelegate {
             Object data = field.get(object);
             Predicate<Object> predicate = fieldValue.getPredicate();
             if(null != predicate){
-                return predicate.test(data);
+                if(predicate.test(data)){
+                    append("属性[{0}]的值[{1}]在回调中命中", field.getName(), data);
+                    return true;
+                }
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();

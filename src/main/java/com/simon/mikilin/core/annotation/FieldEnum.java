@@ -1,6 +1,7 @@
 package com.simon.mikilin.core.annotation;
 
 import java.util.regex.Pattern;
+import lombok.Getter;
 
 /**
  * @author zhouzhenyong
@@ -17,6 +18,7 @@ public enum FieldEnum {
     MAIL("邮箱", "^([\\w-_]+(?:\\.[\\w-_]+)*)@[\\w-]+(.[\\w_-]+)+"),
     IP_ADDRESS("IP地址", "^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),;
 
+    @Getter
     private String name;
     private String regex;
 
