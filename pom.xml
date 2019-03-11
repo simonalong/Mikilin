@@ -7,7 +7,21 @@
     <groupId>com.simon.mikilin</groupId>
     <artifactId>mikilin</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
+    <version>1.2.0-SNAPSHOT</version>
+
+    <name>Mikilin</name>
+    <url>https://github.com/SimonAlong/Mikilin</url>
+    <description>对象属性核查工具</description>
+
+    <developers>
+        <developer>
+            <name>zhouzhenyong</name>
+            <email>simonalong@outlook.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
