@@ -522,9 +522,7 @@ final class CheckDelegate {
                 }
 
                 // 外部判决是否匹配
-                if (judgeContain(object, field, fieldValue)) {
-                    return true;
-                }
+                return judgeContain(object, field, fieldValue);
             }
         }
         return false;
@@ -604,7 +602,6 @@ final class CheckDelegate {
             Object data = field.get(object);
             Pattern pattern = fieldValue.getPattern();
             if (null != pattern) {
-                boolean result = pattern.matcher((String) (data)).matches();
                 if (pattern.matcher((String) (data)).matches()) {
                     append("属性[{0}]的值[{1}]命中正则表达式[{2}]", field.getName(), data, pattern.pattern());
                     return true;

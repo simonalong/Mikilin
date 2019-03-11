@@ -68,7 +68,7 @@ public final class Checks {
         if (ClassUtil.isBaseField(object.getClass())) {
             return true;
         } else {
-            return check(object, getObjFieldMap(object), getWhiteMap(object), getBlackMap(object));
+            return check(object, getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
@@ -140,11 +140,11 @@ public final class Checks {
         return objectFieldCheckMap;
     }
 
-    private Map<String, Map<String, FieldValue>> getWhiteMap(Object object) {
+    private Map<String, Map<String, FieldValue>> getWhiteMap() {
         return whiteFieldValueMap;
     }
 
-    private Map<String, Map<String, FieldValue>> getBlackMap(Object object) {
+    private Map<String, Map<String, FieldValue>> getBlackMap() {
         return blackFieldValueMap;
     }
 
@@ -259,7 +259,7 @@ public final class Checks {
          */
         private Boolean disable;
 
-        public static FieldValue buildFromValid(Field field, FieldValidCheck validCheck){
+        static FieldValue buildFromValid(Field field, FieldValidCheck validCheck){
             return new FieldValue()
                 .setName(field.getName())
                 .setValues(getObjectSet(field, validCheck.value()))
@@ -269,7 +269,7 @@ public final class Checks {
                 .setDisable(validCheck.disable());
         }
 
-        public static FieldValue buildFromInvalid(Field field, FieldInvalidCheck invalidCheck){
+        static FieldValue buildFromInvalid(Field field, FieldInvalidCheck invalidCheck){
             return new FieldValue()
                 .setName(field.getName())
                 .setValues(getObjectSet(field, invalidCheck.value()))
@@ -287,7 +287,7 @@ public final class Checks {
         }
 
         private static Pattern buildPattern(String regex){
-            if (null == regex || regex.equals("")){
+            if (null == regex || "".equals(regex)){
                 return null;
             }
             return Pattern.compile(regex);
@@ -312,8 +312,9 @@ public final class Checks {
                 Object object = cls.newInstance();
                 Class<?> returnType = method.getReturnType();
 
+                String booleanStr = "boolean";
                 if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
-                    || returnType.getSimpleName().equals("boolean")){
+                    || returnType.getSimpleName().equals(booleanStr)){
                     return obj -> {
                         try {
                             method.setAccessible(true);

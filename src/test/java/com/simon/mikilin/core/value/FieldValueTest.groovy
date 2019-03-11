@@ -56,16 +56,14 @@ class FieldValueTest extends Specification {
 
         where:
         name | age  || result
-        "a"  | 12   || false
-        "a"  | 13   || false
+        "a"  | 12
+        "a"  | 13
         "b"  | 12   || true
         "b"  | 13   || true
         "c"  | 12   || true
         "d"  | 12   || true
         "d"  | null || true
     }
-
-
 
     /**
      * 复杂类型，不建议使用该方法
@@ -85,10 +83,10 @@ class FieldValueTest extends Specification {
         name | age || result
         "a"  | 12  || true
         "a"  | 13  || true
-        "b"  | 12  || false
-        "b"  | 13  || false
-        "c"  | 12  || false
-        null | 12  || false
+        "b"  | 12
+        "b"  | 13
+        "c"  | 12
+        null | 12
     }
 
     def "复杂类型白名单测试"() {
@@ -109,7 +107,7 @@ class FieldValueTest extends Specification {
         "b"  || true
         "c"  || true
         null || true
-        "d"  || false
+        "d"
     }
 
     def "复杂类型黑名单测试"() {
@@ -125,11 +123,11 @@ class FieldValueTest extends Specification {
 
         where:
         name || result
-        "a"  || false
-        "b"  || false
-        "c"  || false
-        null || false
-        "d"  || true
+        "a"
+        "b"
+        "c"
+        null
+        "d" || true
     }
 
     def "复杂类型黑白名单测试"() {
@@ -147,19 +145,19 @@ class FieldValueTest extends Specification {
         name | age  || result
         "a"  | 3    || true
         "b"  | 4    || true
-        "a"  | 1    || false
-        "a"  | 2    || false
-        "b"  | 1    || false
-        "c"  | 3    || false
-        "c"  | 4    || false
+        "a"  | 1
+        "a"  | 2
+        "b"  | 1
+        "c"  | 3
+        "c"  | 4
         "a"  | null || true
-        null | 3    || false
-        null | null || false
+        null | 3
+        null | null
     }
 
     def "复杂类型白名单复杂结构"() {
         given:
-        WhiteBEntity entity = new WhiteBEntity();
+        WhiteBEntity entity = new WhiteBEntity()
         entity.setName(whiteBName).setBEntity(new BEntity().setName(whiteBBName)
                 .setAEntity(new AEntity().setName(whiteBAName).setAge(age)))
 
@@ -177,12 +175,12 @@ class FieldValueTest extends Specification {
         "a"        | "b"         | "b"         | 12  || true
         "a"        | "b"         | "c"         | 12  || true
         "a"        | "b"         | null        | 12  || true
-        "a"        | "c"         | "c"         | 12  || false
-        "b"        | "c"         | null        | 12  || false
+        "a"        | "c"         | "c"         | 12
+        "b"        | "c"         | null        | 12
         "b"        | "b"         | "b"         | 12  || true
-        "b"        | "b"         | "d"         | 12  || false
-        "b"        | null        | "c"         | 12  || false
-        null       | "a"         | null        | 12  || false
+        "b"        | "b"         | "d"         | 12
+        "b"        | null        | "c"         | 12
+        null       | "a"         | null        | 12
     }
 
     def "复杂类型白名单复杂结构2"() {
@@ -200,7 +198,7 @@ class FieldValueTest extends Specification {
         bName | baName || result
         "a"   | "b"    || true
         "a"   | "c"    || true
-        "a"   | "d"    || false
+        "a"   | "d"
     }
 
     /**
@@ -221,7 +219,7 @@ class FieldValueTest extends Specification {
         bName || result
         "a"   || true
         "b"   || true
-        "c"   || false
+        "c"
     }
 
     def "复杂类型白名单集合复杂结构"() {
@@ -244,7 +242,7 @@ class FieldValueTest extends Specification {
         "a"    | "a"     | "a"     | "a"   | "c"     || true
         "a"    | "a"     | "b"     | "a"   | "a"     || true
         "b"    | "a"     | "b"     | "a"   | "a"     || true
-        "b"    | "c"     | "b"     | "a"   | "a"     || false
+        "b"    | "c"     | "b"     | "a"   | "a"
         "b"    | "a"     | "b"     | "a"   | null    || true
     }
 }

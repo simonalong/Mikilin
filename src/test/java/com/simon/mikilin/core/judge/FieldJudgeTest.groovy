@@ -26,12 +26,12 @@ class FieldJudgeTest extends Specification {
 
         where:
         name    | age  || result
-        "women" | 12   || false
-        "haode" | 13   || false
-        "b"     | -1   || false
-        "b"     | 200  || false
+        "women" | 12   
+        "haode" | 13   
+        "b"     | -1   
+        "b"     | 200  
         "c"     | 12   || true
-        "d"     | null || false
-        null    | 32   || false
+        "d"     | null 
+        null    | 32   
     }
 }
