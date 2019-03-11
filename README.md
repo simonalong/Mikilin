@@ -212,7 +212,33 @@ def "复杂类型白名单集合复杂结构"() {
 ```
 更全面的测试详见测试类：FieldValueTest、FieldTypeTest、FieldRegexTest和FieldJudgeTest
 
-<a name="db35d823"></a>
-## 五、代码：
+<a name="be85ff02"></a>
+## 五、注意点：
+1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
+```java
+@Check
+List<AEntity> entityList;
+
+@Check
+List<List<AEntity>> entityList;
+```
+
+而下面的这些暂时是不支持的（后面可以考虑支持）
+```java
+@Check
+List<?> dataList;
+
+@Check
+List dataList;
+
+@Check
+List<? extend AEntity> dataList;
+
+@Check
+List<T> dataList;
+```
+
+<a name="fab7b2b4"></a>
+## 六、代码：
 [https://github.com/SimonAlong/Mikilin](https://github.com/SimonAlong/Mikilin)
 
