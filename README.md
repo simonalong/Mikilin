@@ -1,21 +1,20 @@
 # Mikilin 介绍
 
 该框架是我在业务开发中，经常需要校验核查对象中的属性的可用值和不可用值，进而开发的一个核查框架。该框架通过引入黑白名单机制，能够核查所有的基本属性，针对复杂类型，通过拆分后获取基本类型进行核查。该框架具有以下特性：
-<a name="2fdee72a"></a>
+
 #### 功能性：
 * 全类型：可以核查所有类型，基本类型，复杂类型，集合和Map等各种类型
 * 多方式：对类型的核查支持多种方式：值列表、属性类型、正则表达式和外部逻辑回调核查
 * 黑白机制：核查机制引入正反的黑白名单机制，白名单表示只要的值，黑名单表示禁用的值
-<a name="0cfcf179"></a>
+
 #### 非功能性：
 * 零侵入：对代码无侵入，仅作为一个工具类存在
 * 易使用：使用超级简单，三个注解，一个核查函数，一个核查失败函数，多种核查通道
 * 高性能：所有的核查均是内存直接调用
 * 可扩展：针对一些不好核查的属性，可以设置外部回调，可设置自己定义的核查逻辑
-<a name="5d2cbe92"></a>
+
 ## 一、介绍：
 该工具可以核查基本类型、集合类型和各种复杂等的类型。
-<a name="8883a7c4"></a>
 ### @FieldValidCheck 和 @FieldInvalidCheck
 这两个注解值修饰基本类型`（Boolean Byte Character Short Integer Long Double Float）`和 `String`类型，而复杂类型是由基本类型组成的，复杂类型的修饰通过注解`@Check`进行修饰，解析时候才会解析内部的基本类型注解。<br />上面两种注解都有下面的属性：
 * value：（禁用或者可用的）值列表
@@ -23,33 +22,30 @@
 * regex：（禁用或者可用的）正则表达式
 * judge：（禁用或者可用的）属性外部配置，可设置自定义的核查逻辑
 * disable：（禁用或者可用的）是否启动该核查
-<a name="303f7c60"></a>
+
 ### 基本类型核查
 有两个函数供基本类型使用，（下面两个函数也可以测试复杂类型，但是不建议，复杂类型可用后面讲述方式）
-```java
+```text
 Checks.checkWhite
 Checks.checkBlack
 ```
 
-<a name="104274b6"></a>
 ### 复杂类型核查
 针对自定义类型我们这里引入两个注解（主要可以核查各种结构（基本类型、自定义类型、集合类型和Map类型（Map结构只解析value，key不考虑）））：
-```java
+```text
 @FieldValidCheck：用于设置属性可用的值
 @FieldInvalidCheck：用于设置属性禁用的值
 @Check：修饰复杂结构体，用于向内部解析
 ```
 核查函数为：
-```java
+```text
 Checks.check(Object)
 ```
 
-<a name="04aaedad"></a>
 ## 二、用法：
-<a name="7d9b9af3"></a>
 #### 核查函数
 该核查对基本类型有两种函数，多个重载函数
-```java
+```text
 // 核查可用的值
 public <T> boolean checkWhite(T object, Set<T> whiteSet)
 public <T> boolean checkWhite(T object, List<T> whiteSet)
@@ -61,14 +57,13 @@ public <T> boolean checkBlack(T object, List<T> blackSet)
 public <T> boolean checkBlack(T object, T... blackSet)
 ```
 核查复杂类型就一个函数
-```java
+```text
 public boolean check(Object object)
 ```
 
-<a name="4604d502"></a>
 #### 错误信息
 如果核查失败，则返回false，同时也可以返回核查失败的调用路径
-```java
+```text
 public String getErrMsg()
 ```
 
@@ -77,7 +72,6 @@ public String getErrMsg()
 数据校验失败-->对象值["c"]不在白名单[null, a, b]中
 ```
 上面是一层结构，对于更复杂的结构输出可继续看后面复杂结构
-<a name="44ae8afc"></a>
 ## 三、用例：
 ```java
 @Data
@@ -89,14 +83,14 @@ public class AEntity {
     private Integer age;
     private String address;
 }
-
+```
+```text
 // 调用测试
 if (!Checks.check(aEntity)) {
   println Checks.getErrMsg()
 }
 ```
 可以根据打印的信息定位到哪个类的哪个属性的哪个值是不合法的，对于更多的复杂结构测试，可见下面的测试方式
-<a name="ec4b1975"></a>
 ## 四、测试：
 这里我们放一个复杂类型的黑名单测试
 ```java
@@ -129,12 +123,10 @@ def "复杂类型白名单测试"() {
     "d"  || false
 }
 ```
-<a name="8ba7c3a7"></a>
 ###### 输出
 ```
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
-<a name="396e6ab7"></a>
 ### 更复杂的结构
 测试结构 WhiteCEntity 对应的对象
 ```java
@@ -180,7 +172,6 @@ public class AEntity {
     private String address;
 }
 ```
-<a name="db06c78d"></a>
 ###### 测试
 ```groovy
 def "复杂类型白名单集合复杂结构"() {
@@ -205,17 +196,15 @@ def "复杂类型白名单集合复杂结构"() {
     "b"    | "a"     | "b"     | "a"   | null    || true
 }
 ```
-<a name="8ba7c3a7-1"></a>
 ###### 输出
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
 ```
 更全面的测试详见测试类：FieldValueTest、FieldTypeTest、FieldRegexTest和FieldJudgeTest
 
-<a name="be85ff02"></a>
 ## 五、注意点：
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
-```java
+```text
 @Check
 List<AEntity> entityList;
 
@@ -224,7 +213,7 @@ List<List<AEntity>> entityList;
 ```
 
 而下面的这些暂时是不支持的（后面可以考虑支持）
-```java
+```text
 @Check
 List<?> dataList;
 
@@ -237,7 +226,5 @@ List<? extend AEntity> dataList;
 @Check
 List<T> dataList;
 ```
-
-<a name="fab7b2b4"></a>
 
 
