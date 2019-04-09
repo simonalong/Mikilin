@@ -58,6 +58,8 @@ public final class Checks {
 
     /**
      * 自定义的复杂类型校验，基本类型校验不校验，基本类型校验为baseCheck
+     * @param object 待核查对象
+     * @return true：成功，false：核查失败
      */
     public boolean check(Object object) {
         if (delegate.isEmpty(object)) {
@@ -88,6 +90,10 @@ public final class Checks {
 
     /**
      * 类型白名单核查 注意： 建议基本类型使用，自定义类型、集合和Map类型不建议使用
+     * @param object 待核查对象
+     * @param whiteSet 白名单集合
+     * @param <T> 对象类型
+     * @return 核查结果 true：核查成功；false：核查失败
      */
     public <T> boolean checkWhite(T object, Set<T> whiteSet) {
         return check(object, whiteSet, Collections.emptySet());
@@ -103,6 +109,10 @@ public final class Checks {
 
     /**
      * 类型黑名单核查 注意： 建议基本类型使用，自定义类型、集合和Map类型不建议使用
+     * @param object 待核查对象
+     * @param blackSet 黑名单集合
+     * @param <T> 对象类型
+     * @return 核查结果 true：核查成功；false：核查失败
      */
     public <T> boolean checkBlack(T object, Set<T> blackSet) {
         return check(object, Collections.emptySet(), blackSet);

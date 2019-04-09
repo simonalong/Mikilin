@@ -15,29 +15,33 @@ import java.lang.annotation.Target;
 public @interface FieldValidCheck {
 
     /**
-     * 可用的值
-     * 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * @return 禁用的值的列表
      */
     String[] value() default {};
 
     /**
      * 可用的值对应的类型
+     * @return 对应的枚举类型
      */
     FieldEnum type() default FieldEnum.DEFAULT;
 
     /**
-     * 禁用的值对应的类型
+     * 可用的值对应的正则表达式
+     * @return 对应的正则表达式
      */
     String regex() default "";
 
     /**
-     * 内部类的判断的调用
-     * 比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
+     * 内部的判断的调用
+     *
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
      */
     String judge() default "";
 
     /**
      * 是否不可用
+     * @return true：禁用核查，false：启用核查
      */
     boolean disable() default false;
 }
