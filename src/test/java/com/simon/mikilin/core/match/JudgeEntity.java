@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.judge;
+package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.judge.JudgeCls#ageValid")
+    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#ageValid")
     private Integer age;
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.judge.JudgeCls#nameValid")
+    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#nameValid")
     private String name;
 }

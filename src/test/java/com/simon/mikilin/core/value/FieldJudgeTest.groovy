@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/3/10 下午10:11
  */
-class FieldValueTest extends Specification {
+class FieldJudgeTest extends Specification {
 
     def "基本类型白名单测试"() {
         expect:
@@ -55,14 +55,14 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        name | age  || result
-        "a"  | 12
-        "a"  | 13
-        "b"  | 12   || true
-        "b"  | 13   || true
-        "c"  | 12   || true
-        "d"  | 12   || true
-        "d"  | null || true
+        name | age  | result
+        "a"  | 12   | false
+        "a"  | 13   | false
+        "b"  | 12   | true
+        "b"  | 13   | true
+        "c"  | 12   | true
+        "d"  | 12   | true
+        "d"  | null | true
     }
 
     /**
@@ -80,13 +80,13 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        name | age || result
-        "a"  | 12  || true
-        "a"  | 13  || true
-        "b"  | 12
-        "b"  | 13
-        "c"  | 12
-        null | 12
+        name | age | result
+        "a"  | 12  | true
+        "a"  | 13  | true
+        "b"  | 12  | false
+        "b"  | 13  | false
+        "c"  | 12  | false
+        null | 12  | false
     }
 
     def "复杂类型白名单测试"() {
@@ -102,12 +102,12 @@ class FieldValueTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        name || result
-        "a"  || true
-        "b"  || true
-        "c"  || true
-        null || true
-        "d"
+        name | result
+        "a"  | true
+        "b"  | true
+        "c"  | true
+        null | true
+        "d"  | false
     }
 
     def "复杂类型黑名单测试"() {
@@ -122,12 +122,12 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        name || result
-        "a"
-        "b"
-        "c"
-        null
-        "d" || true
+        name | result
+        "a"  | false
+        "b"  | false
+        "c"  | false
+        null | false
+        "d"  | true
     }
 
     def "复杂类型黑白名单测试"() {
@@ -142,17 +142,17 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        name | age  || result
-        "a"  | 3    || true
-        "b"  | 4    || true
-        "a"  | 1
-        "a"  | 2
-        "b"  | 1
-        "c"  | 3
-        "c"  | 4
-        "a"  | null || true
-        null | 3
-        null | null
+        name | age  | result
+        "a"  | 3    | true
+        "b"  | 4    | true
+        "a"  | 1    | false
+        "a"  | 2    | false
+        "b"  | 1    | false
+        "c"  | 3    | false
+        "c"  | 4    | false
+        "a"  | null | true
+        null | 3    | false
+        null | null | false
     }
 
     def "复杂类型白名单复杂结构"() {
@@ -168,19 +168,19 @@ class FieldValueTest extends Specification {
 
         expect:
         where:
-        whiteBName | whiteBBName | whiteBAName | age || result
-        "a"        | "a"         | "a"         | 12  || true
-        "a"        | "a"         | "b"         | 12  || true
-        "a"        | "b"         | "a"         | 12  || true
-        "a"        | "b"         | "b"         | 12  || true
-        "a"        | "b"         | "c"         | 12  || true
-        "a"        | "b"         | null        | 12  || true
-        "a"        | "c"         | "c"         | 12
-        "b"        | "c"         | null        | 12
-        "b"        | "b"         | "b"         | 12  || true
-        "b"        | "b"         | "d"         | 12
-        "b"        | null        | "c"         | 12
-        null       | "a"         | null        | 12
+        whiteBName | whiteBBName | whiteBAName | age | result
+        "a"        | "a"         | "a"         | 12  | true
+        "a"        | "a"         | "b"         | 12  | true
+        "a"        | "b"         | "a"         | 12  | true
+        "a"        | "b"         | "b"         | 12  | true
+        "a"        | "b"         | "c"         | 12  | true
+        "a"        | "b"         | null        | 12  | true
+        "a"        | "c"         | "c"         | 12  | false
+        "b"        | "c"         | null        | 12  | false
+        "b"        | "b"         | "b"         | 12  | true
+        "b"        | "b"         | "d"         | 12  | false
+        "b"        | null        | "c"         | 12  | false
+        null       | "a"         | null        | 12  | false
     }
 
     def "复杂类型白名单复杂结构2"() {
@@ -195,10 +195,10 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        bName | baName || result
-        "a"   | "b"    || true
-        "a"   | "c"    || true
-        "a"   | "d"
+        bName | baName | result
+        "a"   | "b"    | true
+        "a"   | "c"    | true
+        "a"   | "d"    | false
     }
 
     /**
@@ -216,15 +216,15 @@ class FieldValueTest extends Specification {
         }
 
         where:
-        bName || result
-        "a"   || true
-        "b"   || true
-        "c"
+        bName | result
+        "a"   | true
+        "b"   | true
+        "c"   | false
     }
 
     def "复杂类型白名单集合复杂结构"() {
         given:
-        WhiteCEntity entity = new WhiteCEntity();
+        WhiteCEntity entity = new WhiteCEntity()
         entity.setCEntities(Arrays.asList(new CEntity().setName(ccName)
                 .setBEntities(Arrays.asList(new BEntity().setName(cb1Name), new BEntity().setName(cb2Name)))))
                 .setBEntity(new BEntity().setName(cName).setAEntity(new AEntity().setName(cbaName).setAge(12)))
@@ -236,13 +236,13 @@ class FieldValueTest extends Specification {
 
         expect:
         where:
-        ccName | cb1Name | cb2Name | cName | cbaName || result
-        "a"    | "a"     | "a"     | "a"   | "a"     || true
-        "a"    | "a"     | "a"     | "a"   | "b"     || true
-        "a"    | "a"     | "a"     | "a"   | "c"     || true
-        "a"    | "a"     | "b"     | "a"   | "a"     || true
-        "b"    | "a"     | "b"     | "a"   | "a"     || true
-        "b"    | "c"     | "b"     | "a"   | "a"
-        "b"    | "a"     | "b"     | "a"   | null    || true
+        ccName | cb1Name | cb2Name | cName | cbaName | result
+        "a"    | "a"     | "a"     | "a"   | "a"     | true
+        "a"    | "a"     | "a"     | "a"   | "b"     | true
+        "a"    | "a"     | "a"     | "a"   | "c"     | true
+        "a"    | "a"     | "b"     | "a"   | "a"     | true
+        "b"    | "a"     | "b"     | "a"   | "a"     | true
+        "b"    | "c"     | "b"     | "a"   | "a"     | false
+        "b"    | "a"     | "b"     | "a"   | null    | true
     }
 }

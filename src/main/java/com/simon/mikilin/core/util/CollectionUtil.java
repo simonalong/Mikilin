@@ -1,4 +1,4 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.util;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,12 +10,12 @@ import lombok.experimental.UtilityClass;
  * @since 2019/1/5 下午1:21
  */
 @UtilityClass
-class CollectionUtil {
-    static boolean isEmpty(Collection<?> collection) {
+public class CollectionUtil {
+    public boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
-    static boolean isEmpty(Map<?, ?> map) {
+    public boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 }

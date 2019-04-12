@@ -1,4 +1,4 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.util;
 
 import java.lang.reflect.InvocationTargetException;
 import lombok.experimental.UtilityClass;
@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
  * @since 2018/12/26 下午11:56
  */
 @UtilityClass
-class Objects {
+public class Objects {
 
     private static final String NULL_STR = "null";
 
@@ -18,7 +18,7 @@ class Objects {
      * @param data 数据
      * @return Class类型对应的对象
      */
-    Object cast(Class<?> cls, String data){
+    public Object cast(Class<?> cls, String data){
         if(cls.equals(String.class)) {
             // 针对data为null的情况进行转换
             if(NULL_STR.equals(data)){

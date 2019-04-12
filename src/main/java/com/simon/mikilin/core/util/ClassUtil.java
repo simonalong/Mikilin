@@ -1,4 +1,4 @@
-package com.simon.mikilin.core;
+package com.simon.mikilin.core.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -16,12 +16,12 @@ import lombok.experimental.UtilityClass;
  * @since 2018/12/25 下午5:17
  */
 @UtilityClass
-class ClassUtil {
+public class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性，包括继承的
      */
-    Set<Field> allFieldsOfClass(Class<?> cls){
+    public Set<Field> allFieldsOfClass(Class<?> cls){
         Set<Field> fieldSet = new HashSet<>();
         while (cls != null){
             fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
@@ -33,7 +33,7 @@ class ClassUtil {
     /**
      * 获取一个对象类的所有属性（包括继承的）的类
      */
-    Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
+    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
         return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toSet());
     }
 
@@ -44,7 +44,7 @@ class ClassUtil {
      * 注意:
      * 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      */
-    boolean isBaseField(Class<?> cls) {
+    public boolean isBaseField(Class<?> cls) {
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class)) || cls.equals(String.class);
         if (baseFlag) {
             return true;
@@ -66,7 +66,7 @@ class ClassUtil {
      * 注意：
      * 当前集合泛型只处理基本的 ParameterizedType，其他暂时不支持（TypeVariable, WildcardType, GenericArrayType）
      */
-    Class<?> peel(Type type) {
+    public Class<?> peel(Type type) {
         if (type instanceof Class<?>) {
             return Class.class.cast(type);
         } else if (type instanceof ParameterizedType) {
@@ -87,7 +87,7 @@ class ClassUtil {
      * {@Code Map<String, AEntity>} -> {@Code Class<AEntity>}
      * {@Code List<BEntity>} -> {@Code Class<BEntity>}
      */
-    Class<?> peel(Object object) {
+    public Class<?> peel(Object object) {
         if (object instanceof Collection) {
             Collection collection = Collection.class.cast(object);
             if (!collection.isEmpty()) {

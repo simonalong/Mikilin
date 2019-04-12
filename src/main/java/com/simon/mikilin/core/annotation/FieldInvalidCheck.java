@@ -25,7 +25,7 @@ public @interface FieldInvalidCheck {
      * 禁用的值对应的类型
      * @return 对应的枚举类型
      */
-    FieldEnum type() default FieldEnum.DEFAULT;
+    FieldType type() default FieldType.DEFAULT;
 
     /**
      * 枚举类型的判断
@@ -74,7 +74,7 @@ public @interface FieldInvalidCheck {
     String regex() default "";
 
     /**
-     * 内部的判断的调用
+     * 系统自己编码判断
      *
      * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
      */

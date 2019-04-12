@@ -1,8 +1,9 @@
 package com.simon.mikilin.core;
 
 import com.alibaba.fastjson.JSON;
-import com.simon.mikilin.core.Checks.FieldValue;
-import com.simon.mikilin.core.annotation.FieldEnum;
+import com.simon.mikilin.core.match.FieldJudge;
+import com.simon.mikilin.core.util.ClassUtil;
+import com.simon.mikilin.core.util.CollectionUtil;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -13,8 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
  * @since 2018/12/24 下午10:31
  */
 @SuppressWarnings("unchecked")
-final class CheckDelegate {
+public final class CheckDelegate {
 
     private ThreadLocal<StringBuilder> errMsg;
 
@@ -74,8 +73,8 @@ final class CheckDelegate {
      * @param whiteSet 对象的属性的可用值列表
      * @param blackSet 对象的属性的禁用值列表
      */
-    boolean available(Object object, Map<String, Map<String, FieldValue>> whiteSet,
-        Map<String, Map<String, FieldValue>> blackSet){
+    boolean available(Object object, Map<String, Map<String, FieldJudge>> whiteSet,
+        Map<String, Map<String, FieldJudge>> blackSet){
         // 黑白名单都有的话，则按照白名单
         return available(object, generateObjectFieldMap(whiteSet, blackSet), whiteSet, blackSet);
     }
@@ -94,7 +93,7 @@ final class CheckDelegate {
      * @param object 待校验对象（复杂对象）
      * @param blackSet 对象的属性的禁用值列表
      */
-    boolean availableBlack(Object object, Map<String, Map<String, FieldValue>> blackSet){
+    boolean availableBlack(Object object, Map<String, Map<String, FieldJudge>> blackSet){
         return available(object, generateObjectFieldMap(blackSet), Collections.emptyMap(), blackSet);
     }
 
@@ -105,7 +104,7 @@ final class CheckDelegate {
      * @param blackSet 对象的属性的禁用值列表
      */
     boolean availableBlack(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, FieldValue>> blackSet){
+        Map<String, Map<String, FieldJudge>> blackSet){
         return available(object, objectFieldMap, Collections.emptyMap(), blackSet);
     }
 
@@ -123,7 +122,7 @@ final class CheckDelegate {
      * @param object 待校验对象（复杂对象）
      * @param whiteSet 对象的属性的可用值列表
      */
-    boolean availableWhite(Object object, Map<String, Map<String, FieldValue>> whiteSet){
+    boolean availableWhite(Object object, Map<String, Map<String, FieldJudge>> whiteSet){
         return available(object, generateObjectFieldMap(whiteSet), whiteSet, Collections.emptyMap());
     }
 
@@ -134,7 +133,7 @@ final class CheckDelegate {
      * @param whiteSet 对象的属性的可用值列表
      */
     boolean availableWhite(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, FieldValue>> whiteSet){
+        Map<String, Map<String, FieldJudge>> whiteSet){
         return available(object, objectFieldMap, whiteSet, Collections.emptyMap());
     }
 
@@ -277,7 +276,7 @@ final class CheckDelegate {
      * true：所有属性都可用
      */
     boolean available(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, FieldValue>> whiteSet, Map<String, Map<String, FieldValue>> blackSet){
+        Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet){
         initErrMsg();
         if (null == object) {
             // 对于对象中的其他属性不核查
@@ -335,7 +334,7 @@ final class CheckDelegate {
      * @param objectFieldMap 对象核查的属性映射
      */
     private boolean available(Object object, Field field,  Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, FieldValue>> whiteSet,Map<String, Map<String, FieldValue>> blackSet) {
+        Map<String, Map<String, FieldJudge>> whiteSet,Map<String, Map<String, FieldJudge>> blackSet) {
         Class cls = field.getType();
         if(ClassUtil.isBaseField(cls)){
             // 基本类型，则直接校验
@@ -373,8 +372,8 @@ final class CheckDelegate {
      *      2.如果（白名单不空且不包含）则不放过
      *      3.其他都放过
      */
-    private boolean primaryFieldAvailable(Object object, Field field, Map<String, Map<String, FieldValue>> whiteFieldValue,
-        Map<String, Map<String, FieldValue>> blackFieldValue) {
+    private boolean primaryFieldAvailable(Object object, Field field, Map<String, Map<String, FieldJudge>> whiteFieldValue,
+        Map<String, Map<String, FieldJudge>> blackFieldValue) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackFieldValue);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteFieldValue);
         // 1.黑白名单都有空，则不核查该参数，放过
@@ -404,15 +403,13 @@ final class CheckDelegate {
             else {
                 // 1.如果（黑名单不空且包含）则不放过
                 if (!blackEmpty && fieldContain(object, field, blackFieldValue)) {
-                    append("属性[{0}]的值[{1}]位于黑名单中{2}", field.getName(), field.get(object),
-                        fieldSet(object, field, blackFieldValue));
+                    append("属性[{0}]的值[{1}]命中黑名单中", field.getName(), field.get(object));
                     return false;
                 }
 
                 // 2.如果（白名单不空且不包含）则不放过
                 if(!whiteEmpty && !fieldContain(object, field, whiteFieldValue)){
-                    append("属性[{0}]的值[{1}]不在白名单{2}中", field.getName(), field.get(object),
-                        fieldSet(object, field, whiteFieldValue));
+                    append("属性[{0}]的值[{1}]不在所有白名单中", field.getName(), field.get(object));
                     return false;
                 }
 
@@ -445,51 +442,27 @@ final class CheckDelegate {
      * @param valueSet 可用或者不可用的数据
      * @return true:所有为空，false属性都有
      */
-    private boolean fieldCheckIsEmpty(Object object, Field field, Map<String, Map<String, FieldValue>> valueSet){
+    private boolean fieldCheckIsEmpty(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet){
         if (checkDisable(object, field, valueSet)){
             return true;
         }
-        Map<String, FieldValue> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
+        Map<String, FieldJudge> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
         if(!CollectionUtil.isEmpty(fieldValueSetMap)){
-            FieldValue fieldValue = fieldValueSetMap.get(field.getName());
-            if(null != fieldValue) {
-                return valuesIsEmpty(fieldValue)
-                    && typeIsEmpty(fieldValue)
-                    && regexIsEmpty(fieldValue)
-                    && judgeIsEmpty(fieldValue);
-            }
-            return true;
+            return fieldValueSetMap.get(field.getName()).isEmpty();
         }
         return true;
     }
 
-    private boolean valuesIsEmpty(FieldValue fieldValue) {
-        return CollectionUtil.isEmpty(fieldValue.getValues());
-    }
-
-    private boolean typeIsEmpty(FieldValue fieldValue) {
-        return null == fieldValue.getFieldEnum();
-    }
-
-    private boolean regexIsEmpty(FieldValue fieldValue) {
-        return null == fieldValue.getPattern();
-    }
-
-    private boolean judgeIsEmpty(FieldValue fieldValue) {
-        return null == fieldValue.getPredicate();
-    }
-
-    private boolean checkDisable(Object object, Field field, Map<String, Map<String, FieldValue>> valueSet){
-        Map<String, FieldValue> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
+    private boolean checkDisable(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet){
+        Map<String, FieldJudge> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
         if(!CollectionUtil.isEmpty(fieldValueSetMap)){
-            FieldValue fieldValue = fieldValueSetMap.get(field.getName());
-            if(null != fieldValue){
-                return fieldValue.getDisable();
+            FieldJudge fieldJudge = fieldValueSetMap.get(field.getName());
+            if(null != fieldJudge){
+                return fieldJudge.getDisable();
             }
         }
         return true;
     }
-
 
     /**
      * 对象的某个属性可用或者不可用核查中是否包含
@@ -497,151 +470,145 @@ final class CheckDelegate {
      * @param field 对象的属性
      * @param valueSet 可用或者不可用数据
      */
-    private boolean fieldContain(Object object, Field field, Map<String, Map<String, FieldValue>> valueSet){
+    private boolean fieldContain(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet){
         if (checkDisable(object, field, valueSet)) {
             return false;
         }
 
-        Map<String, FieldValue> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
+        Map<String, FieldJudge> fieldValueSetMap = valueSet.get(object.getClass().getCanonicalName());
         if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
-            FieldValue fieldValue = fieldValueSetMap.get(field.getName());
-            if (null != fieldValue) {
-                // 注解中的value是否包含
-                if (valuesContain(object, field, fieldValue)) {
-                    return true;
+            FieldJudge fieldJudge = fieldValueSetMap.get(field.getName());
+            if (null != fieldJudge) {
+                field.setAccessible(true);
+                Object data;
+                try {
+                    data = field.get(object);
+                    return fieldJudge.judge(data, this);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
-
-                // 属性类型是否匹配
-                if (typeContain(object, field, fieldValue)) {
-                    return true;
-                }
-
-                // 正则表达式是否匹配
-                if (regexContain(object, field, fieldValue)) {
-                    return true;
-                }
-
-                // 外部判决是否匹配
-                return judgeContain(object, field, fieldValue);
             }
         }
         return false;
     }
+//
+//    /**
+//     * 对象的某个属性列表包含，前提是这个列表存在
+//     * @param object 对象
+//     * @param field 对象的属性
+//     * @param fieldJudge 可用或者不可用数据
+//     */
+//    private boolean valuesContain(Object object, Field field, FieldJudge fieldJudge){
+//        try {
+//            field.setAccessible(true);
+//            Object data = field.get(object);
+//            fieldJudge.judge(data);
+//
+//            //
+//            if (!CollectionUtil.isEmpty(fieldSet) && fieldSet.contains(data)){
+//                append("属性[{0}]的值[{1}]位于名单中{2}", field.getName(), data, fieldSet);
+//                return true;
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+//
+//    private Set<Object> fieldSet(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet){
+//        String clsStr = object.getClass().getCanonicalName();
+//        if (!valueSet.containsKey(clsStr)){
+//            return null;
+//        }
+//
+//        Map<String, FieldJudge> fieldMap = valueSet.get(clsStr);
+//        if(!fieldMap.containsKey(field.getName())){
+//            return null;
+//        }
+//
+//        FieldJudge fieldJudge = fieldMap.get(field.getName());
+//        if (null != fieldJudge) {
+//            return fieldJudge.getValues();
+//        }
+//        return null;
+//    }
 
-    /**
-     * 对象的某个属性列表包含，前提是这个列表存在
-     * @param object 对象
-     * @param field 对象的属性
-     * @param fieldValue 可用或者不可用数据
-     */
-    private boolean valuesContain(Object object, Field field, FieldValue fieldValue){
-        Set<Object> fieldSet = fieldValue.getValues();
-        try {
-            field.setAccessible(true);
-            Object data = field.get(object);
-            if (!CollectionUtil.isEmpty(fieldSet) && fieldSet.contains(data)){
-                append("属性[{0}]的值[{1}]位于名单中{2}", field.getName(), data, fieldSet);
-                return true;
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    /**
+//     * 对象的某个属性列表包含，前提是这个列表存在
+//     * @param object 对象
+//     * @param field 属性
+//     * @param fieldJudge 属性值
+//     */
+//    private boolean typeContain(Object object, Field field, FieldJudge fieldJudge){
+//        field.setAccessible(true);
+//        try {
+//            Object data = field.get(object);
+//            FieldType fieldType = fieldJudge.getFieldType();
+//            if(null != fieldType) {
+//                if (fieldType.valid((String) (data))) {
+//                    append("属性[{0}]的值[{1}]命中[FieldType-{2}]", field.getName(), data, fieldType.name());
+//                    return true;
+//                }
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
-    private Set<Object> fieldSet(Object object, Field field, Map<String, Map<String, FieldValue>> valueSet){
-        String clsStr = object.getClass().getCanonicalName();
-        if (!valueSet.containsKey(clsStr)){
-            return null;
-        }
+//    /**
+//     * 对象的某个属性列表包含，前提是这个列表存在
+//     * @param object 对象
+//     * @param field 对象的属性
+//     * @param fieldJudge 属性value实体
+//     */
+//    private boolean regexContain(Object object, Field field, FieldJudge fieldJudge){
+//        field.setAccessible(true);
+//        try {
+//            Object data = field.get(object);
+//            Pattern pattern = fieldJudge.getPattern();
+//            if (null != pattern) {
+//                if (pattern.matcher((String) (data)).matches()) {
+//                    append("属性[{0}]的值[{1}]命中正则表达式[{2}]", field.getName(), data, pattern.pattern());
+//                    return true;
+//                }
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
-        Map<String, FieldValue> fieldMap = valueSet.get(clsStr);
-        if(!fieldMap.containsKey(field.getName())){
-            return null;
-        }
-
-        FieldValue fieldValue = fieldMap.get(field.getName());
-        if (null != fieldValue) {
-            return fieldValue.getValues();
-        }
-        return null;
-    }
-
-    /**
-     * 对象的某个属性列表包含，前提是这个列表存在
-     * @param object 对象
-     * @param field 属性
-     * @param fieldValue 属性值
-     */
-    private boolean typeContain(Object object, Field field, FieldValue fieldValue){
-        field.setAccessible(true);
-        try {
-            Object data = field.get(object);
-            FieldEnum fieldEnum = fieldValue.getFieldEnum();
-            if(null != fieldEnum) {
-                if (fieldEnum.valid((String) (data))) {
-                    append("属性[{0}]的值[{1}]命中[FieldEnum-{2}]", field.getName(), data, fieldEnum.name());
-                    return true;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * 对象的某个属性列表包含，前提是这个列表存在
-     * @param object 对象
-     * @param field 对象的属性
-     * @param fieldValue 属性value实体
-     */
-    private boolean regexContain(Object object, Field field, FieldValue fieldValue){
-        field.setAccessible(true);
-        try {
-            Object data = field.get(object);
-            Pattern pattern = fieldValue.getPattern();
-            if (null != pattern) {
-                if (pattern.matcher((String) (data)).matches()) {
-                    append("属性[{0}]的值[{1}]命中正则表达式[{2}]", field.getName(), data, pattern.pattern());
-                    return true;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * 对象的某个属性列表包含，前提是这个列表存在
-     * @param object 对象
-     * @param field 对象的属性
-     * @param fieldValue 属性value实体
-     */
-    private boolean judgeContain(Object object, Field field, FieldValue fieldValue){
-        field.setAccessible(true);
-        try {
-            Object data = field.get(object);
-            Predicate<Object> predicate = fieldValue.getPredicate();
-            if(null != predicate){
-                if(predicate.test(data)){
-                    append("属性[{0}]的值[{1}]在回调中命中", field.getName(), data);
-                    return true;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    /**
+//     * 对象的某个属性列表包含，前提是这个列表存在
+//     * @param object 对象
+//     * @param field 对象的属性
+//     * @param fieldJudge 属性value实体
+//     */
+//    private boolean judgeContain(Object object, Field field, FieldJudge fieldJudge){
+//        field.setAccessible(true);
+//        try {
+//            Object data = field.get(object);
+//            Predicate<Object> predicate = fieldJudge.getPredicate();
+//            if(null != predicate){
+//                if(predicate.test(data)){
+//                    append("属性[{0}]的值[{1}]在回调中命中", field.getName(), data);
+//                    return true;
+//                }
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     /**
      * 根据传入的自动构造映射树
      */
-    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, FieldValue>> valueSet){
-        if(!CollectionUtil.isEmpty(valueSet)){
-            return valueSet.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new HashSet<>(d.getValue().keySet())));
+    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, FieldJudge>> valueSet) {
+        if (!CollectionUtil.isEmpty(valueSet)) {
+            return valueSet.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, d -> new HashSet<>(d.getValue().keySet())));
         }
         return Collections.emptyMap();
     }
@@ -649,8 +616,8 @@ final class CheckDelegate {
     /**
      * 根据传入的黑白名单一起构造映射树
      */
-    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, FieldValue>> whiteSet,
-        Map<String, Map<String, FieldValue>> blackSet){
+    private Map<String, Set<String>> generateObjectFieldMap(Map<String, Map<String, FieldJudge>> whiteSet,
+        Map<String, Map<String, FieldJudge>> blackSet){
         Map<String, Set<String>> dataMap = new HashMap<>(12);
         if (!CollectionUtil.isEmpty(whiteSet)){
             dataMap.putAll(whiteSet.entrySet().stream().collect(Collectors.toMap(Entry::getKey, d->new HashSet<>(d.getValue().keySet()))));
@@ -673,8 +640,12 @@ final class CheckDelegate {
         return dataMap;
     }
 
-    void append(String errMsgStr, Object... keys){
+    private void append(String errMsgStr, Object... keys){
         errMsg.get().append("-->").append(MessageFormat.format(errMsgStr, keys));
+    }
+
+    public void append(String errMsgStr){
+        errMsg.get().append("-->").append(errMsgStr);
     }
 
     private void initErrMsg(){

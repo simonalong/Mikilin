@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:31
  */
-public enum FieldEnum {
+public enum FieldType {
     /**
      * 默认全部可用
      */
@@ -22,7 +22,7 @@ public enum FieldEnum {
     private String name;
     private String regex;
 
-    FieldEnum(String name, String regex) {
+    FieldType(String name, String regex) {
         this.name = name;
         this.regex = regex;
     }

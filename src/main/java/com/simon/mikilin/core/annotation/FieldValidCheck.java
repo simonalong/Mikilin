@@ -24,12 +24,14 @@ public @interface FieldValidCheck {
      * 可用的值对应的类型
      * @return 对应的枚举类型
      */
-    FieldEnum type() default FieldEnum.DEFAULT;
+    FieldType type() default FieldType.DEFAULT;
 
     /**
      * 枚举类型的判断
      *
-     * @return 如果位于枚举类型内部，则通过，否则核查失败
+     * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的Names，Integer是枚举的下标
+     *
+     * @return 该属性为枚举对应的类，否则不生效
      */
     Class[] enumType() default {};
 
@@ -44,13 +46,15 @@ public @interface FieldValidCheck {
      * 数据条件的判断
      *
      * 根据Java的运算符构造出来对应的条件表达式来进行判断，而其中的数据不仅可以和相关的数据做条件判断，还可和当前修饰的类的其他数据进行判断，
-     * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性
+     * 其中当前类用#root表示，而当前属性用#current，比如举例如下，对象中的一个属性小于另外一个属性
      * {@code
      * class ToCheckClass{
      *
-     *      @FieldValidCheck(condition="#root.ratioA > #root.ratioB")
+     *      @FieldValidCheck(condition="#current + #root.ratioB + #root.ratioC == 100")
      *      private String ratioA;
      *      private String ratioB;
+     *      @FieldValidCheck(condition="#current < #root.ratioB")
+     *      private String ratioC;
      * }
      * }
      * 如上只有在属性ratioA是大于ratioB的时候核查才会成功
@@ -73,7 +77,7 @@ public @interface FieldValidCheck {
     String regex() default "";
 
     /**
-     * 内部的判断的回调
+     * 系统自己编码判断
      *
      * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
      */

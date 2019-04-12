@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.judge
+package com.simon.mikilin.core.match
 
 import com.simon.mikilin.core.Checks
 import org.junit.Assert
@@ -25,13 +25,13 @@ class FieldJudgeTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        name    | age  || result
-        "women" | 12   
-        "haode" | 13   
-        "b"     | -1   
-        "b"     | 200  
-        "c"     | 12   || true
-        "d"     | null 
-        null    | 32   
+        name    | age  | result
+        "women" | 12   | false
+        "haode" | 13   | false
+        "b"     | -1   | false
+        "b"     | 200  | false
+        "c"     | 12   | true
+        "d"     | null | false
+        null    | 32   | false
     }
 }

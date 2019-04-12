@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldEnum;
+import com.simon.mikilin.core.annotation.FieldType;
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IdCardEntity {
 
-    @FieldValidCheck(type = FieldEnum.ID_CARD)
+    @FieldValidCheck(type = FieldType.ID_CARD)
     private String idCardValid;
-    @FieldInvalidCheck(type = FieldEnum.ID_CARD)
+    @FieldInvalidCheck(type = FieldType.ID_CARD)
     private String idCardInValid;
 }

@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldEnum;
+import com.simon.mikilin.core.annotation.FieldType;
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class FixPhoneEntity {
 
-    @FieldValidCheck(type = FieldEnum.FIXED_PHONE)
+    @FieldValidCheck(type = FieldType.FIXED_PHONE)
     private String fixedPhone;
-    @FieldInvalidCheck(type = FieldEnum.FIXED_PHONE)
+    @FieldInvalidCheck(type = FieldType.FIXED_PHONE)
     private String fixedPhoneInValid;
 }
