@@ -36,4 +36,19 @@ public class JudgeCls {
         }
         return true;
     }
+
+    /**
+     * 地址不合法
+     */
+    private boolean addressInvalid(String address){
+        if(null == address){
+            return true;
+        }
+        List<String> blackList = Arrays.asList("beijing", "hangzhou");
+        if (blackList.contains(address)) {
+            return true;
+        }
+        return false;
+    }
+
 }

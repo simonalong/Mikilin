@@ -13,10 +13,9 @@ class FieldJudgeTest extends Specification {
     /**
      * 测试外部判断的调用
      */
-    // todo 有问题
     def "外部调用测试"() {
         given:
-        JudgeEntity entity = new JudgeEntity().setName(name).setAge(age)
+        JudgeEntity entity = new JudgeEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
         boolean actResult = Checks.check(entity)
@@ -26,13 +25,15 @@ class FieldJudgeTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        name    | age  | result
-        "women" | 12   | false
-//        "haode" | 13   | false
-//        "b"     | -1   | false
-//        "b"     | 200  | false
-//        "c"     | 12   | true
-//        "d"     | null | false
-//        null    | 32   | false
+        name    | age  | address    | result
+        "women" | 12   | "hangzhou" | false
+        "haode" | 13   | "tianjin"  | false
+        "b"     | -1   | "tianjin"  | false
+        "b"     | 200  | "tianjin"  | false
+        "c"     | 12   | "hangzhou" | false
+        "c"     | 12   | "beijing"  | false
+        "c"     | 12   | "tianjin"  | true
+        "d"     | null | "tianjin"  | false
+        null    | 32   | "tianjin"  | false
     }
 }

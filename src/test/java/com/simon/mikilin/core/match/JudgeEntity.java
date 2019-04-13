@@ -1,5 +1,6 @@
 package com.simon.mikilin.core.match;
 
+import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,4 +18,7 @@ public class JudgeEntity {
 
     @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#nameValid")
     private String name;
+
+    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#addressInvalid")
+    private String address;
 }

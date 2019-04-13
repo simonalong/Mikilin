@@ -2,6 +2,7 @@ package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.util.SingleFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +27,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                 setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, object, judgeStr);
                 return true;
             } else {
-                setBlackMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, object, judgeStr);
+                setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, object, judgeStr);
             }
         }
         return false;
@@ -54,7 +55,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
         try {
             Class<?> cls = Class.forName(classStr);
             Method method = cls.getDeclaredMethod(funStr, field.getType());
-            Object object = cls.newInstance();
+            Object object = SingleFactory.getSingle(cls);
             Class<?> returnType = method.getReturnType();
 
             String booleanStr = "boolean";
@@ -71,7 +72,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                     return false;
                 };
             }
-        } catch (ClassNotFoundException | InstantiationException | NoSuchMethodException | IllegalAccessException e ) {
+        } catch (ClassNotFoundException | NoSuchMethodException e ) {
             e.printStackTrace();
         }
     }
