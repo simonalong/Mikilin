@@ -5,7 +5,6 @@ import com.simon.mikilin.core.annotation.FieldValidCheck;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
 import java.util.function.Predicate;
 
 /**
@@ -14,18 +13,20 @@ import java.util.function.Predicate;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:52
  */
-public class JudgeMatcher implements Matcher {
+public class JudgeMatcher extends AbstractBlackWhiteMatcher {
 
     private Predicate<Object> predicate;
+    private String judgeStr;
     private String errMsg;
 
     @Override
     public boolean match(String name, Object object) {
         if (null != predicate) {
             if (predicate.test(object)) {
+                setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, object, judgeStr);
                 return true;
             } else {
-                errMsg = MessageFormat.format("属性[{0}]的值[{1}]在回调中命中", name, object);
+                setBlackMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, object, judgeStr);
             }
         }
         return false;
@@ -34,11 +35,6 @@ public class JudgeMatcher implements Matcher {
     @Override
     public boolean isEmpty() {
         return null == predicate;
-    }
-
-    @Override
-    public String errMsg() {
-        return errMsg;
     }
 
     /**
@@ -64,6 +60,7 @@ public class JudgeMatcher implements Matcher {
             String booleanStr = "boolean";
             if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
                 || returnType.getSimpleName().equals(booleanStr)){
+                judgeStr = judge;
                 predicate =  obj -> {
                     try {
                         method.setAccessible(true);

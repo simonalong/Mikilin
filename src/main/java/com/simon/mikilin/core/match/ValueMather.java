@@ -4,7 +4,6 @@ import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import com.simon.mikilin.core.util.Objects;
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,17 +16,17 @@ import lombok.Setter;
  * @since 2019/4/11 下午8:49
  */
 @Setter
-public class ValueMather implements Matcher{
+public class ValueMather extends AbstractBlackWhiteMatcher {
 
     private Set<Object> values;
-    private String errMsg;
 
     @Override
     public boolean match(String fieldName, Object object) {
         if (values.contains(object)){
+            setBlackMsg("属性[{0}]的值[{1}]位于黑名单[{2}]中", fieldName, object, values.toString());
             return true;
         }else{
-            errMsg = MessageFormat.format("属性[{0}]的值[{1}]位于名单中{2}", fieldName, object, values.toArray());
+            setWhiteMsg("属性[{0}]的值[{1}]不在白单中[{2}]中", fieldName, object, values.toString());
             return false;
         }
     }
@@ -35,11 +34,6 @@ public class ValueMather implements Matcher{
     @Override
     public boolean isEmpty() {
         return values.isEmpty();
-    }
-
-    @Override
-    public String errMsg() {
-        return errMsg;
     }
 
     /**

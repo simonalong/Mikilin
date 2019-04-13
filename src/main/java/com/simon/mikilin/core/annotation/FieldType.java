@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 
 /**
+ * 常见的匹配的类型
+ *
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:31
  */

@@ -33,7 +33,7 @@ public @interface FieldValidCheck {
      *
      * @return 该属性为枚举对应的类，否则不生效
      */
-    Class[] enumType() default {};
+    Class<? extends Enum>[] enumType() default {};
 
     /**
      * 数据范围的判断
@@ -67,6 +67,7 @@ public @interface FieldValidCheck {
      * 逻辑运算符：&&、||、!
      * 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
      * 其他运算符：条件运算符（?:）、instanceof运算符
+     * 还有其他java的所有运算结果为true的表达式
      */
     String condition() default "";
 

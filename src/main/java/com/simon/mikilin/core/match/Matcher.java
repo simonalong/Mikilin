@@ -25,9 +25,16 @@ public interface Matcher {
     boolean isEmpty();
 
     /**
-     * 如果没有匹配上，则返回对应的信息
+     * 白名单匹配不上的信息
      *
      * @return 没有匹配上的信息
      */
-    String errMsg();
+    String getWhiteMsg();
+
+    /**
+     * 黑名单匹配上的信息
+     *
+     * @return 匹配上的信息
+     */
+    String getBlackMsg();
 }

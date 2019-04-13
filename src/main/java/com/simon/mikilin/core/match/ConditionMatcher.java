@@ -9,7 +9,7 @@ import com.simon.mikilin.core.annotation.FieldValidCheck;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
-public class ConditionMatcher implements Matcher, Builder<ConditionMatcher, String> {
+public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Builder<ConditionMatcher, String> {
 
     @Override
     public boolean match(String name, Object object) {
@@ -20,11 +20,6 @@ public class ConditionMatcher implements Matcher, Builder<ConditionMatcher, Stri
     public boolean isEmpty() {
         // todo
         return true;
-    }
-
-    @Override
-    public String errMsg() {
-        return null;
     }
 
     @Override

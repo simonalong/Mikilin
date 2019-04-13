@@ -36,32 +36,57 @@ public class FieldJudge {
     private Boolean disable;
 
     /**
-     * 判断是否符合匹配器中的匹配
+     * 判断是否符合匹配器中的白名单匹配
      *
-     * 针对匹配器中的所有不空的匹配器进行匹配
+     * 针对匹配器中的所有不空的匹配器进行匹配，如果所有的不为空的白名单中都没有匹配上则说明没有匹配上
      *
      * @param object 待校验的数据
-     * @return true：匹配上，false：没有匹配上
+     * @return true：满足任何一个非空白名单，false：不满足任何非空白名单
      */
-    public Boolean judge(Object object, CheckDelegate checkDelegate) {
-        AtomicReference<Boolean> result = new AtomicReference<>(false);
+    public Boolean judgeWhite(Object object, CheckDelegate checkDelegate) {
         List<String> errMsgList = new ArrayList<>();
 
-        matcherList.stream().filter(m -> !m.isEmpty()).forEach(m -> {
-            if (!m.match(name, object)) {
-                if (null != m.errMsg()) {
-                    errMsgList.add(m.errMsg());
-                }
+        Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
+            if (m.match(name, object)) {
+                return true;
             } else {
-                result.set(true);
+                if (null != m.getWhiteMsg()) {
+                    errMsgList.add(m.getWhiteMsg());
+                }
+                return false;
             }
         });
 
-        if (result.get()) {
+        if (result) {
             errMsgList.clear();
             return true;
         }
         checkDelegate.append(errMsgList.toString());
+        return false;
+    }
+
+    /**
+     * 如果所有的不为空的黑名单中是否有任何匹配的
+     *
+     * 针对匹配器中的所有不空的匹配器进行匹配，如果有任何一个匹配上，则上报失败
+     *
+     * @param object 待校验的数据
+     * @return true：满足任何一个黑名单，false：所有黑名单都不满足
+     */
+    public Boolean judgeBlack(Object object, CheckDelegate checkDelegate) {
+        AtomicReference<String> errMsg = new AtomicReference<>();
+        Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
+            if (m.match(name, object)) {
+                errMsg.set(m.getBlackMsg());
+                return true;
+            }
+            return false;
+        });
+
+        if (result) {
+            checkDelegate.append(errMsg.get());
+            return true;
+        }
         return false;
     }
 

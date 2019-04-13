@@ -287,7 +287,7 @@ public final class Checks {
 //         */
 //        private Pattern pattern;
 //        /**
-//         * 正则表达式判断，对应{@link FieldValidCheck#condition()}或者{@link FieldInvalidCheck#condition()}
+//         * 正则表达式判断，对应{@link FieldValidCheck#enumtype()}或者{@link FieldInvalidCheck#enumtype()}
 //         */
 //        private Pattern pattern;
 //        /**

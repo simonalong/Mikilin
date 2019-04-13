@@ -387,14 +387,12 @@ public final class CheckDelegate {
             if (isEmpty(field.get(object))) {
 
                 // 1.（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldContain(object, field, blackFieldValue)){
-                    append("属性[{0}]为空，命中黑名单", field.getName());
+                if (!blackEmpty && fieldContain(object, field, blackFieldValue, false)){
                     return false;
                 }
 
                 // 2.（白名单不空且不包含）则不放过
-                if (!whiteEmpty && !fieldContain(object, field, whiteFieldValue)){
-                    append("属性[{0}]为空，不在白名单", field.getName());
+                if (!whiteEmpty && !fieldContain(object, field, whiteFieldValue, true)){
                     return false;
                 }
                 return true;
@@ -402,14 +400,12 @@ public final class CheckDelegate {
             // 3.对象不空
             else {
                 // 1.如果（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldContain(object, field, blackFieldValue)) {
-                    append("属性[{0}]的值[{1}]命中黑名单中", field.getName(), field.get(object));
+                if (!blackEmpty && fieldContain(object, field, blackFieldValue, false)) {
                     return false;
                 }
 
                 // 2.如果（白名单不空且不包含）则不放过
-                if(!whiteEmpty && !fieldContain(object, field, whiteFieldValue)){
-                    append("属性[{0}]的值[{1}]不在所有白名单中", field.getName(), field.get(object));
+                if(!whiteEmpty && !fieldContain(object, field, whiteFieldValue, true)){
                     return false;
                 }
 
@@ -469,8 +465,9 @@ public final class CheckDelegate {
      * @param object 对象
      * @param field 对象的属性
      * @param valueSet 可用或者不可用数据
+     * @param whiteOrBlack true=white, false=black
      */
-    private boolean fieldContain(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet){
+    private boolean fieldContain(Object object, Field field, Map<String, Map<String, FieldJudge>> valueSet, Boolean whiteOrBlack){
         if (checkDisable(object, field, valueSet)) {
             return false;
         }
@@ -483,7 +480,11 @@ public final class CheckDelegate {
                 Object data;
                 try {
                     data = field.get(object);
-                    return fieldJudge.judge(data, this);
+                    if (whiteOrBlack) {
+                        return fieldJudge.judgeWhite(data, this);
+                    } else {
+                        return fieldJudge.judgeBlack(data, this);
+                    }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

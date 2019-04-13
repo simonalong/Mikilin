@@ -30,9 +30,11 @@ public @interface FieldInvalidCheck {
     /**
      * 枚举类型的判断
      *
+     * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的Names，Integer是枚举的下标
+     *
      * @return 如果位于枚举类型内部，则拦截，否则认为核查通过
      */
-    Class[] enumType() default {};
+    Class<? extends Enum>[] enumType() default {};
 
     /**
      * 数据范围的判断
@@ -64,6 +66,7 @@ public @interface FieldInvalidCheck {
      * 逻辑运算符：&&、||、!
      * 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
      * 其他运算符：条件运算符（?:）、instanceof运算符
+     * 还有其他java的所有运算结果为true的表达式
      */
     String condition() default "";
 
