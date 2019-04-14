@@ -5,7 +5,6 @@ import com.simon.mikilin.core.annotation.FieldValidCheck;
 import com.simon.mikilin.core.express.ExpressParser;
 import com.simon.mikilin.core.util.Maps;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import org.codehaus.groovy.syntax.Numbers;
 
 /**
@@ -34,9 +33,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private String express;
 
     @Override
-    public boolean match(String name, Object object) {
-        if (object instanceof Number){
-            Number number = Number.class.cast(object);
+    public boolean match(Object object, String name, Object value) {
+        if (value instanceof Number){
+            Number number = Number.class.cast(value);
             Boolean result = predicate.test(number);
             if (result){
                 setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, number, express);
@@ -45,7 +44,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                 setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, number, express);
             }
         } else{
-            setWhiteMsg("属性[{0}]的值[{1}]不是数字类型", name, object);
+            setWhiteMsg("属性[{0}]的值[{1}]不是数字类型", name, value);
         }
         return false;
     }

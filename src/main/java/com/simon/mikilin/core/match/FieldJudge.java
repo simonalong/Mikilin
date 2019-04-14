@@ -40,14 +40,15 @@ public class FieldJudge {
      *
      * 针对匹配器中的所有不空的匹配器进行匹配，如果所有的不为空的白名单中都没有匹配上则说明没有匹配上
      *
-     * @param object 待校验的数据
+     * @param object 待校验的数据，就是属性的值
+     * @param value 待校验的数据，就是属性的值
      * @return true：满足任何一个非空白名单，false：不满足任何非空白名单
      */
-    public Boolean judgeWhite(Object object, CheckDelegate checkDelegate) {
+    public Boolean judgeWhite(Object object, Object value, CheckDelegate checkDelegate) {
         List<String> errMsgList = new ArrayList<>();
 
         Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
-            if (m.match(name, object)) {
+            if (m.match(object, name, value)) {
                 return true;
             } else {
                 if (null != m.getWhiteMsg()) {
@@ -70,13 +71,13 @@ public class FieldJudge {
      *
      * 针对匹配器中的所有不空的匹配器进行匹配，如果有任何一个匹配上，则上报失败
      *
-     * @param object 待校验的数据
+     * @param value 待校验的数据
      * @return true：满足任何一个黑名单，false：所有黑名单都不满足
      */
-    public Boolean judgeBlack(Object object, CheckDelegate checkDelegate) {
+    public Boolean judgeBlack(Object object, Object value, CheckDelegate checkDelegate) {
         AtomicReference<String> errMsg = new AtomicReference<>();
         Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
-            if (m.match(name, object)) {
+            if (m.match(object, name, value)) {
                 errMsg.set(m.getBlackMsg());
                 return true;
             }

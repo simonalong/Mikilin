@@ -6,18 +6,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2019/4/14 下午12:09
+ * @since 2019/4/14 下午4:12
  */
 @Data
 @Accessors(chain = true)
-public class ConditionEntity1 {
+public class ConditionEntity3 {
 
-    @FieldValidCheck(condition = "#current + #root.num2 > 100")
+    @FieldValidCheck(condition = "min(#current, #root.num2) > #root.num3")
     private Integer num1;
-
-    @FieldValidCheck(condition = "#current < 20")
     private Integer num2;
-
-    @FieldValidCheck(condition = "(++#current) >31")
     private Integer num3;
 }

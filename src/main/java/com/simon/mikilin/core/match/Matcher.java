@@ -11,11 +11,12 @@ public interface Matcher {
      *
      * 只有isEmpty为false时候才会匹配
      *
-     * @param object 待匹配的数据
+     * @param object 数据对象
+     * @param value 待匹配的数据
      * @param name 属性名
      * @return true=匹配成功，false=匹配失败
      */
-    boolean match(String name, Object object);
+    boolean match(Object object, String name, Object value);
 
     /**
      * 判断当前匹配器是否为空

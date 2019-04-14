@@ -15,16 +15,16 @@ public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private Pattern pattern;
 
     @Override
-    public boolean match(String name, Object object) {
-        if (object instanceof String) {
-            if (pattern.matcher(String.class.cast(object)).matches()) {
-                setBlackMsg("属性[{0}]的值[{1}]命中正则表达式黑名单[{2}]", name, object, pattern.pattern());
+    public boolean match(Object object, String name, Object value) {
+        if (value instanceof String) {
+            if (pattern.matcher(String.class.cast(value)).matches()) {
+                setBlackMsg("属性[{0}]的值[{1}]命中正则表达式黑名单[{2}]", name, value, pattern.pattern());
                 return true;
             } else {
-                setWhiteMsg("属性[{0}]的值[{1}]没命中正则表达式白名单[{2}]", name, object, pattern.pattern());
+                setWhiteMsg("属性[{0}]的值[{1}]没命中正则表达式白名单[{2}]", name, value, pattern.pattern());
             }
         }else{
-            setWhiteMsg("属性[{0}]的值[{1}]不是String类型", name, object);
+            setWhiteMsg("属性[{0}]的值[{1}]不是String类型", name, value);
         }
         return false;
     }

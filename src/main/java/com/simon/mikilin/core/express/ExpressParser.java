@@ -17,6 +17,10 @@ public class ExpressParser {
 
     private Binding binding;
 
+    public ExpressParser(){
+        binding = new Binding();
+    }
+
     public ExpressParser(Maps maps){
         binding = new Binding(maps.build());
     }
@@ -34,11 +38,12 @@ public class ExpressParser {
      * 表达式解析
      *
      * 我们这里只返回Boolean结果
+     * @param importPath 脚本依赖的其他的jar包路径
      * @param script 待解析的表达式脚本
      * @return true=解析为true, false=解析结果为false
      */
-    public Boolean parse(String script){
-        script = "return (" + script + ")";
+    public Boolean parse(String importPath, String script){
+        script = importPath + "\n" +"return (" + script + ")";
         try {
             Object result = groovy.scriptGetAndRun(script, binding);
             if (null == result) {
@@ -46,8 +51,21 @@ public class ExpressParser {
             }
             return (Boolean) result;
         }catch (Exception e){
+            e.printStackTrace();
             log.error("表达式执行失败");
         }
         return null;
     }
+
+    /**
+     * 表达式解析
+     *
+     * 我们这里只返回Boolean结果
+     * @param script 待解析的表达式脚本
+     * @return true=解析为true, false=解析结果为false
+     */
+    public Boolean parse(String script){
+        return parse("", script);
+    }
+
 }

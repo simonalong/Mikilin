@@ -21,13 +21,13 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
     private String errMsg;
 
     @Override
-    public boolean match(String name, Object object) {
+    public boolean match(Object object, String name, Object value) {
         if (null != predicate) {
-            if (predicate.test(object)) {
-                setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, object, judgeStr);
+            if (predicate.test(value)) {
+                setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, value, judgeStr);
                 return true;
             } else {
-                setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, object, judgeStr);
+                setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, value, judgeStr);
             }
         }
         return false;

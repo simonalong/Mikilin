@@ -67,6 +67,7 @@ public @interface FieldValidCheck {
      * 逻辑运算符：&&、||、!
      * 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
      * 其他运算符：条件运算符（?:）、instanceof运算符
+     * java.lang.math中的所有函数，比如：min,max,asb,cell...等等
      */
     String condition() default "";
 

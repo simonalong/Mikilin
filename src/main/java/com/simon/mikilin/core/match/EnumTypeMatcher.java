@@ -17,9 +17,9 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements Builde
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean match(String name, Object object) {
-        if(object instanceof String) {
-            String target = String.class.cast(object);
+    public boolean match(Object object, String name, Object value) {
+        if(value instanceof String) {
+            String target = String.class.cast(value);
             if (enumClass.length > 0) {
                 Boolean result = Stream.of(enumClass).filter(Class::isEnum).anyMatch(e -> {
                     try {
@@ -31,10 +31,10 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements Builde
                 });
 
                 if (result) {
-                    setBlackMsg("属性[{0}]对象[{1}]命中黑名单枚举[{2}]中的类型", name, object, getEnumStr(enumClass));
+                    setBlackMsg("属性[{0}]对象[{1}]命中黑名单枚举[{2}]中的类型", name, value, getEnumStr(enumClass));
                     return true;
                 }else{
-                    setWhiteMsg("属性[{0}]对象[{1}]没有命中白名单枚举[{2}]中的类型", name, object, getEnumStr(enumClass));
+                    setWhiteMsg("属性[{0}]对象[{1}]没有命中白名单枚举[{2}]中的类型", name, value, getEnumStr(enumClass));
                 }
             }
         }

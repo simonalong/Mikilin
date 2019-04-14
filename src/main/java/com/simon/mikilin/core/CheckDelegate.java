@@ -481,9 +481,9 @@ public final class CheckDelegate {
                 try {
                     data = field.get(object);
                     if (whiteOrBlack) {
-                        return fieldJudge.judgeWhite(data, this);
+                        return fieldJudge.judgeWhite(object, data, this);
                     } else {
-                        return fieldJudge.judgeBlack(data, this);
+                        return fieldJudge.judgeBlack(object, data, this);
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

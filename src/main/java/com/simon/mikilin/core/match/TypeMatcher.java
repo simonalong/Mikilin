@@ -15,13 +15,13 @@ public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<Ty
     private FieldType fieldType;
 
     @Override
-    public boolean match(String nam, Object object) {
-        if (object instanceof String) {
-            if (fieldType.valid(String.class.cast(object))) {
-                setBlackMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, object, fieldType.getName());
+    public boolean match(Object object, String nam, Object value) {
+        if (value instanceof String) {
+            if (fieldType.valid(String.class.cast(value))) {
+                setBlackMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, value, fieldType.getName());
                 return true;
             } else {
-                setWhiteMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, object, fieldType.name());
+                setWhiteMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, value, fieldType.name());
             }
         }
         return false;
