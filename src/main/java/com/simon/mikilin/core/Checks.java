@@ -1,7 +1,6 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldType;
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import com.simon.mikilin.core.match.FieldJudge;
@@ -10,8 +9,6 @@ import com.simon.mikilin.core.util.CollectionUtil;
 import com.simon.mikilin.core.util.Maps;
 import com.simon.mikilin.core.util.Objects;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,12 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -256,131 +248,4 @@ public final class Checks {
             }
         }).collect(Collectors.toSet());
     }
-
-//    @Getter
-//    @Setter
-//    @Accessors(chain = true)
-//    static class FieldJudge {
-//
-//        /**
-//         * 属性名字
-//         */
-//        private String name;
-//        /**
-//         * 指定的值判断，对应{@link FieldValidCheck#value()}或者{@link FieldInvalidCheck#value()}
-//         */
-//        private Set<Object> values;
-//        /**
-//         * 指定的类型判断，对应{@link FieldValidCheck#type()}或者{@link FieldInvalidCheck#type()}
-//         */
-//        private FieldType fieldType;
-//        /**
-//         * 正则表达式判断，对应{@link FieldValidCheck#regex()}或者{@link FieldInvalidCheck#regex()}
-//         */
-//        private Pattern range;
-//        /**
-//         * 正则表达式判断，对应{@link FieldValidCheck#enumType()}或者{@link FieldInvalidCheck#enumType()}
-//         */
-//        private Pattern pattern;
-//        /**
-//         * 正则表达式判断，对应{@link FieldValidCheck#range()}或者{@link FieldInvalidCheck#range()}
-//         */
-//        private Pattern pattern;
-//        /**
-//         * 正则表达式判断，对应{@link FieldValidCheck#enumtype()}或者{@link FieldInvalidCheck#enumtype()}
-//         */
-//        private Pattern pattern;
-//        /**
-//         * 系统自行判断，对应{@link FieldValidCheck#judge()}或者{@link FieldInvalidCheck#judge()}
-//         */
-//        private Predicate<Object> predicate;
-//        /**
-//         * 属性核查禁用标示，对应{@link FieldValidCheck#disable()}或者{@link FieldInvalidCheck#disable()}
-//         */
-//        private Boolean disable;
-//
-////        /**
-////         * 判断是否符合以上的匹配
-////         * @param object 待校验的数据
-////         * @return true：匹配上，false：没有匹配上
-////         */
-////        public Boolean match(Object object){
-////
-////        }
-////
-////        /**
-////         * 过滤条件是否为空
-////         * @return true：条件为空，false：条件不空
-////         */
-////        public Boolean isEmpty(){
-////
-////        }
-//
-//        static FieldJudge buildFromValid(Field field, FieldValidCheck validCheck){
-//            return this.setFieldType(buildFieldEnum(validCheck.type()))
-//                .setPattern(buildPattern(validCheck.regex()))
-//                .setPredicate(buildPredicate(field, validCheck.judge()))
-//                .setDisable(validCheck.disable());
-//        }
-//
-//        static FieldJudge buildFromInvalid(Field field, FieldInvalidCheck invalidCheck){
-//            return this.setFieldType(buildFieldEnum(invalidCheck.type()))
-//                .setPattern(buildPattern(invalidCheck.regex()))
-//                .setPredicate(buildPredicate(field, invalidCheck.judge()))
-//                .setDisable(invalidCheck.disable());
-//        }
-//
-//        private static FieldType buildFieldEnum(FieldType fieldType){
-//            if (fieldType.equals(FieldType.DEFAULT)){
-//                return null;
-//            }
-//            return fieldType;
-//        }
-//
-//        private static Pattern buildPattern(String regex){
-//            if (null == regex || "".equals(regex)){
-//                return null;
-//            }
-//            return Pattern.compile(regex);
-//        }
-//
-//        /**
-//         * 将一个类中的函数转换为一个过滤器
-//         *
-//         * @return com.xxx.ACls#isValid -> predicate
-//         */
-//        @SuppressWarnings("all")
-//        private static Predicate<Object> buildPredicate(Field field, String judge){
-//            if (null == judge || judge.isEmpty() || !judge.contains("#")){
-//               return null;
-//            }
-//            Integer index = judge.indexOf("#");
-//            String classStr = judge.substring(0, index);
-//            String funStr = judge.substring(index + 1);
-//
-//            try {
-//                Class<?> cls = Class.forName(classStr);
-//                Method method = cls.getDeclaredMethod(funStr, field.getType());
-//                Object object = cls.newInstance();
-//                Class<?> returnType = method.getReturnType();
-//
-//                String booleanStr = "boolean";
-//                if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
-//                    || returnType.getSimpleName().equals(booleanStr)){
-//                    return obj -> {
-//                        try {
-//                            method.setAccessible(true);
-//                            return (boolean) method.invoke(object, obj);
-//                        } catch (IllegalAccessException | InvocationTargetException e) {
-//                            e.printStackTrace();
-//                        }
-//                        return false;
-//                    };
-//                }
-//            } catch (ClassNotFoundException | InstantiationException | NoSuchMethodException | IllegalAccessException e ) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//    }
 }
