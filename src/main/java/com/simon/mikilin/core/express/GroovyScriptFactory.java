@@ -1,5 +1,6 @@
 package com.simon.mikilin.core.express;
 
+import com.simon.mikilin.core.util.EncryptUtil;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
@@ -36,12 +37,14 @@ public class GroovyScriptFactory {
     }
 
     private Class getScript(String key) {
-        if (scriptCache.containsKey(key)) {
-            return scriptCache.get(key);
+        // 压缩脚本节省空间
+        String encodeStr = EncryptUtil.SHA256(key);
+        if (scriptCache.containsKey(encodeStr)) {
+            return scriptCache.get(encodeStr);
         } else {
             // 脚本不存在则创建新的脚本
             Class<Script> scriptClass = classLoader.parseClass(key);
-            scriptCache.put(key, scriptClass);
+            scriptCache.put(encodeStr, scriptClass);
             return scriptClass;
         }
     }
