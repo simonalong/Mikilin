@@ -59,7 +59,7 @@ public @interface FieldInvalidCheck {
      * 如上只有在属性ratioA是大于ratioB的时候核查才会拦截
      * </p>
      *
-     * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符：
+     * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
      * 算术运算符：+、-、*、/、％、++、--
      * 关系运算符：==、!=、>、<、>=、<=
      * 位运算符：＆、|、^、~、<<、>>、>>>
