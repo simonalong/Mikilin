@@ -21,11 +21,6 @@ public class GroovyScriptFactory {
     private GroovyClassLoader classLoader = new GroovyClassLoader();
     private static GroovyScriptFactory factory = new GroovyScriptFactory();
 
-    private static final String TEMPLAT = ""
-        + "import groovy.lang.*\n"
-        + "import java.lang.*\n"
-        + "\n";
-
     /**
      * 设置为单例模式
      */
