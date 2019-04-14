@@ -51,9 +51,11 @@ public @interface FieldInvalidCheck {
      * {@code
      * class ToCheckClass{
      *
-     *      @FieldInvalidCheck(condition="#root.ratioA > #root.ratioB")
+     *      @FieldValidCheck(condition="#current + #root.ratioB + #root.ratioC == 100")
      *      private String ratioA;
      *      private String ratioB;
+     *      @FieldValidCheck(condition="#current < #root.ratioB")
+     *      private String ratioC;
      * }
      * }
      * 如上只有在属性ratioA是大于ratioB的时候核查才会拦截
