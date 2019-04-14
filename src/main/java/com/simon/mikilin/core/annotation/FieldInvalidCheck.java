@@ -39,7 +39,7 @@ public @interface FieldInvalidCheck {
     /**
      * 数据范围的判断
      *
-     * @return 如果类型是数值类型，且位于范围之内，则拦截，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)
+     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
      */
     String range() default "";
 
