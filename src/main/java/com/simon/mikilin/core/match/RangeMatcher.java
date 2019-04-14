@@ -2,6 +2,11 @@ package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.express.ExpressParser;
+import com.simon.mikilin.core.util.Maps;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import org.codehaus.groovy.syntax.Numbers;
 
 /**
  * 正则表达式判断，对应{@link FieldValidCheck#range()}或者{@link FieldInvalidCheck#range()}
@@ -11,19 +16,91 @@ import com.simon.mikilin.core.annotation.FieldValidCheck;
  */
 public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<RangeMatcher, String> {
 
+    private static final String LEFT_BRACKET_EQUAL = "[";
+    private static final String LEFT_BRACKET = "(";
+    private static final String RIGHT_BRACKET_EQUAL = "]";
+    private static final String RIGHT_BRACKET = ")";
+    /**
+     * 判决对象
+     */
+    private Predicate<Number> predicate;
+    /**
+     * 表达式解析对象
+     */
+    private ExpressParser parser;
+    /**
+     * 表达式
+     */
+    private String express;
+
     @Override
     public boolean match(String name, Object object) {
+        if (object instanceof Number){
+            Number number = Number.class.cast(object);
+            Boolean result = predicate.test(number);
+            if (result){
+                setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, number, express);
+                return true;
+            }else{
+                setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, number, express);
+            }
+        } else{
+            setWhiteMsg("属性[{0}]的值[{1}]不是数字类型", name, object);
+        }
         return false;
     }
 
     @Override
     public boolean isEmpty() {
-        // todo
-        return true;
+        return null == predicate;
     }
 
+    /**
+     * 其中待构造的数据只匹配如下几种：[a,b]，[a,b)，(a,b]，(a,b)
+     *
+     * @param obj 待构造需要的数据
+     */
     @Override
     public RangeMatcher build(String obj) {
+        String startAli = null, endAli = null;
+        Number begin = null, end = null;
+        obj = obj.trim();
+        if(obj.startsWith(LEFT_BRACKET_EQUAL)){
+            startAli = LEFT_BRACKET_EQUAL;
+            begin = Numbers.parseDecimal(obj.substring(1, obj.indexOf(",")).trim());
+        }else if(obj.startsWith(LEFT_BRACKET)){
+            startAli = LEFT_BRACKET;
+            begin = Numbers.parseDecimal(obj.substring(1, obj.indexOf(",")).trim());
+        }
+
+        if(obj.endsWith(RIGHT_BRACKET_EQUAL)){
+            endAli = RIGHT_BRACKET_EQUAL;
+            end = Numbers.parseDecimal(obj.substring(obj.indexOf(",") + 1, obj.indexOf("]")).trim());
+        } else if(obj.endsWith(RIGHT_BRACKET)){
+            endAli = RIGHT_BRACKET;
+            end = Numbers.parseDecimal(obj.substring(obj.indexOf(",") + 1, obj.indexOf(")")).trim());
+        } else{
+            return this;
+        }
+
+        String finalStartAli = startAli;
+        String finalEndAli = endAli;
+        express = obj;
+
+        parser = new ExpressParser(Maps.of("begin", begin, "end", end));
+        predicate = o ->{
+            parser.addBinding(Maps.of("o", o));
+            if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                return parser.parse("begin <= o && o <= end");
+            } else if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                return parser.parse("begin <= o && o < end");
+            } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                return parser.parse("begin < o && o <= end");
+            } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                return parser.parse("begin < o && o < end");
+            }
+            return Boolean.parseBoolean(null);
+        };
         return this;
     }
 }
