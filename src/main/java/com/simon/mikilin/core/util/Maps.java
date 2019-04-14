@@ -17,6 +17,9 @@ public class Maps<K, V> {
 
     /**
      * key-value-key-value...这种格式初始化map
+     *
+     * @param kvs key-value-key-value这种kv入参
+     * @return 构造的Maps结构
      */
     @SuppressWarnings("unchecked")
     public static Maps of(Object... kvs) {

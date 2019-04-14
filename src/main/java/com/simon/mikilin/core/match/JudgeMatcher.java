@@ -41,7 +41,8 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
     /**
      * 将一个类中的函数转换为一个过滤器
      *
-     * @return com.xxx.ACls#isValid -> predicate
+     * @param field 属性
+     * @param judge 回调判决，这里是类和对应的函数组成
      */
     @SuppressWarnings("all")
     public JudgeMatcher(Field field, String judge) {

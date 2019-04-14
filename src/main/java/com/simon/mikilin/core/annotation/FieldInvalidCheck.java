@@ -47,28 +47,17 @@ public @interface FieldInvalidCheck {
      * 数据条件的判断
      *
      * 根据Java的运算符构造出来对应的条件表达式来进行判断，而其中的数据不仅可以和相关的数据做条件判断，还可和当前修饰的类的其他数据进行判断，
-     * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性
-     * {@code
-     * class ToCheckClass{
-     *
-     *      @FieldValidCheck(condition="#current + #root.ratioB + #root.ratioC == 100")
-     *      private String ratioA;
-     *      private String ratioB;
-     *      @FieldValidCheck(condition="#current < #root.ratioB")
-     *      private String ratioC;
-     * }
-     * }
-     * 如上只有在属性ratioA是大于ratioB的时候核查才会拦截
-     * </p>
+     * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性，比如：{@code #current + #root.ratioB + #root.ratioC == 100}
+     * 其中#current表示当前的属性，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
      *
      * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
-     * 算术运算符：+、-、*、/、％、++、--
-     * 关系运算符：==、!=、>、<、>=、<=
-     * 位运算符：＆、|、^、~、<<、>>、>>>
-     * 逻辑运算符：&&、||、!
-     * 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
-     * 其他运算符：条件运算符（?:）、instanceof运算符
-     * java.lang.math中的所有函数，比如：min,max,asb,cell...等等
+     * 算术运算符：{@code  "+"、"-"、"*"、"/"、"％"、"++"、"--"}
+     * 关系运算符：{@code "=="、"!="、">"、"<"、">="、"<="}
+     * 位运算符：{@code "＆"、"|"、"^"、"~"、"<<"、">>"、">>>"}
+     * 逻辑运算符：{@code "&&"、"||"、"!"}
+     * 赋值运算符：{@code "="、"+="、"-="、"*="、"/="、"(%)="、"<<="、">>="、"&="、"^="、"|="}
+     * 其他运算符：{@code 条件运算符（?:）、instanceof运算符}
+     * {@code java.lang.math}中的所有函数，比如：{@code min,max,asb,cell}等等
      */
     String condition() default "";
 

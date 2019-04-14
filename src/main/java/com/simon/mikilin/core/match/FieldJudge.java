@@ -40,8 +40,9 @@ public class FieldJudge {
      *
      * 针对匹配器中的所有不空的匹配器进行匹配，如果所有的不为空的白名单中都没有匹配上则说明没有匹配上
      *
-     * @param object 待校验的数据，就是属性的值
+     * @param object 待校验的属性的对象
      * @param value 待校验的数据，就是属性的值
+     * @param checkDelegate 核查的代理对象
      * @return true：满足任何一个非空白名单，false：不满足任何非空白名单
      */
     public Boolean judgeWhite(Object object, Object value, CheckDelegate checkDelegate) {
@@ -71,7 +72,9 @@ public class FieldJudge {
      *
      * 针对匹配器中的所有不空的匹配器进行匹配，如果有任何一个匹配上，则上报失败
      *
-     * @param value 待校验的数据
+     * @param object 待校验的属性的对象
+     * @param value 待校验的属性的值
+     * @param checkDelegate 核查的代理对象
      * @return true：满足任何一个黑名单，false：所有黑名单都不满足
      */
     public Boolean judgeBlack(Object object, Object value, CheckDelegate checkDelegate) {
