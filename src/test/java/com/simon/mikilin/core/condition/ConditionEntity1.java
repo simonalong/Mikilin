@@ -13,5 +13,9 @@ public class ConditionEntity1 {
     @FieldValidCheck(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
+    @FieldValidCheck(condition = "#current < 20")
     private Integer num2;
+
+    @FieldValidCheck(condition = "(++#current) >31")
+    private Integer num3;
 }
