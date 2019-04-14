@@ -38,7 +38,7 @@ public @interface FieldValidCheck {
     /**
      * 数据范围的判断
      *
-     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)
+     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
      */
     String range() default "";
 
@@ -60,14 +60,13 @@ public @interface FieldValidCheck {
      * 如上只有在属性ratioA是大于ratioB的时候核查才会成功
      * </p>
      *
-     * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符：
+     * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
      * 算术运算符：+、-、*、/、％、++、--
      * 关系运算符：==、!=、>、<、>=、<=
      * 位运算符：＆、|、^、~、<<、>>、>>>
      * 逻辑运算符：&&、||、!
      * 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
      * 其他运算符：条件运算符（?:）、instanceof运算符
-     * 还有其他java的所有运算结果为true的表达式
      */
     String condition() default "";
 

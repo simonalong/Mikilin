@@ -61,24 +61,25 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * @param obj 待构造需要的数据
      */
     @Override
+    @SuppressWarnings("all")
     public RangeMatcher build(String obj) {
         String startAli = null, endAli = null;
         Number begin = null, end = null;
         obj = obj.trim();
         if(obj.startsWith(LEFT_BRACKET_EQUAL)){
             startAli = LEFT_BRACKET_EQUAL;
-            begin = Numbers.parseDecimal(obj.substring(1, obj.indexOf(",")).trim());
+            begin = parseNum(obj.substring(1, obj.indexOf(",")).trim());
         }else if(obj.startsWith(LEFT_BRACKET)){
             startAli = LEFT_BRACKET;
-            begin = Numbers.parseDecimal(obj.substring(1, obj.indexOf(",")).trim());
+            begin = parseNum(obj.substring(1, obj.indexOf(",")).trim());
         }
 
         if(obj.endsWith(RIGHT_BRACKET_EQUAL)){
             endAli = RIGHT_BRACKET_EQUAL;
-            end = Numbers.parseDecimal(obj.substring(obj.indexOf(",") + 1, obj.indexOf("]")).trim());
+            end = parseNum(obj.substring(obj.indexOf(",") + 1, obj.indexOf("]")).trim());
         } else if(obj.endsWith(RIGHT_BRACKET)){
             endAli = RIGHT_BRACKET;
-            end = Numbers.parseDecimal(obj.substring(obj.indexOf(",") + 1, obj.indexOf(")")).trim());
+            end = parseNum(obj.substring(obj.indexOf(",") + 1, obj.indexOf(")")).trim());
         } else{
             return this;
         }
@@ -88,19 +89,50 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         express = obj;
 
         parser = new ExpressParser(Maps.of("begin", begin, "end", end));
+        Number finalBegin = begin;
+        Number finalEnd = end;
         predicate = o ->{
             parser.addBinding(Maps.of("o", o));
-            if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
-                return parser.parse("begin <= o && o <= end");
-            } else if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
-                return parser.parse("begin <= o && o < end");
-            } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
-                return parser.parse("begin < o && o <= end");
-            } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
-                return parser.parse("begin < o && o < end");
+            if (null == finalBegin){
+                if(null == finalEnd){
+                    return true;
+                }else{
+                    if (RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                        return parser.parse("o <= end");
+                    } else if (RIGHT_BRACKET.equals(finalEndAli)) {
+                        return parser.parse("o < end");
+                    }
+                }
+            }else {
+                if(null == finalEnd){
+                    if (LEFT_BRACKET_EQUAL.equals(finalStartAli)) {
+                        return parser.parse("begin <= o");
+                    } else if (LEFT_BRACKET.equals(finalStartAli)) {
+                        return parser.parse("begin < o");
+                    }
+                }else{
+                    if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                        return parser.parse("begin <= o && o <= end");
+                    } else if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                        return parser.parse("begin <= o && o < end");
+                    } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                        return parser.parse("begin < o && o <= end");
+                    } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                        return parser.parse("begin < o && o < end");
+                    }
+                }
             }
+
             return Boolean.parseBoolean(null);
         };
         return this;
+    }
+
+    private Number parseNum(String str){
+        try {
+            return Numbers.parseDecimal(str);
+        }catch (NumberFormatException e){
+            return null;
+        }
     }
 }

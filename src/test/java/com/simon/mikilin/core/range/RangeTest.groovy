@@ -81,4 +81,28 @@ class RangeTest extends Specification {
         3.00   | 10001 | true
         3.01   | 10001 | false
     }
+
+    def "范围的无限字段测试"() {
+        given:
+        RangeEntity4 range = new RangeEntity4()
+        range.setNum1(num1)
+        range.setNum2(num2)
+        range.setNum3(num3)
+        range.setNum4(num4)
+
+        expect:
+        boolean actResult = Checks.check(range)
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        num1 | num2 | num3 | num4 | result
+        101  | 100  | 49   | 50   | true
+        100  | 100  | 49   | 50   | false
+        101  | 90   | 49   | 50   | false
+        101  | 100  | 50   | 50   | false
+        101  | 100  | 50   | 51   | false
+    }
 }
