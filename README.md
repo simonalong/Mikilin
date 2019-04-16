@@ -16,9 +16,10 @@
 …… 
 [TOC] 
 ……
-[这句话是想要跳转到Mark处的锚点链接，点击即会跳转](#Mark).
-[名称](#id)
-##一、介绍：
+* [一、介绍](#介绍)
+* [二、用法](#用法)
+<h2 id="Mark">一、介绍：</h2>
+
 该工具可以核查基本类型、集合类型和各种复杂等的类型。
 <h4 id="check">@FieldValidCheck 和 @FieldInvalidCheck</h4>
 这两个注解值修饰基本类型`（Boolean Byte Character Short Integer Long Double Float）`和 `String`类型，而复杂类型是由基本类型组成的，复杂类型的修饰通过注解`@Check`进行修饰，解析时候才会解析内部的基本类型注解。<br />上面两种注解都有下面的属性：
@@ -51,7 +52,7 @@ Checks.checkBlack
 Checks.check(Object)
 ```
 
-<div id="Mark"></div>这句话定义了锚点所指定的位置标记，名字为“Mark”.
+<h2 id="用法">一、用法：</h2>
 ##二、用法：
 #### 核查函数
 该核查对基本类型有两种函数，多个重载函数
