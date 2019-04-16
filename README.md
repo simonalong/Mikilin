@@ -13,9 +13,13 @@
 * 高性能：所有的核查均是内存直接调用
 * 可扩展：针对一些不好核查的属性，可以设置外部回调，可设置自己定义的核查逻辑
 
-## 一、介绍：
+…… 
+[TOC] 
+……
+[名称](#id)
+##一、介绍：
 该工具可以核查基本类型、集合类型和各种复杂等的类型。
-### @FieldValidCheck 和 @FieldInvalidCheck
+<h4 id="check">@FieldValidCheck 和 @FieldInvalidCheck</h4>
 这两个注解值修饰基本类型`（Boolean Byte Character Short Integer Long Double Float）`和 `String`类型，而复杂类型是由基本类型组成的，复杂类型的修饰通过注解`@Check`进行修饰，解析时候才会解析内部的基本类型注解。<br />上面两种注解都有下面的属性：
 * value：（禁用或者可用的）值列表
 * type：（禁用或者可用的）既定的类型：身份证，手机号，固定电话，IP地址，邮箱
@@ -46,7 +50,8 @@ Checks.checkBlack
 Checks.check(Object)
 ```
 
-## 二、用法：
+<a href=”#id”>名称
+##二、用法：
 #### 核查函数
 该核查对基本类型有两种函数，多个重载函数
 ```text
