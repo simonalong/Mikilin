@@ -33,6 +33,7 @@
 
 该工具可以核查基本类型、集合类型和各种复杂等的类型。
 <h4 id="check">@FieldValidCheck 和 @FieldInvalidCheck</h4>
+
 这两个注解值修饰基本类型`（Boolean Byte Character Short Integer Long Double Float）`和 `String`类型，而复杂类型是由基本类型组成的，复杂类型的修饰通过注解`@Check`进行修饰，解析时候才会解析内部的基本类型注解。<br />上面两种注解都有下面的属性：
 * value：（禁用或者可用的）值列表
 * type：（禁用或者可用的）既定的类型：身份证，手机号，固定电话，IP地址，邮箱
@@ -45,6 +46,7 @@
 
 上面所有的核查都有专门的例子进行解释，详情请见对应的测试
 <h3 id="基本类型核查">基本类型核查</h3>
+
 有两个函数供基本类型使用，（下面两个函数也可以测试复杂类型，但是不建议，复杂类型可用后面讲述方式）
 ```text
 Checks.checkWhite
@@ -52,6 +54,7 @@ Checks.checkBlack
 ```
 
 <h3 id="复杂类型核查">复杂类型核查</h3>
+
 针对自定义类型我们这里引入两个注解（主要可以核查各种结构（基本类型、自定义类型、集合类型和Map类型（Map结构只解析value，key不考虑）））：
 ```text
 @FieldValidCheck：用于设置属性可用的值
@@ -64,6 +67,7 @@ Checks.check(Object)
 ```
 
 <h4 id="核查函数">核查函数</h4>
+
 该核查对基本类型有两种函数，多个重载函数
 ```text
 // 核查可用的值
@@ -81,6 +85,7 @@ public <T> boolean checkBlack(T object, T... blackSet)
 public boolean check(Object object)
 ```
 <h4 id="错误信息">错误信息</h4>
+
 如果核查失败，则返回false，同时也可以返回核查失败的调用路径
 ```text
 public String getErrMsg()
@@ -93,6 +98,7 @@ public String getErrMsg()
 上面是一层结构，对于更复杂的结构输出可继续看后面复杂结构
 
 <h2 id="用例">三、用例：</h2>
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -112,6 +118,7 @@ if (!Checks.check(aEntity)) {
 ```
 可以根据打印的信息定位到哪个类的哪个属性的哪个值是不合法的，对于更多的复杂结构测试，可见下面的测试方式
 <h2 id="测试">四、测试：</h2>
+
 这里我们放一个复杂类型的黑名单测试
 ```java
 @Data
@@ -144,10 +151,12 @@ def "复杂类型白名单测试"() {
 }
 ```
 <h5 id="输出">输出</h5>
+
 ```
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
 <h3 id="更复杂的结构">更复杂的结构</h3>
+
 测试结构 WhiteCEntity 对应的对象
 ```java
 @Data
@@ -193,6 +202,7 @@ public class AEntity {
 }
 ```
 <h4 id="测试">测试</h3>
+
 ```groovy
 def "复杂类型白名单集合复杂结构"() {
     given:
@@ -217,12 +227,14 @@ def "复杂类型白名单集合复杂结构"() {
 }
 ```
 <h4 id="输出">输出</h4>
+
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
 ```
 更全面的测试详见测试类：FieldValueTest、FieldTypeTest、FieldRegexTest和FieldJudgeTest
 
 <h2 id="注意点">注意点</h2>
+
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
 ```text
 @Check
