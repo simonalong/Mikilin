@@ -231,18 +231,15 @@ def "复杂类型白名单集合复杂结构"() {
     "b"    | "a"     | "b"     | "a"   | null    || true
 }
 ```
-
 <h4 id="输出">输出</h4>
-
+异常信息
 ```
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
 ```
 更全面的测试详见测试类：FieldValueTest、FieldTypeTest、FieldRegexTest和FieldJudgeTest
 
 <h2 id="注意点">注意点</h2>
-
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
-
 ```text
 @Check
 List<AEntity> entityList;
@@ -250,9 +247,7 @@ List<AEntity> entityList;
 @Check
 List<List<AEntity>> entityList;
 ```
-
 而下面的这些暂时是不支持的（后面可以考虑支持）
-
 ```text
 @Check
 List<?> dataList;
