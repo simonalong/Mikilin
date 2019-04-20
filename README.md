@@ -205,6 +205,7 @@ public class AEntity {
     private String address;
 }
 ```
+
 <h4 id="测试">测试</h3>
 
 ```groovy
@@ -230,6 +231,7 @@ def "复杂类型白名单集合复杂结构"() {
     "b"    | "a"     | "b"     | "a"   | null    || true
 }
 ```
+
 <h4 id="输出">输出</h4>
 
 ```
@@ -240,6 +242,7 @@ def "复杂类型白名单集合复杂结构"() {
 <h2 id="注意点">注意点</h2>
 
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
+
 ```text
 @Check
 List<AEntity> entityList;
@@ -249,6 +252,7 @@ List<List<AEntity>> entityList;
 ```
 
 而下面的这些暂时是不支持的（后面可以考虑支持）
+
 ```text
 @Check
 List<?> dataList;
