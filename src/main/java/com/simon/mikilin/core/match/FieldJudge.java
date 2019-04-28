@@ -107,19 +107,25 @@ public class FieldJudge {
         return matcherList.stream().allMatch(Matcher::isEmpty);
     }
 
+    // todo 这里额外多出了几个,
     public static FieldJudge buildFromValid(Field field, FieldValidCheck validCheck) {
         return new FieldJudge()
             .setName(field.getName())
+            // // todo 这个好像也有点问题
             .addMatcher(new ValueMather(field, validCheck.value()))
             .addMatcher(MatcherFactory.build(TypeMatcher.class, validCheck.type()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
+            // // todo 这个好像也有点问题
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
+            // todo 这个好像也有点问题
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
+            // todo 这个不应该直接创建
             .addMatcher(new JudgeMatcher(field, validCheck.judge()))
             .setDisable(validCheck.disable());
     }
 
+    // todo 这里额外多出了几个, 同上
     public static FieldJudge buildFromInvalid(Field field, FieldInvalidCheck invalidCheck) {
         return new FieldJudge()
             .setName(field.getName())

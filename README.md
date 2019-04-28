@@ -16,7 +16,7 @@
 ## 目录：
 
 * [一、介绍](#介绍)
-    * [@FieldValidCheck 和 @FieldInvalidCheck](#check)
+    * [注解](#check)
     * [基本类型核查](#基本类型核查)
     * [复杂类型核查](#复杂类型核查)
 * [二、用法](#用法)
@@ -33,7 +33,7 @@
 <h2 id="介绍">一、介绍：</h2>
 
 该工具可以核查基本类型、集合类型和各种复杂等的类型。
-<h4 id="check">@FieldValidCheck 和 @FieldInvalidCheck</h4>
+<h4 id="check">注解@FieldValidCheck 和 @FieldInvalidCheck</h4>
                     
 这两个注解值修饰基本类型`（Boolean Byte Character Short Integer Long Double Float）`和 `String`类型，而复杂类型是由基本类型组成的，复杂类型的修饰通过注解`@Check`进行修饰，解析时候才会解析内部的基本类型注解。<br />上面两种注解都有下面的属性：
 * value：（禁用或者可用的）值列表

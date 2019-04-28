@@ -16,7 +16,7 @@ public @interface FieldValidCheck {
 
     /**
      * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
-     * @return 禁用的值的列表
+     * @return 只允许的值的列表
      */
     String[] value() default {};
 
