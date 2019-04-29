@@ -9,7 +9,7 @@ package com.simon.mikilin.core.match;
 public class MatcherFactory {
 
     public static <T, K> T build(Class<? extends Builder<T, K>> tClass, K params){
-        if (null == tClass){
+        if (null == params){
            return null;
         }
         try {

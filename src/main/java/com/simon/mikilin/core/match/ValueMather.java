@@ -42,13 +42,20 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
      * @param field 对象的属性类型
      * @param values 属性的可用的或者不可用列表String形式
      */
-    ValueMather(Field field, String[] values){
-        this.values = Arrays.stream(values).map(i -> {
+    static ValueMather build(Field field, String[] values){
+        if(null == values || 0 == values.length){
+            return null;
+        }
+
+        ValueMather valueMather = new ValueMather();
+        valueMather.setValues(Arrays.stream(values).map(i -> {
             if (null != i && !"".equals(i)) {
                 return Objects.cast(field.getType(), i);
             } else {
                 return null;
             }
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toSet()));
+
+        return valueMather;
     }
 }

@@ -111,17 +111,13 @@ public class FieldJudge {
     public static FieldJudge buildFromValid(Field field, FieldValidCheck validCheck) {
         return new FieldJudge()
             .setName(field.getName())
-            // // todo 这个好像也有点问题
-            .addMatcher(new ValueMather(field, validCheck.value()))
+            .addMatcher(ValueMather.build(field, validCheck.value()))
             .addMatcher(MatcherFactory.build(TypeMatcher.class, validCheck.type()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
-            // // todo 这个好像也有点问题
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
-            // todo 这个好像也有点问题
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
-            // todo 这个不应该直接创建
-            .addMatcher(new JudgeMatcher(field, validCheck.judge()))
+            .addMatcher(JudgeMatcher.build(field, validCheck.judge()))
             .setDisable(validCheck.disable());
     }
 
@@ -129,13 +125,13 @@ public class FieldJudge {
     public static FieldJudge buildFromInvalid(Field field, FieldInvalidCheck invalidCheck) {
         return new FieldJudge()
             .setName(field.getName())
-            .addMatcher(new ValueMather(field, invalidCheck.value()))
+            .addMatcher(ValueMather.build(field, invalidCheck.value()))
             .addMatcher(MatcherFactory.build(TypeMatcher.class, invalidCheck.type()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, invalidCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
-            .addMatcher(new JudgeMatcher(field, invalidCheck.judge()))
+            .addMatcher(JudgeMatcher.build(field, invalidCheck.judge()))
             .setDisable(invalidCheck.disable());
     }
 

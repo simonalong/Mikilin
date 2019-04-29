@@ -45,10 +45,12 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
      * @param judge 回调判决，这里是类和对应的函数组成
      */
     @SuppressWarnings("all")
-    public JudgeMatcher(Field field, String judge) {
+    public static JudgeMatcher build(Field field, String judge) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")){
-            return;
+            return null;
         }
+
+        JudgeMatcher judgeMatcher = new JudgeMatcher();
         Integer index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);
@@ -62,8 +64,8 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
             String booleanStr = "boolean";
             if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
                 || returnType.getSimpleName().equals(booleanStr)){
-                judgeStr = judge;
-                predicate =  obj -> {
+                judgeMatcher.judgeStr = judge;
+                judgeMatcher.predicate =  obj -> {
                     try {
                         method.setAccessible(true);
                         return (boolean) method.invoke(object, obj);
@@ -76,6 +78,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
         } catch (ClassNotFoundException | NoSuchMethodException e ) {
             e.printStackTrace();
         }
+        return judgeMatcher;
     }
 
 }

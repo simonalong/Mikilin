@@ -54,6 +54,9 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
 
     @Override
     public ConditionMatcher build(String obj) {
+        if (null == obj || "".equals(obj)) {
+            return null;
+        }
         express = obj;
         parser = new ExpressParser();
         predicate = (root, current) -> {

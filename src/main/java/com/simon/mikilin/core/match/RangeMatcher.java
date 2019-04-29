@@ -62,6 +62,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     @Override
     @SuppressWarnings("all")
     public RangeMatcher build(String obj) {
+        if(null == obj || "".equals(obj)){
+            return null;
+        }
         String startAli = null, endAli = null;
         Number begin = null, end = null;
         obj = obj.trim();
