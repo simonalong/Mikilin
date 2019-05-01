@@ -231,7 +231,7 @@ public class RangeEntity1 {
 | 其他运算符 | 条件运算符（?:）、instanceof运算符 |
 
 <h3 id="math的函数">math的函数</h3>
-除了支持运算符构成的条件表达式之外，这里也支持java.lang.math中的所有函数，比如：min、max和abs等等函数
+除了支持运算符构成的条件表达式之外，这里也支持`java.lang.math`中的所有函数，比如：`min`、`max`和`abs`等等函数
 
 <h3 id="自定义占位符">自定义占位符</h3>
 自定义占位符有两个：
@@ -505,7 +505,10 @@ def "复杂类型白名单集合复杂结构"() {
 }
 ```
 输出
-> 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
+
+```text
+数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
+```
 
 更全面的测试详见代码中的测试类
 
