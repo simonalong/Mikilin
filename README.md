@@ -15,24 +15,34 @@
 ## 目录：
 
 * [一、介绍](#介绍)
-    * [注解](#check)
-    * [基本类型核查](#基本类型核查)
-    * [复杂类型核查](#复杂类型核查)
-* [二、用法](#用法)
-    * [核查函数](#核查函数)
-    * [错误信息](#错误信息)
-* [三、用例](#用例)
-* [四、测试](#测试)
-    * [输出](#输出)
-    * [更复杂的结构](#更复杂的结构)
-        * [测试](#测试)
-        * [输出](#输出)
-* [五、注意点](#注意点)
+    * [一个类](#一个类)
+    * [两种函数](#两种函数)
+    * [三个注解](#三个注解)
+        * [@Check](#@Check)
+        * [@FieldValidCheck](#@FieldValidCheck)
+        * [@FieldInvalidCheck](#@FieldInvalidCheck)
+* [​二、用法](#用法)
+    * [values](#values)
+    * [type](#type)
+    * [enumType](#enumType)
+    * [range](#range)
+    * [condition](#condition)
+        * [运算符](#运算符)
+        * [math的函数](#math的函数)
+        * [自定义占位符](#自定义占位符)
+    * [regex](#regex)
+    * [judge](#judge)
+    * [disable](#disable)
+* [三、demo](#demo)
+    * [用例1](#用例1)
+    * [用例2](#用例2)
+* [四、注意点](#注意点)
+* [五、代码](#代码)
 
-# 一、介绍：
+<h1 id="介绍">一、介绍：</h1>
 该工具在使用方面，采用一个类，两种函数（核查函数和检测函数），三个注解的方式，使用超级简单，但是功能却很多，所有的功能都提供在注解中，下面先简单介绍下。
 
-## 一个类：
+<h2 id="一个类">一个类：</h2>
 该类为`Checks` ，里面包含各种对基本类型和自定义类型核查的三类静态函数：
 ```text
 // 针对自定义复杂类型核查
@@ -48,7 +58,7 @@ public <T> boolean checkWhite(T object, List<T> whiteSet)
 public <T> boolean checkWhite(T object, T... whiteSet)
 ```
 
-## 两种函数：
+<h2 id="两种函数">两种函数：</h2>
 这两种函数是核查函数和核查失败后的异常数据获取函数。核查函数就是上面的，而检测函数则更简单，如下：
 ```text
 public String getErrMsg()
@@ -65,13 +75,14 @@ public String getErrMsg()
 ```text
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
-## 三个注解：
+
+<h2 id="三个注解">三个注解：</h2>
 在该工具中只有三个注解：`@Check`、`@FieldValidCheck`和`@FieldInvalidCheck`
 
-### @Check
+<h3 id="@Check">@Check</h3>
 该注解没有属性，修饰属性，用于表示该属性里面是有待核查的属性，如果不添加，则该属性里面的核查注解无法生效
 
-### @FieldValidCheck
+<h3 id="@FieldValidCheck">@FieldValidCheck</h3>
 该注解是白名单注解，修饰属性，表示修饰的属性只接收能匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解有如下的属性：
 
 - value：值列表
@@ -88,13 +99,14 @@ public String getErrMsg()
 
 一旦修饰属性，则该属性的值就不能为null，否则就会命中失败，如果需要允许null，则需要在白名单中添加上允许为null的规则即可。
 
-### @FieldInvalidCheck
+<h3 id="@FieldInvalidCheck">@FieldInvalidCheck</h3>
 该注解是黑名单注解，修饰属性，表示修饰的属性不接受匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解的属性跟`@FieldValidCheck`是完全一样的，只是逻辑判断不一样：只要满足属性中的任何一项匹配，则称之为匹配成功，即没有通过核查，调用`Checks.getErrMsg()`即可看到错误调用链。
 
+<h1 id="用法">一、用法：</h1>
 # ​二、用法：
  该小节用于介绍用法方面，主要介绍针对注解`@FieldValidCheck`或者`@FieldInvalidCheck`中的属性进行用法介绍。
  
-## values
+<h2 id="values">values</h2>
 用于表示只要的或者不要的值列表，一般用于`String`，`Integer`（会自动转成`Integer`），该属性用于表示修饰的属性对应的值，比如
 ```text
 @FieldValidCheck({"a", "b", "c", "null"})
@@ -106,7 +118,7 @@ private Integer age;
 
 表示一个类的属性名 name 允许的值（或禁止的值）只能为："a", "b", "c" 和null，属性名 age 允许的值（或禁止的值）只能为：12， 32， 29
 
-## type
+<h2 id="type">type</h2>
 该属性一般用于修饰String类型的数据，表示命中系统内置的几种类型（目前系统内置了简单的几种）：
 
 > 手机号，身份证号，固定电话，邮箱，IP地址
@@ -119,7 +131,7 @@ private String fixedPhone;
 @FieldInvalidCheck(type = FieldType.FIXED_PHONE)
 private String fixedPhoneInValid;
 ```
-## enumType
+<h2 id="enumType">enumType</h2>
 表示枚举类型，修饰String类型的属性，用于表示该String类型的属性是多个枚举的名字
 ```text
 @FieldValidCheck(enumType = AEnum.class)
@@ -166,7 +178,7 @@ public enum  BEnum {
     }
 }
 ```
-## range
+<h2 id="range">range</h2>
 表示修饰数字类型数据的范围
 > ## 这是一个标题。
 >1. [a, b]：表示数字>=a且<=b
@@ -194,10 +206,10 @@ public class RangeEntity1 {
     private Integer age2;
 }
 ```
-## condition
+<h2 id="condition">condition</h2>
 是条件表达式语句，该条件表达式中支持Java的所有运算符和java.lang.math的所有函数，且也支持类自定义的两个占位符。现在列举如下：
 
-### 运算符
+<h3 id="运算符">运算符</h3>
 >1. 算术运算符：+、-、*、/、%、++、--
 >2. 关系运算符：==、!=、>、<、>=、<=
 >3. 位运算符：&、|、^、~、<<、>>、>>>
@@ -205,10 +217,10 @@ public class RangeEntity1 {
 >5. 赋值运算符：=、+=、-=、*=、/=、(%)=、<<=、>>=、&=、^=、|=
 >6. 其他运算符：条件运算符（?:）、instanceof运算符
 
-### math的函数
+<h3 id="math的函数">math的函数</h3>
 除了支持运算符构成的条件表达式之外，这里也支持java.lang.math中的所有函数，比如：min、max和abs等等函数
 
-### 自定义占位符
+<h3 id="自定义占位符">自定义占位符</h3>
 自定义占位符有两个：
 >`#root`：表示属性所在类的对象值
 >
@@ -259,7 +271,7 @@ public class ConditionEntity3 {
 }
 ```
 
-## regex
+<h2 id="regex">regex</h2>
 自定义的正则表达式
 
 #### 注意：
@@ -281,7 +293,7 @@ public class RegexEntity {
 }
 ```
 
-## judge
+<h2 id="judge">judge</h2>
 除了上面的一些用法之外，这里还支持系统内部自己进行判断，其中表达式的格式为
 > class全路径#函数名，比如：com.xxx.AEntity#isValid
 其中isValid的入参是当前属性的类型
@@ -357,11 +369,11 @@ public class JudgeCls {
     }
 }
 ```
-## disable
+<h2 id="disable">disable</h2>
 表示是否启用该注解，true启用，false不启用
 
-# 三、demo
-## 用例1
+<h1 id="demo">三、demo</h1>
+<h2 id="用例1">用例1</h2>
 ```java
 @Data
 @Accessors(chain = true)
@@ -395,7 +407,7 @@ def "复杂类型白名单测试"() {
 输出
 > 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 
-## 用例2
+<h2 id="用例2">用例2</h2>
 更复杂结构
 ```java
 @Data
@@ -469,7 +481,7 @@ def "复杂类型白名单集合复杂结构"() {
 
 更全面的测试详见代码中的测试类
 
-# 四、注意点：
+<h1 id="注意点">四、注意点：</h1>
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
 ```text
 @Check
@@ -493,5 +505,5 @@ List<? extend AEntity> dataList;
 List<T> dataList;
 ```
 
-# 五、代码：
+<h1 id="代码">五、代码：</h1>
 https://github.com/SimonAlong/Mikilin
