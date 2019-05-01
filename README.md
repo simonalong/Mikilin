@@ -61,6 +61,7 @@ public <T> boolean checkWhite(T object, T... whiteSet)
 
 <h2 id="两种函数">两种函数：</h2>
 这两种函数是核查函数和核查失败后的异常数据获取函数。核查函数就是上面的，而检测函数则更简单，如下：
+
 ```text
 public String getErrMsg()
 ```
@@ -109,6 +110,7 @@ public String getErrMsg()
  
 <h2 id="values">values</h2>
 用于表示只要的或者不要的值列表，一般用于`String`，`Integer`（会自动转成`Integer`），该属性用于表示修饰的属性对应的值，比如
+
 ```text
 @FieldValidCheck({"a", "b", "c", "null"})
 private String name;
@@ -125,6 +127,7 @@ private Integer age;
 > 手机号，身份证号，固定电话，邮箱，IP地址
 
 使用方式比如：
+
 ```text
 @FieldValidCheck(type = FieldType.FIXED_PHONE)
 private String fixedPhone;
@@ -134,6 +137,7 @@ private String fixedPhoneInValid;
 ```
 <h2 id="enumType">enumType</h2>
 表示枚举类型，修饰String类型的属性，用于表示该String类型的属性是多个枚举的名字
+
 ```text
 @FieldValidCheck(enumType = AEnum.class)
 private String name;
@@ -142,6 +146,7 @@ private String name;
 private String tag;
 ```
 比如某个枚举类
+
 ```java
 /**
  * @author zhouzhenyong
@@ -160,6 +165,7 @@ public enum AEnum {
     }
 }
 ```
+
 ```java
 /**
  * @author zhouzhenyong
@@ -191,6 +197,7 @@ public enum  BEnum {
 >7. [a, null)：表示数字>=a
 >8. (a, null)：表示数字>a
 #### 例子：
+
 ```java
 /**
  * @author zhouzhenyong
@@ -230,6 +237,7 @@ public class RangeEntity1 {
 添加自定义占位符主要是用于在对象的属性间有相互约束的时候用，比如，属性a和属性b之和大于属性c，这种就可以使用自定义占位符使用。
 
 ### 用例：
+
 ```java
 /**
  * @author zhouzhenyong
@@ -249,6 +257,7 @@ public class ConditionEntity1 {
     private Integer num3;
 }
 ```
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -260,6 +269,7 @@ public class ConditionEntity2 {
     private Boolean judge;
 }
 ```
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -277,6 +287,7 @@ public class ConditionEntity3 {
 
 #### 注意：
 这里的正则表达式是Java的正则表达式
+
 ```java
 /**
  * @author zhouzhenyong
@@ -300,6 +311,7 @@ public class RegexEntity {
 其中isValid的入参是当前属性的类型
 
 #### 用例：
+
 ```java
 /**
  * @author zhouzhenyong
@@ -320,6 +332,7 @@ public class JudgeEntity {
 }
 ```
 其中系统的匹配判决函数
+
 ```java
 /**
  * @author zhouzhenyong
@@ -375,6 +388,7 @@ public class JudgeCls {
 
 <h1 id="demo">三、demo</h1>
 <h2 id="用例1">用例1</h2>
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -386,6 +400,7 @@ public class AEntity {
     private String address;
 }
 ```
+
 ```groovy
 def "复杂类型白名单测试"() {
     given:
@@ -410,6 +425,7 @@ def "复杂类型白名单测试"() {
 
 <h2 id="用例2">用例2</h2>
 更复杂结构
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -421,6 +437,7 @@ public class WhiteCEntity {
     private BEntity bEntity;
 }
 ```
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -433,6 +450,7 @@ CEntity {
     private List<BEntity> bEntities;
 }
 ```
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -443,6 +461,7 @@ public class BEntity {
     private AEntity aEntity;
 }
 ```
+
 ```java
 @Data
 @Accessors(chain = true)
@@ -454,6 +473,7 @@ public class AEntity {
     private String address;
 }
 ```
+
 ```groovy
 def "复杂类型白名单集合复杂结构"() {
     given:
@@ -484,6 +504,7 @@ def "复杂类型白名单集合复杂结构"() {
 
 <h1 id="注意点">四、注意点：</h1>
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
+
 ```text
 @Check
 List<AEntity> entityList;
@@ -492,6 +513,7 @@ List<AEntity> entityList;
 List<List<AEntity>> entityList;
 ```
 而下面的这些暂时是不支持的（后面可以考虑支持）
+
 ```text
 @Check
 List<?> dataList;
