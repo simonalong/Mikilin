@@ -20,5 +20,4 @@ public class RangeEntity1 {
 
     @FieldValidCheck(range = "[0, 100]")
     private Integer age2;
-
 }

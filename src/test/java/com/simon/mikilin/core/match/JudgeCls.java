@@ -10,7 +10,7 @@ import java.util.List;
 public class JudgeCls {
 
     /**
-     * 年龄可用
+     * 年龄是否合法
      */
     public boolean ageValid(Integer age) {
         if(null == age){
@@ -24,7 +24,7 @@ public class JudgeCls {
     }
 
     /**
-     * 如果名字位于黑名单中，则命中失败
+     * 名称是否合法
      */
     private boolean nameValid(String name) {
         if(null == name){
@@ -38,7 +38,7 @@ public class JudgeCls {
     }
 
     /**
-     * 地址不合法
+     * 地址匹配
      */
     private boolean addressInvalid(String address){
         if(null == address){
@@ -50,5 +50,4 @@ public class JudgeCls {
         }
         return false;
     }
-
 }

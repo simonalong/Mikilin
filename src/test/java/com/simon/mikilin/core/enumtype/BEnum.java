@@ -9,9 +9,9 @@ import lombok.Getter;
 @Getter
 public enum  BEnum {
 
-    B1("B1"),
-    B2("B2"),
-    B3("B3");
+    B1("b1"),
+    B2("b2"),
+    B3("b3");
 
     private String name;
 

@@ -8,9 +8,9 @@ import lombok.Getter;
  */
 @Getter
 public enum AEnum {
-    A1("A1"),
-    A2("A2"),
-    A3("A3");
+    A1("a1"),
+    A2("a2"),
+    A3("a3");
 
     private String name;
 
