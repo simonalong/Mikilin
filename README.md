@@ -314,8 +314,10 @@ public class RegexEntity {
 
 <h2 id="judge">judge</h2>
 除了上面的一些用法之外，这里还支持系统内部自己进行判断，其中表达式的格式为
-> class全路径#函数名，比如：com.xxx.AEntity#isValid
-其中isValid的入参是当前属性的类型
+
+```text
+class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的入参是当前属性的类型
+```
 
 #### 用例：
 
