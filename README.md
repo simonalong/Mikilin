@@ -188,6 +188,7 @@ public enum  BEnum {
 ```
 <h2 id="range">range</h2>
 表示修饰数字类型数据的范围
+
 ```text
 [a, b]：表示数字>=a且<=b
 [a, b)：表示数字>=a且<b
