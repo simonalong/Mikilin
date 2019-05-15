@@ -523,7 +523,7 @@ def "复杂类型白名单集合复杂结构"() {
 <h1 id="注意点">四、注意点：</h1>
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如
 
-```text
+```java
 @Check
 List<AEntity> entityList;
 
@@ -532,7 +532,7 @@ List<List<AEntity>> entityList;
 ```
 而下面的这些暂时是不支持的（后面可以考虑支持）
 
-```text
+```java
 @Check
 List<?> dataList;
 
