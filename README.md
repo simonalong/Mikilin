@@ -46,7 +46,7 @@
 <h2 id="一个类">一个类：</h2>
 该类为`Checks` ，里面包含各种对基本类型和自定义类型核查的三类静态函数：
 
-```text
+```java
 // 针对自定义复杂类型核查
 public boolean check(Object object){}
 
@@ -63,7 +63,7 @@ public <T> boolean checkWhite(T object, T... whiteSet)
 <h2 id="两种函数">两种函数：</h2>
 这两种函数是核查函数和核查失败后的异常数据获取函数。核查函数就是上面的，而检测函数则更简单，如下：
 
-```text
+```java
 public String getErrMsg()
 ```
 ​
@@ -111,7 +111,7 @@ public String getErrMsg()
 <h2 id="values">values</h2>
 用于表示只要的或者不要的值列表，一般用于`String`，`Integer`（会自动转成`Integer`），该属性用于表示修饰的属性对应的值，比如
 
-```text
+```java
 @FieldValidCheck({"a", "b", "c", "null"})
 private String name;
 
@@ -130,7 +130,7 @@ private Integer age;
 
 使用方式比如：
 
-```text
+```java
 @FieldValidCheck(type = FieldType.FIXED_PHONE)
 private String fixedPhone;
 
@@ -140,7 +140,7 @@ private String fixedPhoneInValid;
 <h2 id="enumType">enumType</h2>
 表示枚举类型，修饰String类型的属性，用于表示该String类型的属性是多个枚举的名字
 
-```text
+```java
 @FieldValidCheck(enumType = AEnum.class)
 private String name;
 
