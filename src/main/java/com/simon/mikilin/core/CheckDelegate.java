@@ -33,6 +33,7 @@ public final class CheckDelegate {
     /**
      * 判断自定义结构的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      * @param object 为集合、Map和自定义结构，其中基本类型，为另外一个重载函数
+     * @param fieldSet 待核查的属性的集合
      * @param objectFieldMap 自定义对象属性的核查影射，key为类的名字，value为类中对应的属性名字
      * @param whiteSet 对象属性集合的可用值列表
      * @param blackSet 对象属性集合的不可用值列表
@@ -40,7 +41,7 @@ public final class CheckDelegate {
      * false：如果对象中有某个属性不可用
      * true：所有属性都可用
      */
-    boolean available(Object object, Map<String, Set<String>> objectFieldMap,
+    boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
         Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet){
         initErrMsg();
         if (null == object) {
@@ -56,7 +57,7 @@ public final class CheckDelegate {
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection collection = Collection.class.cast(object);
             if (!CollectionUtil.isEmpty(collection)){
-                return collection.stream().allMatch(c-> available(c, objectFieldMap, whiteSet, blackSet));
+                return collection.stream().allMatch(c-> available(c, fieldSet, objectFieldMap, whiteSet, blackSet));
             }else{
                 // 为空则忽略
                 return true;
@@ -65,7 +66,8 @@ public final class CheckDelegate {
             // Map 结构中的数据的判断，目前只判断value中的值
             Map map = Map.class.cast(object);
             if (!CollectionUtil.isEmpty(map)) {
-                if(map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, objectFieldMap, whiteSet, blackSet))){
+                if(map.values().stream().filter(Objects::nonNull)
+                    .allMatch(v -> available(v, fieldSet, objectFieldMap, whiteSet, blackSet))){
                     return true;
                 }
                 append("Map的value中有不合法");
@@ -80,8 +82,9 @@ public final class CheckDelegate {
                 return true;
             }
 
-            // 自定义类型，如果对象中任何一个属性不可用，则对象不可用
-            if(ClassUtil.allFieldsOfClass(object.getClass()).stream().allMatch(f-> available(object, f, objectFieldMap, whiteSet, blackSet))){
+            // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用
+            if (ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains)
+                .allMatch(f -> available(object, f, objectFieldMap, whiteSet, blackSet))) {
                 return true;
             }
 
@@ -119,6 +122,14 @@ public final class CheckDelegate {
             }
         }
         return true;
+    }
+
+    private boolean available(Object object, Map<String, Set<String>> objectFieldMap,
+        Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet){
+        if(null == object){
+            return true;
+        }
+        return available(object, ClassUtil.allFieldsOfClass(object.getClass()), objectFieldMap, whiteSet, blackSet);
     }
 
     /**

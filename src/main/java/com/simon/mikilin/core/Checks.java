@@ -67,7 +67,7 @@ public final class Checks {
         if (ClassUtil.isBaseField(object.getClass())) {
             return true;
         } else {
-            return check(object, getObjFieldMap(object), getWhiteMap(), getBlackMap());
+            return check(object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
@@ -75,26 +75,40 @@ public final class Checks {
      * 针对对象的某些属性进行核查
      *
      * @param object 待核查对象
-     * @param fieldsStr 待核查对象的多个属性名字
+     * @param fieldSet 待核查对象的多个属性名字
      * @return true：成功，false：核查失败
      */
-    public boolean check(Object object, String... fieldsStr){
-        // todo
-        return false;
+    public boolean check(Object object, String... fieldSet){
+        if (delegate.isEmpty(object)) {
+            delegate.append("数据为空");
+            return false;
+        }
+        if (ClassUtil.isBaseField(object.getClass())) {
+            return true;
+        } else {
+            return check(object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
+                getObjFieldMap(object), getWhiteMap(), getBlackMap());
+        }
+    }
+
+    private Set<Field> getFieldToCheck(Object object, Set<String> fieldStrSet){
+        return ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(f -> fieldStrSet.contains(f.getName()))
+            .collect(Collectors.toSet());
     }
 
     /**
      * 用于索引列表和黑白名单列表核查
      *
      * @param object 待核查的对象
+     * @param fieldSet 待核查的属性
      * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合
      * @param whiteSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的可用值
      * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    private boolean check(Object object, Map<String, Set<String>> objectFieldMap,
+    private boolean check(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
         Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet) {
-        return delegate.available(object, objectFieldMap, whiteSet, blackSet);
+        return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
     }
 
     public String getErrMsg() {
