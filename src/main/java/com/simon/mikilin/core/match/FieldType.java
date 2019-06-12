@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.annotation;
+package com.simon.mikilin.core.match;
 
 import java.util.regex.Pattern;
 import lombok.Getter;

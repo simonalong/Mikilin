@@ -54,7 +54,7 @@ public final class Checks {
     }
 
     /**
-     * 自定义的复杂类型校验，基本类型校验不校验，基本类型校验为baseCheck
+     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
      *
      * @param object 待核查对象
      * @return true：成功，false：核查失败
@@ -73,7 +73,19 @@ public final class Checks {
     }
 
     /**
-     * 开放接口，用于用户自定义索引列表和黑白名单列表
+     * 针对对象的某些属性进行核查
+     *
+     * @param object 待核查对象
+     * @param fieldsStr 待核查对象的多个属性名字
+     * @return true：成功，false：核查失败
+     */
+    public boolean check(Object object, String... fieldsStr){
+        // todo
+        return false;
+    }
+
+    /**
+     * 用于索引列表和黑白名单列表核查
      *
      * @param object 待核查的对象
      * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合
@@ -81,51 +93,9 @@ public final class Checks {
      * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    public boolean check(Object object, Map<String, Set<String>> objectFieldMap,
+    private boolean check(Object object, Map<String, Set<String>> objectFieldMap,
         Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet) {
         return delegate.available(object, objectFieldMap, whiteSet, blackSet);
-    }
-
-    /**
-     * 类型白名单核查 注意： 建议基本类型使用，自定义类型、集合和Map类型不建议使用
-     * @param object 待核查对象
-     * @param whiteSet 白名单集合
-     * @param <T> 对象类型
-     * @return 核查结果 true：核查成功；false：核查失败
-     */
-    public <T> boolean checkWhite(T object, Set<T> whiteSet) {
-        return check(object, whiteSet, Collections.emptySet());
-    }
-
-    public <T> boolean checkWhite(T object, List<T> whiteSet) {
-        return check(object, new HashSet<>(whiteSet), Collections.emptySet());
-    }
-
-    public <T> boolean checkWhite(T object, T... whiteSet) {
-        return check(object, new HashSet<>(Arrays.asList(whiteSet)), Collections.emptySet());
-    }
-
-    /**
-     * 类型黑名单核查 注意： 建议基本类型使用，自定义类型、集合和Map类型不建议使用
-     * @param object 待核查对象
-     * @param blackSet 黑名单集合
-     * @param <T> 对象类型
-     * @return 核查结果 true：核查成功；false：核查失败
-     */
-    public <T> boolean checkBlack(T object, Set<T> blackSet) {
-        return check(object, Collections.emptySet(), blackSet);
-    }
-
-    public <T> boolean checkBlack(T object, List<T> blackSet) {
-        return check(object, Collections.emptySet(), new HashSet<>(blackSet));
-    }
-
-    public <T> boolean checkBlack(T object, T... blackSet) {
-        return check(object, Collections.emptySet(), new HashSet<>(Arrays.asList(blackSet)));
-    }
-
-    private <T> boolean check(T object, Set<T> whiteSet, Set<T> blackSet) {
-        return delegate.available(object, whiteSet, blackSet);
     }
 
     public String getErrMsg() {

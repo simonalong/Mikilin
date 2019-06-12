@@ -1,14 +1,11 @@
 package com.simon.mikilin.core.match;
 
-import static java.lang.Math.*;
-
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import com.simon.mikilin.core.express.ExpressParser;
 import com.simon.mikilin.core.util.Maps;
 import java.lang.reflect.Field;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -15,7 +15,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * @since 2019/1/17 下午7:33
  */
 @SuppressWarnings("unchecked")
-public class GroovyScriptFactory {
+class GroovyScriptFactory {
 
     private static Map<String, Class<Script>> scriptCache = new HashMap<>();
     private GroovyClassLoader classLoader = new GroovyClassLoader();
@@ -27,7 +27,7 @@ public class GroovyScriptFactory {
     private GroovyScriptFactory() {
     }
 
-    public static GroovyScriptFactory getInstance() {
+    static GroovyScriptFactory getInstance() {
         return factory;
     }
 
@@ -52,7 +52,7 @@ public class GroovyScriptFactory {
         return result;
     }
 
-    public Object scriptGetAndRun(String key, Binding binding) {
+    Object scriptGetAndRun(String key, Binding binding) {
         return run(getScript(key), binding);
     }
 }

@@ -13,12 +13,17 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#ageValid")
+    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#nameValid")
+    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
     private String name;
 
-    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#addressInvalid")
+    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
     private String address;
+
+//    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#ratioJudge")
+    private Float mRatio;
+
+    private Float nRatio;
 }

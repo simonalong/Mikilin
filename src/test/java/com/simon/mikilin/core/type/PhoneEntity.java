@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldType;
+import com.simon.mikilin.core.match.FieldType;
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 import lombok.Data;

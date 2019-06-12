@@ -1,7 +1,6 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldType;
 import com.simon.mikilin.core.annotation.FieldValidCheck;
 
 /**

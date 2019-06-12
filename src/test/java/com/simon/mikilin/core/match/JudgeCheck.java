@@ -7,7 +7,7 @@ import java.util.List;
  * @author zhouzhenyong
  * @since 2019/3/10 上午11:19
  */
-public class JudgeCls {
+public class JudgeCheck {
 
     /**
      * 年龄是否合法
@@ -49,5 +49,17 @@ public class JudgeCls {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 能够传递核查的对象，对于对象中的一些属性可以进行系统内部的配置
+     *
+     * mRatio + nRatio < 1.0
+     */
+    private boolean ratioJudge(Float nRatio, JudgeEntity judgeEntity){
+        if(null == nRatio || null == judgeEntity){
+            return false;
+        }
+        return nRatio + judgeEntity.getMRatio() < 1.0f;
     }
 }

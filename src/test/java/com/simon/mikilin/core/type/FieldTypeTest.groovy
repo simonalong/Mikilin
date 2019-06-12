@@ -1,6 +1,7 @@
 package com.simon.mikilin.core.type
 
 import com.simon.mikilin.core.Checks
+import com.simon.mikilin.core.regex.RegexEntity
 import org.junit.Assert
 import spock.lang.Specification
 

@@ -1,5 +1,6 @@
 package com.simon.mikilin.core.annotation;
 
+import com.simon.mikilin.core.match.FieldType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +71,7 @@ public @interface FieldInvalidCheck {
     /**
      * 系统自己编码判断
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
      */
     String judge() default "";
 
