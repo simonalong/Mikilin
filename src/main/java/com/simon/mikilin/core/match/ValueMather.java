@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.match;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import com.simon.mikilin.core.util.Objects;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 
 /**
- * 指定的值判断，对应{@link FieldValidCheck#value()}或者{@link FieldInvalidCheck#value()}
+ * 指定的值判断，对应{@link FieldWhiteMather#value()}或者{@link FieldBlackMatcher#value()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:49

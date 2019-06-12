@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.range;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,10 +13,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RangeEntity3 {
 
-    @FieldValidCheck(range = "[0.00,3.00]")
+    @FieldWhiteMather(range = "[0.00,3.00]")
     private Float height;
 
-    @FieldInvalidCheck(range = "[10,10000]")
+    @FieldBlackMatcher(range = "[10,10000]")
     private Double money;
 
 }

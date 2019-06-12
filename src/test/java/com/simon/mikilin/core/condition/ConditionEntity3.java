@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.condition;
 
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ConditionEntity3 {
 
-    @FieldValidCheck(condition = "min(#current, #root.num2) > #root.num3")
+    @FieldWhiteMather(condition = "min(#current, #root.num2) > #root.num3")
     private Integer num1;
     private Integer num2;
     private Integer num3;

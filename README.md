@@ -20,8 +20,8 @@
     * [两种函数](#两种函数)
     * [三个注解](#三个注解)
         * [@Check](#@Check)
-        * [@FieldValidCheck](#@FieldValidCheck)
-        * [@FieldInvalidCheck](#@FieldInvalidCheck)
+        * [@FieldWhiteMather](#@FieldWhiteMather)
+        * [@FieldBlackMatcher](#@FieldBlackMatcher)
 * [​二、用法](#用法)
     * [values](#values)
     * [type](#type)
@@ -80,12 +80,12 @@ public String getErrMsg()
 ```
 
 <h2 id="三个注解">三个注解：</h2>
-在该工具中只有三个注解：`@Check`、`@FieldValidCheck`和`@FieldInvalidCheck`
+在该工具中只有三个注解：`@Check`、`@FieldWhiteMather`和`@FieldBlackMatcher`
 
 <h3 id="@Check">@Check</h3>
 该注解没有属性，修饰属性，用于表示该属性里面是有待核查的属性，如果不添加，则该属性里面的核查注解无法生效
 
-<h3 id="@FieldValidCheck">@FieldValidCheck</h3>
+<h3 id="@FieldWhiteMather">@FieldWhiteMather</h3>
 该注解是白名单注解，修饰属性，表示修饰的属性只接收能匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解有如下的属性：
 
 - value：值列表
@@ -102,17 +102,17 @@ public String getErrMsg()
 
 一旦修饰属性，则该属性的值就不能为null，否则就会命中失败，如果需要允许null，则需要在白名单中添加上允许为null的规则即可。
 
-<h3 id="@FieldInvalidCheck">@FieldInvalidCheck</h3>
-该注解是黑名单注解，修饰属性，表示修饰的属性不接受匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解的属性跟`@FieldValidCheck`是完全一样的，只是逻辑判断不一样：只要满足属性中的任何一项匹配，则称之为匹配成功，即没有通过核查，调用`Checks.getErrMsg()`即可看到错误调用链。
+<h3 id="@FieldBlackMatcher">@FieldBlackMatcher</h3>
+该注解是黑名单注解，修饰属性，表示修饰的属性不接受匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解的属性跟`@FieldWhiteMather`是完全一样的，只是逻辑判断不一样：只要满足属性中的任何一项匹配，则称之为匹配成功，即没有通过核查，调用`Checks.getErrMsg()`即可看到错误调用链。
 
 <h1 id="用法">一、用法：</h1>
 
-该小节用于介绍用法方面，主要介绍针对注解 `@FieldValidCheck` 或者`@FieldInvalidCheck`中的属性进行用法介绍，对应的匹配策略如下。
+该小节用于介绍用法方面，主要介绍针对注解 `@FieldWhiteMather` 或者`@FieldBlackMatcher`中的属性进行用法介绍，对应的匹配策略如下。
 
 ```java
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldValidCheck {
+public @interface FieldWhiteMather {
 
     /**
      * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
@@ -185,10 +185,10 @@ public @interface FieldValidCheck {
 用于表示只要的或者不要的值列表，一般用于`String`，`Integer`（会自动转成`Integer`），该属性用于表示修饰的属性对应的值，比如
 
 ```java
-@FieldValidCheck({"a", "b", "c", "null"})
+@FieldWhiteMather({"a", "b", "c", "null"})
 private String name;
 
-@FieldValidCheck({"12", "32", "29"})
+@FieldWhiteMather({"12", "32", "29"})
 private Integer age;
 ```
 
@@ -204,20 +204,20 @@ private Integer age;
 使用方式比如：
 
 ```java
-@FieldValidCheck(type = FieldType.FIXED_PHONE)
+@FieldWhiteMather(type = FieldType.FIXED_PHONE)
 private String fixedPhone;
 
-@FieldInvalidCheck(type = FieldType.FIXED_PHONE)
+@FieldBlackMatcher(type = FieldType.FIXED_PHONE)
 private String fixedPhoneInValid;
 ```
 <h2 id="enumType">enumType</h2>
 表示枚举类型，修饰String类型的属性，用于表示该String类型的属性是多个枚举的名字
 
 ```java
-@FieldValidCheck(enumType = AEnum.class)
+@FieldWhiteMather(enumType = AEnum.class)
 private String name;
 
-@FieldValidCheck(enumType = {AEnum.class, BEnum.class})
+@FieldWhiteMather(enumType = {AEnum.class, BEnum.class})
 private String tag;
 ```
 比如某个枚举类
@@ -285,10 +285,10 @@ public enum  BEnum {
 @Accessors(chain = true)
 public class RangeEntity1 {
 
-    @FieldValidCheck(range = "[0,100]")
+    @FieldWhiteMather(range = "[0,100]")
     private Integer age1;
 
-    @FieldValidCheck(range = "[0, 100]")
+    @FieldWhiteMather(range = "[0, 100]")
     private Integer age2;
 }
 ```
@@ -330,13 +330,13 @@ public class RangeEntity1 {
 @Accessors(chain = true)
 public class ConditionEntity1 {
 
-    @FieldValidCheck(condition = "#current + #root.num2 > 100")
+    @FieldWhiteMather(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
-    @FieldValidCheck(condition = "#current < 20")
+    @FieldWhiteMather(condition = "#current < 20")
     private Integer num2;
 
-    @FieldValidCheck(condition = "(++#current) >31")
+    @FieldWhiteMather(condition = "(++#current) >31")
     private Integer num3;
 }
 ```
@@ -346,7 +346,7 @@ public class ConditionEntity1 {
 @Accessors(chain = true)
 public class ConditionEntity2 {
 
-    @FieldValidCheck(condition = "#root.judge")
+    @FieldWhiteMather(condition = "#root.judge")
     private Integer age;
 
     private Boolean judge;
@@ -358,7 +358,7 @@ public class ConditionEntity2 {
 @Accessors(chain = true)
 public class ConditionEntity3 {
 
-    @FieldValidCheck(condition = "min(#current, #root.num2) > #root.num3")
+    @FieldWhiteMather(condition = "min(#current, #root.num2) > #root.num3")
     private Integer num1;
     private Integer num2;
     private Integer num3;
@@ -380,10 +380,10 @@ public class ConditionEntity3 {
 @Accessors(chain = true)
 public class RegexEntity {
 
-    @FieldValidCheck(regex = "^\\d+$")
+    @FieldWhiteMather(regex = "^\\d+$")
     private String regexValid;
 
-    @FieldInvalidCheck(regex = "^\\d+$")
+    @FieldBlackMatcher(regex = "^\\d+$")
     private String regexInValid;
 }
 ```
@@ -406,13 +406,13 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
     private String name;
 
-    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
     private String address;
 }
 ```
@@ -532,7 +532,7 @@ public class WhiteCEntity {
 public class
 CEntity {
 
-    @FieldValidCheck({"a", "b"})
+    @FieldWhiteMather({"a", "b"})
     private String name;
     @Check
     private List<BEntity> bEntities;

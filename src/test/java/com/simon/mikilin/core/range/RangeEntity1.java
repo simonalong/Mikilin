@@ -1,9 +1,6 @@
 package com.simon.mikilin.core.range;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
-import groovy.transform.Field;
-import lombok.AllArgsConstructor;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,9 +12,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RangeEntity1 {
 
-    @FieldValidCheck(range = "[0,100]")
+    @FieldWhiteMather(range = "[0,100]")
     private Integer age1;
 
-    @FieldValidCheck(range = "[0, 100]")
+    @FieldWhiteMather(range = "[0, 100]")
     private Integer age2;
 }

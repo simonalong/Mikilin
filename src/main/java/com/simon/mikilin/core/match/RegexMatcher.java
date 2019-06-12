@@ -1,11 +1,11 @@
 package com.simon.mikilin.core.match;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import java.util.regex.Pattern;
 
 /**
- * 正则表达式判断，对应{@link FieldValidCheck#regex()}或者{@link FieldInvalidCheck#regex()}
+ * 正则表达式判断，对应{@link FieldWhiteMather#regex()}或者{@link FieldBlackMatcher#regex()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

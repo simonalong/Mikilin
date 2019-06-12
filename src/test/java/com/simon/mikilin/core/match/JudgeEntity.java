@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.match;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,16 +13,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
     private String name;
 
-    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
     private String address;
 
-//    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCheck#ratioJudge")
+//    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;

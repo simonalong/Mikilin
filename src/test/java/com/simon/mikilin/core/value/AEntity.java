@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.value;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AEntity {
-    @FieldValidCheck({"a", "b", "c", "null"})
+    @FieldWhiteMather({"a", "b", "c", "null"})
     private String name;
-    @FieldInvalidCheck({"null"})
+    @FieldBlackMatcher({"null"})
     private Integer age;
     private String address;
 }

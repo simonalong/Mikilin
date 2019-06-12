@@ -1,8 +1,8 @@
 package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMather;
 import com.simon.mikilin.core.match.FieldJudge;
 import com.simon.mikilin.core.util.ClassUtil;
 import com.simon.mikilin.core.util.CollectionUtil;
@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -140,13 +139,13 @@ public final class Checks {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 基本类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                FieldValidCheck includeCheck = f.getAnnotation(FieldValidCheck.class);
+                FieldWhiteMather includeCheck = f.getAnnotation(FieldWhiteMather.class);
                 if (null != includeCheck && !includeCheck.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
                     addWhiteValueMap(whiteFieldValueMap, objectClsName, f, includeCheck);
                 }
 
-                FieldInvalidCheck excludeCheck = f.getAnnotation(FieldInvalidCheck.class);
+                FieldBlackMatcher excludeCheck = f.getAnnotation(FieldBlackMatcher.class);
                 if (null != excludeCheck && !excludeCheck.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
                     addBlackValueMap(blackFieldValueMap, objectClsName, f, excludeCheck);
@@ -179,7 +178,7 @@ public final class Checks {
     }
 
     private void addWhiteValueMap(Map<String, Map<String, FieldJudge>> fieldMap, String objectName, Field field,
-        FieldValidCheck validValue) {
+        FieldWhiteMather validValue) {
         fieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of().add(field.getName(), FieldJudge.buildFromValid(field, validValue)).build();
@@ -191,7 +190,7 @@ public final class Checks {
     }
 
     private void addBlackValueMap(Map<String, Map<String, FieldJudge>> fieldMap, String objectName, Field field,
-        FieldInvalidCheck invalidValue) {
+        FieldBlackMatcher invalidValue) {
         fieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of().add(field.getName(), FieldJudge.buildFromInvalid(field, invalidValue)).build();
