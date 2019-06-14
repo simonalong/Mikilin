@@ -44,20 +44,15 @@
 该工具在使用方面，采用一个类，两种函数（核查函数和检测函数），三个注解的方式，使用超级简单，但是功能却很多，所有的功能都提供在注解中，下面先简单介绍下。
 
 <h2 id="一个类">一个类：</h2>
-该类为`Checks` ，里面包含各种对基本类型和自定义类型核查的三类静态函数：
+
+该类为`Checks` ，里面只包含两个函数用于核查，一个是核查添加注解的所有属性，一个是核查添加注解的部分属性
 
 ```java
-// 针对自定义复杂类型核查
+// 核查复杂对象的所有属性
 public boolean check(Object object){}
 
-// 基本类型的黑名单核查函数
-public <T> boolean checkBlack(T object, Set<T> blackSet){}
-public <T> boolean checkBlack(T object, List<T> blackSet)
-public <T> boolean checkBlack(T object, T... blackSet)
-// 基本类型的白名单核查函数
-public <T> boolean checkWhite(T object, Set<T> whiteSet)  
-public <T> boolean checkWhite(T object, List<T> whiteSet)  
-public <T> boolean checkWhite(T object, T... whiteSet)
+// 核查复杂对象的部分属性
+public boolean check(Object object, String... fieldSet){}
 ```
 
 <h2 id="两种函数">两种函数：</h2>
