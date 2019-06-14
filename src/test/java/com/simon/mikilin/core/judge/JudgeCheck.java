@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.match;
+package com.simon.mikilin.core.judge;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,10 +56,10 @@ public class JudgeCheck {
      *
      * mRatio + nRatio < 1.0
      */
-    private boolean ratioJudge(Float nRatio, JudgeEntity judgeEntity){
+    private boolean ratioJudge(JudgeEntity judgeEntity, Float nRatio){
         if(null == nRatio || null == judgeEntity){
             return false;
         }
-        return nRatio + judgeEntity.getMRatio() < 1.0f;
+        return nRatio + judgeEntity.getMRatio() < 10.0f;
     }
 }

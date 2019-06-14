@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.match
+package com.simon.mikilin.core.judge
 
 import com.simon.mikilin.core.Checks
 import org.junit.Assert
@@ -18,7 +18,7 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = Checks.check(entity, "name", "age", "address")
         if (!actResult) {
             println Checks.getErrMsg()
         }
@@ -35,5 +35,25 @@ class FieldJudgeTest extends Specification {
         "c"     | 12   | "tianjin"  | true
         "d"     | null | "tianjin"  | false
         null    | 32   | "tianjin"  | false
+    }
+
+    /**
+     * 测试外部判断的调用
+     */
+    def "外部调用测试（包含请求实体）"() {
+        given:
+        JudgeEntity entity = new JudgeEntity().setMRatio(mRatio).setNRatio(nRatio)
+
+        expect:
+        boolean actResult = Checks.check(entity, "mRatio")
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        mRatio | nRatio | result
+        1f     | 1f     | true
+        10f    | 1f     | false
     }
 }

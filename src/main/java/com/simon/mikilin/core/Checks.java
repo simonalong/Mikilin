@@ -7,7 +7,6 @@ import com.simon.mikilin.core.match.FieldJudge;
 import com.simon.mikilin.core.util.ClassUtil;
 import com.simon.mikilin.core.util.CollectionUtil;
 import com.simon.mikilin.core.util.Maps;
-import com.simon.mikilin.core.util.Objects;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -213,22 +212,5 @@ public final class Checks {
                 return v;
             }
         });
-    }
-
-    /**
-     * 将设置的数据转换为对应结构类型的数据
-     *
-     * @param field 对象的属性类型
-     * @param valueSet 属性的可用的或者不可用列表String形式
-     * @return 转换为属性对象的值的可用或者不可用数据列表
-     */
-    private Set<Object> getObjectSet(Field field, String[] valueSet) {
-        return Arrays.stream(valueSet).map(i -> {
-            if (null != i && !"".equals(i)) {
-                return Objects.cast(field.getType(), i);
-            } else {
-                return null;
-            }
-        }).collect(Collectors.toSet());
     }
 }

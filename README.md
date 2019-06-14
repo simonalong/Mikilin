@@ -406,13 +406,13 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#ageValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldWhiteMather(judge = "com.simon.mikilin.core.match.JudgeCheck#nameValid")
+    @FieldWhiteMather(judge = "com.simon.mikilin.core.judge.JudgeCheck#nameValid")
     private String name;
 
-    @FieldBlackMatcher(judge = "com.simon.mikilin.core.match.JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#addressInvalid")
     private String address;
 }
 ```
