@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.value;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class BlackWhiteAEntity {
 
-    @FieldWhiteMather({"a","b"})
+    @FieldWhiteMatcher({"a","b"})
     private String name;
     @FieldBlackMatcher({"1","2"})
     private Integer age;

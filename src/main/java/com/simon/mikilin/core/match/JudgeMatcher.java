@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import com.simon.mikilin.core.util.SingleFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统自行判断，对应{@link FieldWhiteMather#judge()}或者{@link FieldBlackMatcher#judge()}
+ * 系统自行判断，对应{@link FieldWhiteMatcher#judge()}或者{@link FieldBlackMatcher#judge()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:52

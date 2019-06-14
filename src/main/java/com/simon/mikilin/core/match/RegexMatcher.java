@@ -1,11 +1,11 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import java.util.regex.Pattern;
 
 /**
- * 正则表达式判断，对应{@link FieldWhiteMather#regex()}或者{@link FieldBlackMatcher#regex()}
+ * 正则表达式判断，对应{@link FieldWhiteMatcher#regex()}或者{@link FieldBlackMatcher#regex()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

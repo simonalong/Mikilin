@@ -2,7 +2,7 @@ package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.Check;
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import com.simon.mikilin.core.match.FieldJudge;
 import com.simon.mikilin.core.util.ClassUtil;
 import com.simon.mikilin.core.util.CollectionUtil;
@@ -152,7 +152,7 @@ public final class Checks {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 基本类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                FieldWhiteMather includeCheck = f.getAnnotation(FieldWhiteMather.class);
+                FieldWhiteMatcher includeCheck = f.getAnnotation(FieldWhiteMatcher.class);
                 if (null != includeCheck && !includeCheck.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
                     addWhiteValueMap(whiteFieldValueMap, objectClsName, f, includeCheck);
@@ -191,7 +191,7 @@ public final class Checks {
     }
 
     private void addWhiteValueMap(Map<String, Map<String, FieldJudge>> fieldMap, String objectName, Field field,
-        FieldWhiteMather validValue) {
+        FieldWhiteMatcher validValue) {
         fieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of().add(field.getName(), FieldJudge.buildFromValid(field, validValue)).build();

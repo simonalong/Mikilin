@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.common;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,8 +15,8 @@ public class TestEntity {
 
     @FieldBlackMatcher({"nihao", "ok"})
     private String name;
-    @FieldWhiteMather(range = "[12, 32]")
+    @FieldWhiteMatcher(range = "[12, 32]")
     private Integer age;
-    @FieldWhiteMather({"beijing", "shanghai"})
+    @FieldWhiteMatcher({"beijing", "shanghai"})
     private String address;
 }

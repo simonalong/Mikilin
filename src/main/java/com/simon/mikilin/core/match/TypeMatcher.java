@@ -1,10 +1,10 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 
 /**
- * 指定的类型判断，对应{@link FieldWhiteMather#type()}或者{@link FieldBlackMatcher#type()}
+ * 指定的类型判断，对应{@link FieldWhiteMatcher#type()}或者{@link FieldBlackMatcher#type()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

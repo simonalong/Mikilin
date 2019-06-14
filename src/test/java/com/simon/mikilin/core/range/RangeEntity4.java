@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.range;
 
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,15 +15,15 @@ public class RangeEntity4 {
     /**
      * 属性为大于等于100
      */
-    @FieldWhiteMather(range = "(100, null)")
+    @FieldWhiteMatcher(range = "(100, null)")
     private Integer num1;
 
-    @FieldWhiteMather(range = "[100, null)")
+    @FieldWhiteMatcher(range = "[100, null)")
     private Integer num2;
 
-    @FieldWhiteMather(range = "(null, 50)")
+    @FieldWhiteMatcher(range = "(null, 50)")
     private Integer num3;
 
-    @FieldWhiteMather(range = "(null, 50]")
+    @FieldWhiteMatcher(range = "(null, 50]")
     private Integer num4;
 }

@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.enumtype;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,10 +15,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMather(enumType = AEnum.class)
+    @FieldWhiteMatcher(enumType = AEnum.class)
     private String name;
 
-    @FieldWhiteMather(enumType = {AEnum.class, BEnum.class})
+    @FieldWhiteMatcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
     @FieldBlackMatcher(enumType = {CEnum.class})

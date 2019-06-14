@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import com.simon.mikilin.core.match.FieldType;
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class PhoneEntity {
 
-    @FieldWhiteMather(type = FieldType.PHONE_NUM)
+    @FieldWhiteMatcher(type = FieldType.PHONE_NUM)
     private String phoneValid;
     @FieldBlackMatcher(type = FieldType.PHONE_NUM)
     private String phoneInValid;

@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.range;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RangeEntity3 {
 
-    @FieldWhiteMather(range = "[0.00,3.00]")
+    @FieldWhiteMatcher(range = "[0.00,3.00]")
     private Float height;
 
     @FieldBlackMatcher(range = "[10,10000]")

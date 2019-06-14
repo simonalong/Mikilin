@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.regex;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RegexEntity {
 
-    @FieldWhiteMather(regex = "^\\d+$")
+    @FieldWhiteMatcher(regex = "^\\d+$")
     private String regexValid;
 
     @FieldBlackMatcher(regex = "^\\d+$")

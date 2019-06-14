@@ -1,12 +1,12 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
-import com.simon.mikilin.core.annotation.FieldWhiteMather;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 枚举类型多个判断，对应{@link FieldWhiteMather#enumType()}或者{@link FieldBlackMatcher#enumType()}
+ * 枚举类型多个判断，对应{@link FieldWhiteMatcher#enumType()}或者{@link FieldBlackMatcher#enumType()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
