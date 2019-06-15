@@ -48,6 +48,15 @@
 <h1 id="介绍">一、介绍：</h1>
 该工具在使用方面，采用一个类，两种函数（核查函数和检测函数），三个注解的方式，使用超级简单，但是功能却很多，所有的功能都提供在注解中，下面先简单介绍下。
 
+项目对应的jar包已经发布到maven中央仓库中，可以直接使用，目前最低版本是1.4.0，引入即可
+```xml
+<dependency>
+  <groupId>com.github.simonalong</groupId>
+  <artifactId>mikilin</artifactId>
+  <version>1.4.0</version>
+</dependency>
+```
+
 <h2 id="一个类">一个类：</h2>
 
 该类为`Checks` ，里面只包含如下四个个函数用于核查，两种维度：分组还有属性列表
@@ -525,15 +534,6 @@ public class JudgeCls {
 表示是否启用该注解，true启用，false不启用
 
 <h1 id="使用">三、使用</h1>
-
-项目对应的jar包已经发布到maven中央仓库中，可以直接使用，目前最低版本是1.4.0，引入即可
-```xml
-<dependency>
-  <groupId>com.github.simonalong</groupId>
-  <artifactId>mikilin</artifactId>
-  <version>1.4.0</version>
-</dependency>
-```
 
 <h2 id="基本黑白名单匹配">基本黑白名单匹配</h2>
 
