@@ -107,6 +107,7 @@ public final class CheckDelegate {
      * @param whiteSet 属性值可用值列表
      * @param blackSet 属性值的不用值列表
      * @param objectFieldMap 对象核查的属性映射
+     * @return true 可用， false 不可用
      */
     private boolean available(Object object, Field field,  Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteSet,Map<String, MatcherManager> blackSet) {
@@ -203,6 +204,9 @@ public final class CheckDelegate {
 
     /**
      * 判断对象是否需要继续核查
+     *
+     * @param object 待判决对象
+     * @param objectFieldMap 对象和属性的映射map
      * @return
      * true 对象需要继续核查
      * false 对象不需要通过黑白名单核查

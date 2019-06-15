@@ -53,6 +53,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
      *
      * @param field 属性
      * @param judge 回调判决，这里是类和对应的函数组成
+     * @return 匹配器的判决器
      */
     @SuppressWarnings("all")
     public static JudgeMatcher build(Field field, String judge) {

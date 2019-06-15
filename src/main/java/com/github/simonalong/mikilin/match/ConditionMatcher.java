@@ -108,6 +108,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
 
     /**
      * 移除字符串中的#号和root
+     * @param str 待转换的字符
      * @return #root 到 root
      */
     @SuppressWarnings("all")

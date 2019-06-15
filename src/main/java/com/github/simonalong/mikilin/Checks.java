@@ -139,6 +139,7 @@ public final class Checks {
     /**
      * 用于索引列表和黑白名单列表核查
      *
+     * @param group 分组
      * @param object 待核查的对象
      * @param fieldSet 待核查的属性
      * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合

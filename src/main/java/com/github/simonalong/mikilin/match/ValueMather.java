@@ -41,6 +41,7 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
      *
      * @param field 对象的属性类型
      * @param values 属性的可用的或者不可用列表String形式
+     * @return 值匹配器
      */
     static ValueMather build(Field field, String[] values){
         if(null == values || 0 == values.length){

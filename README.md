@@ -525,6 +525,16 @@ public class JudgeCls {
 表示是否启用该注解，true启用，false不启用
 
 <h1 id="使用">三、使用</h1>
+
+项目对应的jar包已经发布到maven中央仓库中，可以直接使用，目前最低版本是1.4.0，引入即可
+```xml
+<dependency>
+  <groupId>com.github.simonalong</groupId>
+  <artifactId>mikilin</artifactId>
+  <version>1.4.0</version>
+</dependency>
+```
+
 <h2 id="基本黑白名单匹配">基本黑白名单匹配</h2>
 
 ```java
