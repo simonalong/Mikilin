@@ -50,7 +50,7 @@
 
 <h2 id="一个类">一个类：</h2>
 
-该类为`Checks` ，里面只包含两个函数用于核查，一个是核查添加注解的所有属性，一个是核查添加注解的部分属性
+该类为`Checks` ，里面只包含如下四个个函数用于核查，两种维度：分组还有属性列表
 
 ```java
 // 核查复杂对象的所有属性
@@ -87,6 +87,7 @@ public String getErrMsg()
 
 <h2 id="三种注解">三种注解：</h2>
 在该工具中只有三种注解：
+
 - `@Check`：针对修饰的复杂属性，进行拆解
 - `@FieldWhiteMatcher`和`@FieldBlackMatcher`：黑白名单核查
 - `@FieldWhiteMatchers`和`@FieldBlackMatchers`：黑白名单分组核查，内部包含对应的黑白名单核查数组
