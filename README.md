@@ -460,14 +460,12 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#ageValid")
+    @FieldWhiteMatcher(judge = ccom.github.simonalong.mikilin.judge.judge)
     private Integer age;
 
-    @FieldWhiteMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#nameValid")
-    private String name;
+    @FieldWhiteMatcher(judge = com.github.simoncom.github.simonalong.mikilin.judgevate String name;
 
-    @FieldBlackMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#addressInvalid")
-    private String address;
+    @FieldBlackMatcher(judge = com.github.simonalong.mikilin.jucom.github.simonalong.mikilin.judgeess;
 }
 ```
 其中系统的匹配判决函数
