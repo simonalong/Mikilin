@@ -24,7 +24,7 @@
         * [@FieldWhiteMatcher](#@FieldWhiteMatcher)
         * [@FieldBlackMatchers](#@FieldBlackMatchers)
         * [@FieldBlackMatcher](#@FieldBlackMatcher)
-* [​二、用法](#用法)
+* [​二、匹配器](#匹配器)
     * [values](#values)
     * [type](#type)
     * [enumType](#enumType)
@@ -154,9 +154,9 @@ public class GroupEntity {
 Checks.check("test1", entity);
 ```
 
-<h1 id="用法">一、用法：</h1>
+<h1 id="匹配器">一、匹配器：</h1>
 
-该小节用于介绍用法方面，主要介绍针对注解 `@FieldWhiteMatcher` 或者`@FieldBlackMatcher`中的属性进行用法介绍，对应的匹配策略如下。
+这里是将注解的属性作为匹配器，只要配置了这个属性，那么就相当于启用了这个匹配器，匹配器可以有多个，只要匹配上任何一个，那么就算匹配上。注解 `@FieldWhiteMatcher` 或者`@FieldBlackMatcher`中的属性进行用法介绍。
 
 ```java
 @Target(ElementType.FIELD)
