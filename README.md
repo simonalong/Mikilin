@@ -36,9 +36,11 @@
     * [regex](#regex)
     * [judge](#judge)
     * [disable](#disable)
-* [三、demo](#demo)
-    * [用例1](#用例1)
-    * [用例2](#用例2)
+* [三、用例](#用例)
+    * [基本黑白名单匹配](#基本黑白名单匹配)
+    * [复杂类型黑白名单匹配](#复杂类型黑白名单匹配)
+    * [指定参数匹配](#指定参数匹配)
+    * [分组匹配](#分组匹配)
 * [四、注意点](#注意点)
 * [五、代码](#代码)
 * [六、版本](#版本)
@@ -523,8 +525,8 @@ public class JudgeCls {
 <h2 id="disable">disable</h2>
 表示是否启用该注解，true启用，false不启用
 
-<h1 id="demo">三、demo</h1>
-<h2 id="用例1">用例1</h2>
+<h1 id="用例">三、用例</h1>
+<h2 id="基本黑白名单匹配">基本黑白名单匹配</h2>
 
 ```java
 @Data
@@ -563,7 +565,7 @@ def "复杂类型白名单测试"() {
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
 
-<h2 id="用例2">用例2</h2>
+<h2 id="复杂类型黑白名单匹配">复杂类型黑白名单匹配</h2>
 更复杂结构
 
 ```java
@@ -641,6 +643,112 @@ def "复杂类型白名单集合复杂结构"() {
 
 ```text
 数据校验失败-->属性[name]的值[c]不在白名单[a, b]中-->类型[BEntity]核查失败-->类型[CEntity]的属性[bEntities]核查失败-->类型[CEntity]核查失败-->类型[WhiteCEntity]的属性[cEntities]核查失败-->类型[WhiteCEntity]核查失败
+```
+
+<h2 id="指定参数匹配">指定参数匹配</h2>
+修饰实体
+```java
+@Data
+@Accessors(chain = true)
+public class TestEntity {
+
+    @FieldBlackMatcher({"nihao", "ok"})
+    private String name;
+    @FieldWhiteMatcher(range = "[12, 32]")
+    private Integer age;
+    @FieldWhiteMatcher({"beijing", "shanghai"})
+    private String address;
+}
+```
+
+核查代码，只核查指定的参数，参数可指定多个
+
+```groovy
+def "测试指定的属性age"() {
+    given:
+    TestEntity entity = new TestEntity().setName(name).setAge(age)
+
+    expect:
+    def act = Checks.check(entity, "age");
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println Checks.errMsg
+    }
+
+    where:
+    name     | age | result
+    "nihao"  | 12  | true
+    "ok"     | 32  | true
+    "hehe"   | 20  | true
+    "haohao" | 40  | false
+}
+```
+
+<h2 id="分组匹配">分组匹配</h2>
+修饰的实体代码
+```java
+@Data
+@Accessors(chain = true)
+public class GroupEntity {
+
+    @FieldBlackMatchers({
+        @FieldBlackMatcher(range = "[50, 100]"),
+        @FieldBlackMatcher(group = "test1", range = "[12, 23]"),
+        @FieldBlackMatcher(group = "test2", range = "[1, 10]")
+    })
+    private Integer age;
+
+    @FieldWhiteMatchers({
+        @FieldWhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
+        @FieldWhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
+        @FieldWhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
+    })
+    private String name;
+}
+```
+
+核查代码
+```groovy
+def "测试默认分组"() {
+    given:
+    GroupEntity entity = new GroupEntity().setAge(age).setName(name)
+
+    expect:
+    def act = Checks.check(entity);
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println Checks.errMsg
+    }
+
+    where:
+    age | name       | result
+    12  | "shanghai" | true
+    12  | "beijing"  | true
+    49  | "beijing"  | true
+    50  | "beijing"  | false
+    100 | "beijing"  | false
+    49  | "tianjin"  | false
+}
+
+def "测试指定分组"() {
+    given:
+    GroupEntity entity = new GroupEntity().setAge(age).setName(name)
+
+    expect:
+    def act = Checks.check("test1", entity);
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println Checks.errMsg
+    }
+
+    where:
+    age | name        | result
+    10  | "shanghai"  | true
+    12  | "beijing"   | false
+    23  | "beijing"   | false
+    50  | "beijing"   | true
+    100 | "guangzhou" | false
+}
 ```
 
 更全面的测试详见代码中的测试类
