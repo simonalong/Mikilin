@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.value;
 
 import com.simon.mikilin.core.annotation.Check;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class BEntity {
 
-    @FieldValidCheck({"a","b"})
+    @FieldWhiteMatcher({"a","b"})
     private String name;
     @Check
     private AEntity aEntity;

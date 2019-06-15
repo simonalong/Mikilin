@@ -18,10 +18,12 @@
 * [一、介绍](#介绍)
     * [一个类](#一个类)
     * [两种函数](#两种函数)
-    * [三个注解](#三个注解)
+    * [三种注解](#三种注解)
         * [@Check](#@Check)
-        * [@FieldValidCheck](#@FieldValidCheck)
-        * [@FieldInvalidCheck](#@FieldInvalidCheck)
+        * [@FieldWhiteMatchers](#@FieldWhiteMatchers)
+        * [@FieldWhiteMatcher](#@FieldWhiteMatcher)
+        * [@FieldBlackMatchers](#@FieldBlackMatchers)
+        * [@FieldBlackMatcher](#@FieldBlackMatcher)
 * [​二、用法](#用法)
     * [values](#values)
     * [type](#type)
@@ -44,20 +46,21 @@
 该工具在使用方面，采用一个类，两种函数（核查函数和检测函数），三个注解的方式，使用超级简单，但是功能却很多，所有的功能都提供在注解中，下面先简单介绍下。
 
 <h2 id="一个类">一个类：</h2>
-该类为`Checks` ，里面包含各种对基本类型和自定义类型核查的三类静态函数：
+
+该类为`Checks` ，里面只包含两个函数用于核查，一个是核查添加注解的所有属性，一个是核查添加注解的部分属性
 
 ```java
-// 针对自定义复杂类型核查
+// 核查复杂对象的所有属性
 public boolean check(Object object){}
 
-// 基本类型的黑名单核查函数
-public <T> boolean checkBlack(T object, Set<T> blackSet){}
-public <T> boolean checkBlack(T object, List<T> blackSet)
-public <T> boolean checkBlack(T object, T... blackSet)
-// 基本类型的白名单核查函数
-public <T> boolean checkWhite(T object, Set<T> whiteSet)  
-public <T> boolean checkWhite(T object, List<T> whiteSet)  
-public <T> boolean checkWhite(T object, T... whiteSet)
+// 核查复杂对象的部分属性
+public boolean check(Object object, String... fieldSet){}
+
+// 分组核查对象
+public boolean check(String group, Object object) {}
+
+// 分组核查对象的具体属性
+public boolean check(String group, Object object, String... fieldSet) {}
 ```
 
 <h2 id="两种函数">两种函数：</h2>
@@ -79,15 +82,19 @@ public String getErrMsg()
 数据校验失败-->属性[name]的值[d]不在白名单[a, b, c, null]中-->自定义类型[WhiteAEntity]核查失败
 ```
 
-<h2 id="三个注解">三个注解：</h2>
-在该工具中只有三个注解：`@Check`、`@FieldValidCheck`和`@FieldInvalidCheck`
+<h2 id="三种注解">三种注解：</h2>
+在该工具中只有三种注解：
+- `@Check`：针对修饰的复杂属性，进行拆解
+- `@FieldWhiteMatcher`和`@FieldBlackMatcher`：黑白名单核查
+- `@FieldWhiteMatchers`和`@FieldBlackMatchers`：黑白名单分组核查，内部包含对应的黑白名单核查数组
 
 <h3 id="@Check">@Check</h3>
 该注解没有属性，修饰属性，用于表示该属性里面是有待核查的属性，如果不添加，则该属性里面的核查注解无法生效
 
-<h3 id="@FieldValidCheck">@FieldValidCheck</h3>
+<h3 id="@FieldWhiteMatcher">@FieldWhiteMatcher</h3>
 该注解是白名单注解，修饰属性，表示修饰的属性只接收能匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解有如下的属性：
 
+- group：分组，默认为\"\_default\_\"，该字段主要是在使用注解`@FieldWhiteMatchers`和`@FieldBlackMatchers`时候使用
 - value：值列表
 - type：既定的类型：身份证，手机号，固定电话，IP地址，邮箱
 - enumType：枚举类型，可以设置对应的枚举，属性只有为String才识别
@@ -102,20 +109,131 @@ public String getErrMsg()
 
 一旦修饰属性，则该属性的值就不能为null，否则就会命中失败，如果需要允许null，则需要在白名单中添加上允许为null的规则即可。
 
-<h3 id="@FieldInvalidCheck">@FieldInvalidCheck</h3>
-该注解是黑名单注解，修饰属性，表示修饰的属性不接受匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解的属性跟`@FieldValidCheck`是完全一样的，只是逻辑判断不一样：只要满足属性中的任何一项匹配，则称之为匹配成功，即没有通过核查，调用`Checks.getErrMsg()`即可看到错误调用链。
+<h3 id="@FieldBlackMatcher">@FieldBlackMatcher</h3>
+该注解是黑名单注解，修饰属性，表示修饰的属性不接受匹配上该注解的值，用于对修饰的属性进行核查和筛选，该注解的属性跟`@FieldWhiteMatcher`是完全一样的，只是逻辑判断不一样：只要满足属性中的任何一项匹配，则称之为匹配成功，即没有通过核查，调用`Checks.getErrMsg()`即可看到错误调用链。
+
+<h3 id="@FieldWhiteMatchers">@FieldWhiteMatchers</h3>
+该注解是用于在修饰的bean在不同的场景可能核查规则不同的情况下使用。
+
+```java
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FieldWhiteMatchers {
+
+    FieldWhiteMatcher[] value();
+}
+```
+其中对应的黑名单匹配器为对应的黑名单数组，使用如下，比如
+
+```java
+@Data
+@Accessors(chain = true)
+public class GroupEntity {
+
+    @FieldBlackMatchers({
+        @FieldBlackMatcher(range = "[50, 100]"),
+        @FieldBlackMatcher(group = "test1", range = "[12, 23]"),
+        @FieldBlackMatcher(group = "test2", range = "[1, 10]")
+    })
+    private Integer age;
+
+    @FieldWhiteMatchers({
+        @FieldWhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
+        @FieldWhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
+        @FieldWhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
+    })
+    private String name;
+}
+```
+其中分组时候核查可以通过包含分组的函数`check`来进行核查，比如
+```java
+Checks.check("test1", entity);
+```
 
 <h1 id="用法">一、用法：</h1>
- 该小节用于介绍用法方面，主要介绍针对注解`@FieldValidCheck`或者`@FieldInvalidCheck`中的属性进行用法介绍。
+
+该小节用于介绍用法方面，主要介绍针对注解 `@FieldWhiteMatcher` 或者`@FieldBlackMatcher`中的属性进行用法介绍，对应的匹配策略如下。
+
+```java
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FieldWhiteMatcher {
+
+    /**
+     * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * @return 只允许的值的列表
+     */
+    String[] value() default {};
+
+    /**
+     * 可用的值对应的类型
+     * @return 对应的枚举类型
+     */
+    FieldType type() default FieldType.DEFAULT;
+
+    /**
+     * 枚举类型的判断
+     *
+     * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的Names，Integer是枚举的下标
+     *
+     * @return 该属性为枚举对应的类，否则不生效
+     */
+    Class<? extends Enum>[] enumType() default {};
+
+    /**
+     * 数据范围的判断
+     *
+     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     */
+    String range() default "";
+
+    /**
+     * 数据条件的判断
+     *
+     * 根据Java的运算符构造出来对应的条件表达式来进行判断，而其中的数据不仅可以和相关的数据做条件判断，还可和当前修饰的类的其他数据进行判断，
+     * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性，比如：{@code #current + #root.ratioB + #root.ratioC == 100}
+     * 其中#current表示当前的属性，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
+     *
+     * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
+     * 算术运算符：{@code  "+"、"-"、"*"、"/"、"％"、"++"、"--"}
+     * 关系运算符：{@code "=="、"!="、">"、"<"、">="、"<="}
+     * 位运算符：{@code "＆"、"|"、"^"、"~"、"<<"、">>"、">>>"}
+     * 逻辑运算符：{@code "&&"、"||"、"!"}
+     * 赋值运算符：{@code "="、"+="、"-="、"*="、"/="、"(%)="、"<<="、">>="、"&="、"^="、"|="}
+     * 其他运算符：{@code 条件运算符（?:）、instanceof运算符}
+     * {@code java.lang.math}中的所有函数，比如：{@code min,max,asb,cell}等等
+     */
+    String condition() default "";
+
+    /**
+     * 可用的值对应的正则表达式
+     * @return 对应的正则表达式
+     */
+    String regex() default "";
+
+    /**
+     * 系统自己编码判断
+     *
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
+     */
+    String judge() default "";
+
+    /**
+     * 是否启用核查
+     * @return true：禁用核查，false：启用核查
+     */
+    boolean disable() default false;
+}
+```
  
 <h2 id="values">values</h2>
 用于表示只要的或者不要的值列表，一般用于`String`，`Integer`（会自动转成`Integer`），该属性用于表示修饰的属性对应的值，比如
 
 ```java
-@FieldValidCheck({"a", "b", "c", "null"})
+@FieldWhiteMatcher({"a", "b", "c", "null"})
 private String name;
 
-@FieldValidCheck({"12", "32", "29"})
+@FieldWhiteMatcher({"12", "32", "29"})
 private Integer age;
 ```
 
@@ -131,20 +249,20 @@ private Integer age;
 使用方式比如：
 
 ```java
-@FieldValidCheck(type = FieldType.FIXED_PHONE)
+@FieldWhiteMatcher(type = FieldType.FIXED_PHONE)
 private String fixedPhone;
 
-@FieldInvalidCheck(type = FieldType.FIXED_PHONE)
+@FieldBlackMatcher(type = FieldType.FIXED_PHONE)
 private String fixedPhoneInValid;
 ```
 <h2 id="enumType">enumType</h2>
 表示枚举类型，修饰String类型的属性，用于表示该String类型的属性是多个枚举的名字
 
 ```java
-@FieldValidCheck(enumType = AEnum.class)
+@FieldWhiteMatcher(enumType = AEnum.class)
 private String name;
 
-@FieldValidCheck(enumType = {AEnum.class, BEnum.class})
+@FieldWhiteMatcher(enumType = {AEnum.class, BEnum.class})
 private String tag;
 ```
 比如某个枚举类
@@ -212,10 +330,10 @@ public enum  BEnum {
 @Accessors(chain = true)
 public class RangeEntity1 {
 
-    @FieldValidCheck(range = "[0,100]")
+    @FieldWhiteMatcher(range = "[0,100]")
     private Integer age1;
 
-    @FieldValidCheck(range = "[0, 100]")
+    @FieldWhiteMatcher(range = "[0, 100]")
     private Integer age2;
 }
 ```
@@ -257,13 +375,13 @@ public class RangeEntity1 {
 @Accessors(chain = true)
 public class ConditionEntity1 {
 
-    @FieldValidCheck(condition = "#current + #root.num2 > 100")
+    @FieldWhiteMatcher(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
-    @FieldValidCheck(condition = "#current < 20")
+    @FieldWhiteMatcher(condition = "#current < 20")
     private Integer num2;
 
-    @FieldValidCheck(condition = "(++#current) >31")
+    @FieldWhiteMatcher(condition = "(++#current) >31")
     private Integer num3;
 }
 ```
@@ -273,7 +391,7 @@ public class ConditionEntity1 {
 @Accessors(chain = true)
 public class ConditionEntity2 {
 
-    @FieldValidCheck(condition = "#root.judge")
+    @FieldWhiteMatcher(condition = "#root.judge")
     private Integer age;
 
     private Boolean judge;
@@ -285,7 +403,7 @@ public class ConditionEntity2 {
 @Accessors(chain = true)
 public class ConditionEntity3 {
 
-    @FieldValidCheck(condition = "min(#current, #root.num2) > #root.num3")
+    @FieldWhiteMatcher(condition = "min(#current, #root.num2) > #root.num3")
     private Integer num1;
     private Integer num2;
     private Integer num3;
@@ -307,10 +425,10 @@ public class ConditionEntity3 {
 @Accessors(chain = true)
 public class RegexEntity {
 
-    @FieldValidCheck(regex = "^\\d+$")
+    @FieldWhiteMatcher(regex = "^\\d+$")
     private String regexValid;
 
-    @FieldInvalidCheck(regex = "^\\d+$")
+    @FieldBlackMatcher(regex = "^\\d+$")
     private String regexInValid;
 }
 ```
@@ -333,13 +451,13 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#ageValid")
+    @FieldWhiteMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldValidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#nameValid")
+    @FieldWhiteMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#nameValid")
     private String name;
 
-    @FieldInvalidCheck(judge = "com.simon.mikilin.core.match.JudgeCls#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simon.mikilin.core.judge.JudgeCheck#addressInvalid")
     private String address;
 }
 ```
@@ -459,7 +577,7 @@ public class WhiteCEntity {
 public class
 CEntity {
 
-    @FieldValidCheck({"a", "b"})
+    @FieldWhiteMatcher({"a", "b"})
     private String name;
     @Check
     private List<BEntity> bEntities;

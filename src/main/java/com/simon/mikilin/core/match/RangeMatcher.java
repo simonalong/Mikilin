@@ -1,14 +1,14 @@
 package com.simon.mikilin.core.match;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import com.simon.mikilin.core.express.ExpressParser;
 import com.simon.mikilin.core.util.Maps;
 import java.util.function.Predicate;
 import org.codehaus.groovy.syntax.Numbers;
 
 /**
- * 正则表达式判断，对应{@link FieldValidCheck#range()}或者{@link FieldInvalidCheck#range()}
+ * 正则表达式判断，对应{@link FieldWhiteMatcher#range()}或者{@link FieldBlackMatcher#range()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51

@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.enumtype;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,12 +15,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldValidCheck(enumType = AEnum.class)
+    @FieldWhiteMatcher(enumType = AEnum.class)
     private String name;
 
-    @FieldValidCheck(enumType = {AEnum.class, BEnum.class})
+    @FieldWhiteMatcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
-    @FieldInvalidCheck(enumType = {CEnum.class})
+    @FieldBlackMatcher(enumType = {CEnum.class})
     private String invalidTag;
 }

@@ -1,8 +1,8 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldType;
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.match.FieldType;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MailEntity {
 
-    @FieldValidCheck(type = FieldType.MAIL)
+    @FieldWhiteMatcher(type = FieldType.MAIL)
     private String mailValid;
-    @FieldInvalidCheck(type = FieldType.MAIL)
+    @FieldBlackMatcher(type = FieldType.MAIL)
     private String mailInValid;
 }

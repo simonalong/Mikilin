@@ -1,8 +1,8 @@
 package com.simon.mikilin.core.match;
 
 import com.simon.mikilin.core.CheckDelegate;
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
+ * 属性核查器
  * @author zhouzhenyong
  * @since 2019/4/10 下午12:52
  */
@@ -31,7 +32,7 @@ public class FieldJudge {
     private List<Matcher> matcherList = new ArrayList<>();
 
     /**
-     * 属性核查禁用标示，对应{@link FieldValidCheck#disable()}或者{@link FieldInvalidCheck#disable()}
+     * 属性核查禁用标示，对应{@link FieldWhiteMatcher#disable()}或者{@link FieldBlackMatcher#disable()}
      */
     private Boolean disable;
 
@@ -107,8 +108,7 @@ public class FieldJudge {
         return matcherList.stream().allMatch(Matcher::isEmpty);
     }
 
-    // todo 这里额外多出了几个,
-    public static FieldJudge buildFromValid(Field field, FieldValidCheck validCheck) {
+    public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, validCheck.value()))
@@ -121,8 +121,7 @@ public class FieldJudge {
             .setDisable(validCheck.disable());
     }
 
-    // todo 这里额外多出了几个, 同上
-    public static FieldJudge buildFromInvalid(Field field, FieldInvalidCheck invalidCheck) {
+    public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, invalidCheck.value()))

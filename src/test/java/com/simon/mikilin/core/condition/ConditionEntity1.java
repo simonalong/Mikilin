@@ -1,6 +1,6 @@
 package com.simon.mikilin.core.condition;
 
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,12 +12,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ConditionEntity1 {
 
-    @FieldValidCheck(condition = "#current + #root.num2 > 100")
+    @FieldWhiteMatcher(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
-    @FieldValidCheck(condition = "#current < 20")
+    @FieldWhiteMatcher(condition = "#current < 20")
     private Integer num2;
 
-    @FieldValidCheck(condition = "(++#current) >31")
+    @FieldWhiteMatcher(condition = "(++#current) >31")
     private Integer num3;
 }

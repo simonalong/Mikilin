@@ -1,7 +1,7 @@
 package com.simon.mikilin.core.match;
 
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
 import com.simon.mikilin.core.util.Objects;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 
 /**
- * 指定的值判断，对应{@link FieldValidCheck#value()}或者{@link FieldInvalidCheck#value()}
+ * 指定的值判断，对应{@link FieldWhiteMatcher#value()}或者{@link FieldBlackMatcher#value()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:49
@@ -22,10 +22,10 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
 
     @Override
     public boolean match(Object object, String fieldName, Object value) {
-        if (values.contains(value)){
+        if (values.contains(value)) {
             setBlackMsg("属性[{0}]的值[{1}]位于黑名单[{2}]中", fieldName, value, values.toString());
             return true;
-        }else{
+        } else {
             setWhiteMsg("属性[{0}]的值[{1}]不在白单中[{2}]中", fieldName, value, values.toString());
             return false;
         }

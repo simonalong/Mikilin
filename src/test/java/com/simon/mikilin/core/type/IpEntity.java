@@ -1,8 +1,8 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldType;
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
+import com.simon.mikilin.core.match.FieldType;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IpEntity {
 
-    @FieldValidCheck(type = FieldType.IP_ADDRESS)
+    @FieldWhiteMatcher(type = FieldType.IP_ADDRESS)
     private String ipValid;
-    @FieldInvalidCheck(type = FieldType.IP_ADDRESS)
+    @FieldBlackMatcher(type = FieldType.IP_ADDRESS)
     private String ipInvalid;
 }

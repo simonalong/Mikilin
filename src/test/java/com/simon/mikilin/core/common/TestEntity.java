@@ -1,4 +1,4 @@
-package com.simon.mikilin.core.value;
+package com.simon.mikilin.core.common;
 
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
 import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
@@ -7,14 +7,16 @@ import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2018/12/26 下午10:58
+ * @since 2019/6/12 下午10:04
  */
 @Data
 @Accessors(chain = true)
-public class AEntity {
-    @FieldWhiteMatcher({"a", "b", "c", "null"})
+public class TestEntity {
+
+    @FieldBlackMatcher({"nihao", "ok"})
     private String name;
-    @FieldBlackMatcher({"null"})
+    @FieldWhiteMatcher(range = "[12, 32]")
     private Integer age;
+    @FieldWhiteMatcher({"beijing", "shanghai"})
     private String address;
 }

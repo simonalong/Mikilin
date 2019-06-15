@@ -1,8 +1,8 @@
 package com.simon.mikilin.core.type;
 
-import com.simon.mikilin.core.annotation.FieldType;
-import com.simon.mikilin.core.annotation.FieldInvalidCheck;
-import com.simon.mikilin.core.annotation.FieldValidCheck;
+import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
+import com.simon.mikilin.core.match.FieldType;
+import com.simon.mikilin.core.annotation.FieldBlackMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IdCardEntity {
 
-    @FieldValidCheck(type = FieldType.ID_CARD)
+    @FieldWhiteMatcher(type = FieldType.ID_CARD)
     private String idCardValid;
-    @FieldInvalidCheck(type = FieldType.ID_CARD)
+    @FieldBlackMatcher(type = FieldType.ID_CARD)
     private String idCardInValid;
 }

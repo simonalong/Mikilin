@@ -1,19 +1,30 @@
 package com.simon.mikilin.core.annotation;
 
+import com.simon.mikilin.core.MikiConstant;
+import com.simon.mikilin.core.match.FieldType;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 属性黑名单匹配器
  * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）和 String类型，属性的所有禁用的值
  *
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:50
  */
+@Repeatable(FieldBlackMatchers.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldInvalidCheck {
+public @interface FieldBlackMatcher {
+
+    /**
+     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MikiConstant#DEFAULT_GROUP}
+     * @return 分组
+     */
+    String group() default MikiConstant.DEFAULT_GROUP;
 
     /**
      * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
@@ -70,7 +81,7 @@ public @interface FieldInvalidCheck {
     /**
      * 系统自己编码判断
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，入参为当前Field对应的类型或者子类
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
      */
     String judge() default "";
 
