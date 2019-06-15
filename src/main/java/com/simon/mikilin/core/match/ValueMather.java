@@ -22,10 +22,10 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
 
     @Override
     public boolean match(Object object, String fieldName, Object value) {
-        if (values.contains(value)){
+        if (values.contains(value)) {
             setBlackMsg("属性[{0}]的值[{1}]位于黑名单[{2}]中", fieldName, value, values.toString());
             return true;
-        }else{
+        } else {
             setWhiteMsg("属性[{0}]的值[{1}]不在白单中[{2}]中", fieldName, value, values.toString());
             return false;
         }

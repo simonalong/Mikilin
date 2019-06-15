@@ -9,36 +9,67 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/6/15 上午12:01
  */
-class GroupTest extends Specification{
+@SuppressWarnings("all")
+class GroupTest extends Specification {
 
-    // todo 分组测试代码还没搞完，暂时还没有办法进行测试
-    def "分组测试"(){
+    def "测试默认分组"() {
         given:
-        JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag);
+        GroupEntity entity = new GroupEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check(judgeEntity);
+        def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
             println Checks.errMsg
         }
 
         where:
-        name | tag  | invalidTag | result
-        "A1" | "A1" | "c"        | true
-        "A1" | "B1" | "c"        | true
-        "A1" | "B2" | "c"        | true
-        "A1" | "B3" | "c"        | true
-        "A1" | "A1" | "C1"       | false
-        "A1" | "A1" | "C2"       | false
-        "A1" | "A1" | "C3"       | false
-        "A1" | "A1" | "c"        | true
-        "A1" | "A1" | "c"        | true
-        "A1" | "A4" | "c"        | false
-        "A1" | "A2" | "C4"       | true
-        "A1" | "A3" | "C4"       | true
-        "A1" | "a"  | "C4"       | false
-        "A2" | "A3" | "C1"       | false
-        "a"  | "A2" | "C4"       | false
+        age | name       | result
+        12  | "shanghai" | true
+        12  | "beijing"  | true
+        49  | "beijing"  | true
+        50  | "beijing"  | false
+        100 | "beijing"  | false
+        49  | "tianjin"  | false
+    }
+
+    def "测试指定分组"() {
+        given:
+        GroupEntity entity = new GroupEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test1", entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        10  | "shanghai"  | true
+        12  | "beijing"   | false
+        23  | "beijing"   | false
+        50  | "beijing"   | true
+        100 | "guangzhou" | false
+    }
+
+    def "测试指定分组指定属性"() {
+        given:
+        GroupEntity entity = new GroupEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test1", entity, "age");
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        10  | "shanghai"  | true
+        12  | "beijing"   | false
+        23  | "beijing"   | false
+        50  | "beijing"   | true
+        100 | "guangzhou" | true
     }
 }

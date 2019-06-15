@@ -2,7 +2,9 @@ package com.simon.mikilin.core;
 
 import com.simon.mikilin.core.annotation.Check;
 import com.simon.mikilin.core.annotation.FieldBlackMatcher;
+import com.simon.mikilin.core.annotation.FieldBlackMatchers;
 import com.simon.mikilin.core.annotation.FieldWhiteMatcher;
+import com.simon.mikilin.core.annotation.FieldWhiteMatchers;
 import com.simon.mikilin.core.match.FieldJudge;
 import com.simon.mikilin.core.util.ClassUtil;
 import com.simon.mikilin.core.util.CollectionUtil;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -28,27 +31,29 @@ public final class Checks {
     /**
      * 对象属性值白名单
      */
-    private Map<String, Map<String, FieldJudge>> whiteFieldValueMap;
+    private Map<String, MatcherManager> whiteGroupMap;
     /**
      * 对象属性值黑名单
      */
-    private Map<String, Map<String, FieldJudge>> blackFieldValueMap;
+    private Map<String, MatcherManager> blackGroupMap;
     /**
      * 对象属性核查映射
      */
     private Map<String, Set<String>> objectFieldCheckMap;
 
     private CheckDelegate delegate;
+    private ThreadLocal<String> localGroup;
 
     static {
         init();
     }
 
     private void init() {
-        whiteFieldValueMap = new ConcurrentHashMap<>(20);
-        blackFieldValueMap = new ConcurrentHashMap<>(20);
+        whiteGroupMap = new ConcurrentHashMap<>(2);
+        blackGroupMap = new ConcurrentHashMap<>(2);
         objectFieldCheckMap = new ConcurrentHashMap<>(16);
         delegate = new CheckDelegate();
+        localGroup = new ThreadLocal<>();
     }
 
     /**
@@ -58,16 +63,7 @@ public final class Checks {
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object) {
-        if (delegate.isEmpty(object)) {
-            delegate.append("数据为空");
-            return false;
-        }
-
-        if (ClassUtil.isBaseField(object.getClass())) {
-            return true;
-        } else {
-            return check(object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object), getWhiteMap(), getBlackMap());
-        }
+        return check(MikiConstant.DEFAULT_GROUP, object);
     }
 
     /**
@@ -78,18 +74,63 @@ public final class Checks {
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object, String... fieldSet){
+        return check(MikiConstant.DEFAULT_GROUP, object, fieldSet);
+    }
+
+    /**
+     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
+     *
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param object 待核查对象
+     * @return true：成功，false：核查失败
+     */
+    public boolean check(String group, Object object) {
+        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             delegate.append("数据为空");
             return false;
         }
+
+        // 基本类型不核查，直接返回核查成功
         if (ClassUtil.isBaseField(object.getClass())) {
             return true;
         } else {
-            return check(object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
+            return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
+                getWhiteMap(), getBlackMap());
+        }
+    }
+
+    /**
+     * 针对对象的某些属性进行核查
+     *
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param object 待核查对象
+     * @param fieldSet 待核查对象的多个属性名字
+     * @return true：成功，false：核查失败
+     */
+    public boolean check(String group, Object object, String... fieldSet) {
+        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
+        if (delegate.isEmpty(object)) {
+            delegate.append("数据为空");
+            return false;
+        }
+
+        // 基本类型不核查，直接返回核查成功
+        if (ClassUtil.isBaseField(object.getClass())) {
+            return true;
+        } else {
+            return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
                 getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
+    /**
+     * 将要核查的属性转换为Field类型
+     *
+     * @param object 目标对象
+     * @param fieldStrSet 调用方想要调用的属性的字符串名字集合
+     * @return 属性的Field类型集合
+     */
     private Set<Field> getFieldToCheck(Object object, Set<String> fieldStrSet){
         return ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(f -> fieldStrSet.contains(f.getName()))
             .collect(Collectors.toSet());
@@ -105,9 +146,15 @@ public final class Checks {
      * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    private boolean check(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
-        Map<String, Map<String, FieldJudge>> whiteSet, Map<String, Map<String, FieldJudge>> blackSet) {
-        return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
+        Map<String,MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
+        delegate.setGroup(group);
+        try {
+            return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+        }finally {
+            // 防止threadLocal对应的group没有释放
+            delegate.clearGroup();
+        }
     }
 
     public String getErrMsg() {
@@ -130,16 +177,18 @@ public final class Checks {
         return objectFieldCheckMap;
     }
 
-    private Map<String, Map<String, FieldJudge>> getWhiteMap() {
-        return whiteFieldValueMap;
+    private Map<String, MatcherManager> getWhiteMap() {
+        return whiteGroupMap;
     }
 
-    private Map<String, Map<String, FieldJudge>> getBlackMap() {
-        return blackFieldValueMap;
+    private Map<String, MatcherManager> getBlackMap() {
+        return blackGroupMap;
     }
 
     /**
      * 根据对象的类型进行建立对象和属性映射树
+     *
+     * @param cls 待处理的对象的类
      */
     private void createObjectFieldMap(Class<?> cls) {
         if (null == cls) {
@@ -152,16 +201,32 @@ public final class Checks {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 基本类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                FieldWhiteMatcher includeCheck = f.getAnnotation(FieldWhiteMatcher.class);
-                if (null != includeCheck && !includeCheck.disable()) {
+                FieldWhiteMatcher whiteMatcher = f.getAnnotation(FieldWhiteMatcher.class);
+                if (null != whiteMatcher && !whiteMatcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    addWhiteValueMap(whiteFieldValueMap, objectClsName, f, includeCheck);
+                    addWhiteValueMap(whiteGroupMap, objectClsName, f, whiteMatcher);
                 }
 
-                FieldBlackMatcher excludeCheck = f.getAnnotation(FieldBlackMatcher.class);
-                if (null != excludeCheck && !excludeCheck.disable()) {
+                FieldBlackMatcher blackMatcher = f.getAnnotation(FieldBlackMatcher.class);
+                if (null != blackMatcher && !blackMatcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    addBlackValueMap(blackFieldValueMap, objectClsName, f, excludeCheck);
+                    addBlackValueMap(blackGroupMap, objectClsName, f, blackMatcher);
+                }
+
+                FieldWhiteMatchers whiteMatchers = f.getAnnotation(FieldWhiteMatchers.class);
+                if (null != whiteMatchers) {
+                    Stream.of(whiteMatchers.value()).forEach(w-> {
+                        addObjectFieldMap(objectClsName, f.getName());
+                        addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
+                    });
+                }
+
+                FieldBlackMatchers blackMatchers = f.getAnnotation(FieldBlackMatchers.class);
+                if (null != blackMatchers) {
+                    Stream.of(blackMatchers.value()).forEach(w-> {
+                        addObjectFieldMap(objectClsName, f.getName());
+                        addBlackValueMap(blackGroupMap, objectClsName, f, w);
+                    });
                 }
             });
 
@@ -190,25 +255,25 @@ public final class Checks {
         });
     }
 
-    private void addWhiteValueMap(Map<String, Map<String, FieldJudge>> fieldMap, String objectName, Field field,
-        FieldWhiteMatcher validValue) {
-        fieldMap.compute(objectName, (k, v) -> {
+    private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
+        FieldWhiteMatcher fieldWhiteMatcher) {
+        groupMather.compute(fieldWhiteMatcher.group(), (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromValid(field, validValue)).build();
+                return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher);
             } else {
-                v.put(field.getName(), FieldJudge.buildFromValid(field, validValue));
+                v.addWhite(objectName, field, fieldWhiteMatcher);
                 return v;
             }
         });
     }
 
-    private void addBlackValueMap(Map<String, Map<String, FieldJudge>> fieldMap, String objectName, Field field,
-        FieldBlackMatcher invalidValue) {
-        fieldMap.compute(objectName, (k, v) -> {
+    private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
+        FieldBlackMatcher fieldBlackMatcher) {
+        groupMather.compute(fieldBlackMatcher.group(), (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromInvalid(field, invalidValue)).build();
+                return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher);
             } else {
-                v.put(field.getName(), FieldJudge.buildFromInvalid(field, invalidValue));
+                v.addBlack(objectName, field, fieldBlackMatcher);
                 return v;
             }
         });

@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
+ * 属性核查器
  * @author zhouzhenyong
  * @since 2019/4/10 下午12:52
  */
