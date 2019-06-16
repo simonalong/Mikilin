@@ -486,10 +486,6 @@ public class JudgeEntity {
 其中系统的匹配判决函数
 
 ```java
-/**
- * @author zhouzhenyong
- * @since 2019/3/10 上午11:19
- */
 public class JudgeCls {
 
     /**
