@@ -464,20 +464,23 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 #### 用例：
 
 ```java
-/**
- * @author zhouzhenyong
- * @since 2019/3/10 上午11:18
- */
 @Data
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMatcher(judge = ccom.github.simonalong.mikilin.judge.judge)
+    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldWhiteMatcher(judge = com.github.simoncom.github.simonalong.mikilin.judgevate String name;
+    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#nameValid")
+    private String name;
 
-    @FieldBlackMatcher(judge = com.github.simonalong.mikilin.jucom.github.simonalong.mikilin.judgeess;
+    @FieldBlackMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#addressInvalid")
+    private String address;
+
+    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
+    private Float mRatio;
+
+    private Float nRatio;
 }
 ```
 其中系统的匹配判决函数
