@@ -468,16 +468,16 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#ageValid")
+    @FieldWhiteMatcher(judge = "JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#nameValid")
+    @FieldWhiteMatcher(judge = "JudgeCheck#nameValid")
     private String name;
 
-    @FieldBlackMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "JudgeCheck#addressInvalid")
     private String address;
 
-    @FieldWhiteMatcher(judge = "com.github.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
+    @FieldWhiteMatcher(judge = "JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;
