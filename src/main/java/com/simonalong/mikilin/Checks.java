@@ -38,9 +38,7 @@ public final class Checks {
      * 对象属性核查映射
      */
     private Map<String, Set<String>> objectFieldCheckMap;
-
     private CheckDelegate delegate;
-    private ThreadLocal<String> localGroup;
 
     static {
         init();
@@ -51,7 +49,6 @@ public final class Checks {
         blackGroupMap = new ConcurrentHashMap<>(2);
         objectFieldCheckMap = new ConcurrentHashMap<>(16);
         delegate = new CheckDelegate();
-        localGroup = new ThreadLocal<>();
     }
 
     /**

@@ -36,7 +36,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     public boolean match(Object object, String name, Object value) {
         if (value instanceof Number){
             Number number = Number.class.cast(value);
-            Boolean result = predicate.test(number);
+            boolean result = predicate.test(number);
             if (result){
                 setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, number, express);
                 return true;
