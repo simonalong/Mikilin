@@ -24,7 +24,7 @@ public @interface FieldBlackMatcher {
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MikiConstant#DEFAULT_GROUP}
      * @return 分组
      */
-    String group() default MikiConstant.DEFAULT_GROUP;
+    String[] group() default {MikiConstant.DEFAULT_GROUP};
 
     /**
      * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null

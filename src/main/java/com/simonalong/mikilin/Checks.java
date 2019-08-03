@@ -253,25 +253,25 @@ public final class Checks {
 
     private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
         FieldWhiteMatcher fieldWhiteMatcher) {
-        groupMather.compute(fieldWhiteMatcher.group(), (k, v) -> {
+        Arrays.asList(fieldWhiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher);
             } else {
                 v.addWhite(objectName, field, fieldWhiteMatcher);
                 return v;
             }
-        });
+        }));
     }
 
     private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
         FieldBlackMatcher fieldBlackMatcher) {
-        groupMather.compute(fieldBlackMatcher.group(), (k, v) -> {
+        Arrays.asList(fieldBlackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher);
             } else {
                 v.addBlack(objectName, field, fieldBlackMatcher);
                 return v;
             }
-        });
+        }));
     }
 }
