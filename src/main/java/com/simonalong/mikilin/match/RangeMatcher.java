@@ -4,7 +4,13 @@ import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.util.Maps;
+import java.util.Date;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.syntax.Numbers;
 
 /**
@@ -13,16 +19,22 @@ import org.codehaus.groovy.syntax.Numbers;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
+@Slf4j
 public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<RangeMatcher, String> {
 
     private static final String LEFT_BRACKET_EQUAL = "[";
     private static final String LEFT_BRACKET = "(";
     private static final String RIGHT_BRACKET_EQUAL = "]";
     private static final String RIGHT_BRACKET = ")";
+    private static final String NULL_STR = "null";
+    private static final String PAST = "past";
+    private static final String FUTURE = "future";
+    private Pattern digitPattern = Pattern.compile("^\\d*$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(\\S+),(\\s)*(\\S+)(\\)|\\]){1}$");
     /**
      * 判决对象
      */
-    private Predicate<Number> predicate;
+    private Predicate<Object> predicate;
     /**
      * 表达式解析对象
      */
@@ -43,7 +55,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             }else{
                 setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, number, express);
             }
-        } else{
+        } else if(value instanceof Date){
             setWhiteMsg("属性[{0}]的值[{1}]不是数字类型", name, value);
         }
         return false;
@@ -65,34 +77,20 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         if(null == obj || "".equals(obj)){
             return null;
         }
-        String startAli = null, endAli = null;
-        Number begin = null, end = null;
-        obj = obj.trim();
-        if(obj.startsWith(LEFT_BRACKET_EQUAL)){
-            startAli = LEFT_BRACKET_EQUAL;
-            begin = parseNum(obj.substring(1, obj.indexOf(",")).trim());
-        }else if(obj.startsWith(LEFT_BRACKET)){
-            startAli = LEFT_BRACKET;
-            begin = parseNum(obj.substring(1, obj.indexOf(",")).trim());
+
+        RangeEntity rangeEntity = rangeMatch(obj);
+        if (null == rangeEntity){
+           return null;
         }
 
-        if(obj.endsWith(RIGHT_BRACKET_EQUAL)){
-            endAli = RIGHT_BRACKET_EQUAL;
-            end = parseNum(obj.substring(obj.indexOf(",") + 1, obj.indexOf("]")).trim());
-        } else if(obj.endsWith(RIGHT_BRACKET)){
-            endAli = RIGHT_BRACKET;
-            end = parseNum(obj.substring(obj.indexOf(",") + 1, obj.indexOf(")")).trim());
-        } else{
-            return this;
-        }
-
-        String finalStartAli = startAli;
-        String finalEndAli = endAli;
+        String finalStartAli = rangeEntity.getBeginAli();
+        String finalEndAli = rangeEntity.getEndAli();
         express = obj;
 
-        parser = new ExpressParser(Maps.of("begin", begin, "end", end));
-        Number finalBegin = begin;
-        Number finalEnd = end;
+        Object finalBegin = rangeEntity.getBegin();
+        Object finalEnd = rangeEntity.getEnd();
+        parser = new ExpressParser(Maps.of("begin", finalBegin, "end", finalEnd));
+
         predicate = o ->{
             parser.addBinding(Maps.of("o", o));
             if (null == finalBegin){
@@ -124,17 +122,97 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                     }
                 }
             }
-
             return Boolean.parseBoolean(null);
         };
         return this;
     }
 
-    private Number parseNum(String str){
+    private RangeEntity rangeMatch(String input) {
+        input = input.trim();
+        Matcher matcher = rangePattern.matcher(input);
+        if(matcher.find()){
+            String begin = matcher.group(2);
+            String end = matcher.group(4);
+            if (begin.equals(NULL_STR) && end.equals(NULL_STR)) {
+                log.error("range匹配器格式输入错误，start和end不可都为null, input={}", input);
+            } else if (begin.equals(PAST) || begin.equals(FUTURE)) {
+                log.error("range匹配器格式输入错误, start不可含有past或者future, input={}", input);
+            } else if (end.equals(PAST) || end.equals(FUTURE)) {
+                log.error("range匹配器格式输入错误, end不可含有past或者future, input={}", input);
+            }
+
+            String beginAli = matcher.group(1);
+            String endAli = matcher.group(5);
+
+            // 如果是数字，则按照数字解析
+            if (digitPattern.matcher(begin).matches() && digitPattern.matcher(end).matches()) {
+                return RangeEntity.build(beginAli, parseNum(begin), parseNum(end), endAli);
+            } else {
+                Date beginDate = parseDate(begin);
+                Date endDate = parseDate(end);
+                if (null != beginDate && null != endDate) {
+                    return RangeEntity.build(beginAli, beginDate, endDate, endAli);
+                } else {
+                    log.error("range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
+                }
+                return null;
+            }
+        } else {
+            // 匹配过去和未来的时间
+            if (input.equals(PAST) || input.equals(FUTURE)) {
+                return parseRangeDate(input);
+            }
+        }
+        return null;
+    }
+
+
+    private Number parseNum(String data){
         try {
-            return Numbers.parseDecimal(str);
+            return Numbers.parseDecimal(data);
         }catch (NumberFormatException e){
             return null;
+        }
+    }
+
+    /**
+     * 解析时间
+     * 时间格式为如下
+     * yyyy
+     * yyyy-MM
+     * yyyy-MM-dd
+     * yyyy-MM-dd HH
+     * yyyy-MM-dd HH:mm
+     * yyyy-MM-dd HH:mm:ss
+     * yyyy-MM-dd HH:mm:ss.SSS
+     *
+     * @param data 可以为指定的几个时间格式，也可以为两个时间函数
+     * @return yyyy-MM-dd HH:mm:ss.SSS 格式的时间类型
+     */
+    private Date parseDate(String data){
+        // todo
+    }
+
+    /**
+     * 解析过去和未来的时间
+     *
+     * @param data past或者future两个函数
+     * @return 时间范围的实体()
+     */
+    private RangeEntity parseRangeDate(String data){
+        // todo
+    }
+
+    @Data
+    @Accessors(chain = true)
+    static class RangeEntity{
+        String beginAli = null;
+        String endAli = null;
+        Object begin;
+        Object end;
+
+        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli){
+            return new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
         }
     }
 }

@@ -50,7 +50,23 @@ public @interface FieldWhiteMatcher {
     /**
      * 数据范围的判断
      *
-     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * @return
+     * 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * 如果是时间类型，则也可以进行比较，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数
+     * past: 表示过去
+     * now: 表示现在
+     * future: 表示未来
+     * 同时也支持范围中包含函数（其中范围内部暂时不支持past和future，因为这两个函数没有具体的时间），比如：
+     * past 跟(nul, now)表示的相同
+     * future 跟(now, null)表示的相同
+     * 支持具体的范围，比如：("2019-08-03 12:00:32", now)，其中对应的时间类型，目前支持这么几种格式
+     * yyyy
+     * yyyy-MM
+     * yyyy-MM-dd
+     * yyyy-MM-dd HH
+     * yyyy-MM-dd HH:mm
+     * yyyy-MM-dd HH:mm:ss
+     * yyyy-MM-dd HH:mm:ss.SSS
      */
     String range() default "";
 

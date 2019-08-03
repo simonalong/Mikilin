@@ -12,7 +12,7 @@ public class ExpressTest {
 
     @Test
     public void testScript(){
-        ExpressParser express = new ExpressParser(Maps.of("start", 1, "end", 100));
+        ExpressParser express = new ExpressParser(Maps.of("begin", 1, "end", 100));
         express.addBinding(Maps.of("o", 10));
 //        Assert.assertFalse(express.parse("1==2"));
         Assert.assertTrue(express.parse("import static java.lang.Math.*",
