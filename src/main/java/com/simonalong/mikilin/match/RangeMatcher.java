@@ -29,7 +29,13 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private static final String NULL_STR = "null";
     private static final String PAST = "past";
     private static final String FUTURE = "future";
+    /**
+     * 全是数字匹配
+     */
     private Pattern digitPattern = Pattern.compile("^\\d*$");
+    /**
+     * 时间或者数字范围匹配
+     */
     private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(\\S+),(\\s)*(\\S+)(\\)|\\]){1}$");
     /**
      * 判决对象
@@ -48,6 +54,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     public boolean match(Object object, String name, Object value) {
         if (value instanceof Number){
             Number number = (Number) value;
+            // todo 这里也要区分，如果是long类型，则要考虑是否是时间类型的解析
             boolean result = predicate.test(number);
             if (result){
                 setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, number, express);
@@ -78,46 +85,46 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             return null;
         }
 
-        RangeEntity rangeEntity = rangeMatch(obj);
+        RangeEntity rangeEntity = parseRange(obj);
         if (null == rangeEntity){
            return null;
         }
 
-        String finalStartAli = rangeEntity.getBeginAli();
-        String finalEndAli = rangeEntity.getEndAli();
         express = obj;
 
-        Object finalBegin = rangeEntity.getBegin();
-        Object finalEnd = rangeEntity.getEnd();
-        parser = new ExpressParser(Maps.of("begin", finalBegin, "end", finalEnd));
+        String beginAli = rangeEntity.getBeginAli();
+        Object begin = rangeEntity.getBegin();
+        Object end = rangeEntity.getEnd();
+        String endAli = rangeEntity.getEndAli();
+        parser = new ExpressParser(Maps.of("begin", begin, "end", end));
 
         predicate = o ->{
             parser.addBinding(Maps.of("o", o));
-            if (null == finalBegin){
-                if(null == finalEnd){
+            if (null == begin){
+                if(null == end){
                     return true;
                 }else{
-                    if (RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                    if (RIGHT_BRACKET_EQUAL.equals(endAli)) {
                         return parser.parse("o <= end");
-                    } else if (RIGHT_BRACKET.equals(finalEndAli)) {
+                    } else if (RIGHT_BRACKET.equals(endAli)) {
                         return parser.parse("o < end");
                     }
                 }
             }else {
-                if(null == finalEnd){
-                    if (LEFT_BRACKET_EQUAL.equals(finalStartAli)) {
+                if(null == end){
+                    if (LEFT_BRACKET_EQUAL.equals(beginAli)) {
                         return parser.parse("begin <= o");
-                    } else if (LEFT_BRACKET.equals(finalStartAli)) {
+                    } else if (LEFT_BRACKET.equals(beginAli)) {
                         return parser.parse("begin < o");
                     }
                 }else{
-                    if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                    if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET_EQUAL.equals(endAli)) {
                         return parser.parse("begin <= o && o <= end");
-                    } else if (LEFT_BRACKET_EQUAL.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                    } else if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET.equals(endAli)) {
                         return parser.parse("begin <= o && o < end");
-                    } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET_EQUAL.equals(finalEndAli)) {
+                    } else if (LEFT_BRACKET.equals(beginAli) && RIGHT_BRACKET_EQUAL.equals(endAli)) {
                         return parser.parse("begin < o && o <= end");
-                    } else if (LEFT_BRACKET.equals(finalStartAli) && RIGHT_BRACKET.equals(finalEndAli)) {
+                    } else if (LEFT_BRACKET.equals(beginAli) && RIGHT_BRACKET.equals(endAli)) {
                         return parser.parse("begin < o && o < end");
                     }
                 }
@@ -127,12 +134,20 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         return this;
     }
 
-    private RangeEntity rangeMatch(String input) {
+    /**
+     * 解析时间范围格式
+     *
+     * @param input 时间范围格式
+     */
+    private RangeEntity parseRange(String input) {
         input = input.trim();
         Matcher matcher = rangePattern.matcher(input);
         if(matcher.find()){
+            String beginAli = matcher.group(1);
             String begin = matcher.group(2);
             String end = matcher.group(4);
+            String endAli = matcher.group(5);
+
             if (begin.equals(NULL_STR) && end.equals(NULL_STR)) {
                 log.error("range匹配器格式输入错误，start和end不可都为null, input={}", input);
             } else if (begin.equals(PAST) || begin.equals(FUTURE)) {
@@ -140,9 +155,6 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             } else if (end.equals(PAST) || end.equals(FUTURE)) {
                 log.error("range匹配器格式输入错误, end不可含有past或者future, input={}", input);
             }
-
-            String beginAli = matcher.group(1);
-            String endAli = matcher.group(5);
 
             // 如果是数字，则按照数字解析
             if (digitPattern.matcher(begin).matches() && digitPattern.matcher(end).matches()) {
@@ -207,9 +219,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     @Accessors(chain = true)
     static class RangeEntity{
         String beginAli = null;
-        String endAli = null;
         Object begin;
         Object end;
+        String endAli = null;
 
         public static RangeEntity build(String beginAli, Object begin, Object end, String endAli){
             return new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
