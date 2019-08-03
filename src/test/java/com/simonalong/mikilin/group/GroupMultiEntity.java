@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.group;
 
-import com.simonalong.mikilin.MikiConstant;
+import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldBlackMatchers;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
@@ -19,7 +19,7 @@ public class GroupMultiEntity {
     @FieldBlackMatchers({
         @FieldBlackMatcher(range = "[10, 20)"),
         @FieldBlackMatcher(group = {"test1","test2"}, range = "[20, 30)"),
-        @FieldBlackMatcher(group = {MikiConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)"),
+        @FieldBlackMatcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)"),
     })
     private Integer age;
 

@@ -58,7 +58,7 @@ public final class Checks {
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object) {
-        return check(MikiConstant.DEFAULT_GROUP, object);
+        return check(MkConstant.DEFAULT_GROUP, object);
     }
 
     /**
@@ -69,18 +69,18 @@ public final class Checks {
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object, String... fieldSet){
-        return check(MikiConstant.DEFAULT_GROUP, object, fieldSet);
+        return check(MkConstant.DEFAULT_GROUP, object, fieldSet);
     }
 
     /**
      * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @return true：成功，false：核查失败
      */
     public boolean check(String group, Object object) {
-        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
+        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             delegate.append("数据为空");
             return false;
@@ -98,13 +98,13 @@ public final class Checks {
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @return true：成功，false：核查失败
      */
     public boolean check(String group, Object object, String... fieldSet) {
-        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
+        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             delegate.append("数据为空");
             return false;
@@ -137,9 +137,9 @@ public final class Checks {
      * @param group 分组
      * @param object 待核查的对象
      * @param fieldSet 待核查的属性
-     * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合
-     * @param whiteSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的可用值
-     * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @param objectFieldMap 对象的属性映射表，key为类的canonicalName，value为当前类的属性的集合
+     * @param whiteSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
+     * @param blackSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
@@ -192,6 +192,10 @@ public final class Checks {
         }
         // 剥离外部的一些壳之后类的类型
         String objectClsName = cls.getCanonicalName();
+        // 若已经解析，则不再解析
+        if (objectFieldCheckMap.containsKey(objectClsName)){
+            return;
+        }
 
         Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
         if (!CollectionUtil.isEmpty(fieldSet)) {
@@ -228,7 +232,7 @@ public final class Checks {
 
             // 非基本类型拆分开进行迭代分析
             fieldSet.stream().filter(f -> !ClassUtil.isBaseField(f.getType())).forEach(f -> {
-                // 该属性对应的类型是否添加了注解 TypeCheck
+                // 该属性对应的类型是否添加了注解 Check
                 Check check = f.getAnnotation(Check.class);
                 if (null != check) {
                     addObjectFieldMap(objectClsName, f.getName());

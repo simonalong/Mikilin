@@ -12,10 +12,10 @@ class EnumTypeTest extends Specification {
 
     def "枚举类型测试"() {
         given:
-        JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag);
+        JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag)
 
         expect:
-        def act = Checks.check(judgeEntity);
+        def act = Checks.check(judgeEntity)
         Assert.assertEquals(result, act)
         if (!act) {
             println Checks.errMsg
