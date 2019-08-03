@@ -26,6 +26,7 @@ public class RangeTimeEntity1 {
         @FieldWhiteMatcher(group = "test2", range = "(now, '2019-08-13 12:00:23.321']"),
         @FieldWhiteMatcher(group = "test3", range = "past"),
         @FieldWhiteMatcher(group = "test3", range = "future"),
+        @FieldWhiteMatcher(group = "test4", range = "[100, 30000]"),
     })
     private Long time;
     @FieldWhiteMatchers({

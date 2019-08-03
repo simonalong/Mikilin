@@ -4,14 +4,21 @@ import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.util.Maps;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.time.Year;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.function.Predicate;
+import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.syntax.Numbers;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 
 /**
  * 正则表达式判断，对应{@link FieldWhiteMatcher#range()}或者{@link FieldBlackMatcher#range()}
@@ -20,6 +27,7 @@ import org.codehaus.groovy.syntax.Numbers;
  * @since 2019/4/11 下午8:51
  */
 @Slf4j
+//@SuppressWarnings("all")
 public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<RangeMatcher, String> {
 
     private static final String LEFT_BRACKET_EQUAL = "[";
@@ -27,8 +35,23 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private static final String RIGHT_BRACKET_EQUAL = "]";
     private static final String RIGHT_BRACKET = ")";
     private static final String NULL_STR = "null";
+    private static final String NOW = "now";
     private static final String PAST = "past";
     private static final String FUTURE = "future";
+    private static final Pattern yPattern = Pattern.compile("^(\\d){4}$");
+    private static final Pattern ymPattern = Pattern.compile("^(\\d){4}-(\\d){2}$");
+    private static final Pattern ymdPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2}$");
+    private static final Pattern ymdhPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2} (\\d){2}$");
+    private static final Pattern ymdhmPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2} (\\d){2}:(\\d){2}$");
+    private static final Pattern ymdhmsPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2} (\\d){2}:(\\d){2}:(\\d){2}$");
+    private static final Pattern ymdhmssPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2} (\\d){2}:(\\d){2}:(\\d){2}.(\\d){3}$");
+    private static final SimpleDateFormat yFormat = new SimpleDateFormat("yyyy");
+    private static final SimpleDateFormat ymFormat = new SimpleDateFormat("yyyy-MM");
+    private static final SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy_MM_dd");
+    private static final SimpleDateFormat ymdhFormat = new SimpleDateFormat("yyyy_MM_dd HH");
+    private static final SimpleDateFormat ymdhmFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm");
+    private static final SimpleDateFormat ymdhmsFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
+    private static final SimpleDateFormat ymdhmssFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss.SSS");
     /**
      * 全是数字匹配
      */
@@ -42,6 +65,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      */
     private Predicate<Object> predicate;
     /**
+     * 时间类型标示
+     */
+    private Boolean dateFlag = false;
+    /**
      * 表达式解析对象
      */
     private ExpressParser parser;
@@ -52,20 +79,30 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        if (value instanceof Number){
-            Number number = (Number) value;
-            // todo 这里也要区分，如果是long类型，则要考虑是否是时间类型的解析
-            boolean result = predicate.test(number);
-            if (result){
-                setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, number, express);
-                return true;
-            }else{
-                setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, number, express);
+        if (value instanceof Number) {
+            if (dateFlag) {
+                try {
+                    value = new Date(Number.class.cast(value).longValue());
+                } catch (Exception ignore) {}
             }
-        } else if(value instanceof Date){
-            setWhiteMsg("属性[{0}]的值[{1}]不是数字类型", name, value);
+            return match(name, value);
+        } else if (value instanceof Data) {
+            return match(name, value);
+        } else {
+            setWhiteMsg("属性[{0}]的值[{1}]不是数字也不是时间类型", name, value);
         }
         return false;
+    }
+
+    private Boolean match(String name, Object value) {
+        Boolean result = predicate.test(value);
+        if (result) {
+            setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, value, express);
+            return true;
+        } else {
+            setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, value, express);
+            return false;
+        }
     }
 
     @Override
@@ -81,16 +118,17 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     @Override
     @SuppressWarnings("all")
     public RangeMatcher build(String obj) {
-        if(null == obj || "".equals(obj)){
+        if (null == obj || "".equals(obj)) {
             return null;
         }
 
         RangeEntity rangeEntity = parseRange(obj);
-        if (null == rangeEntity){
-           return null;
+        if (null == rangeEntity) {
+            return null;
         }
 
         express = obj;
+        this.dateFlag = rangeEntity.getDateFlag();
 
         String beginAli = rangeEntity.getBeginAli();
         Object begin = rangeEntity.getBegin();
@@ -98,26 +136,26 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         String endAli = rangeEntity.getEndAli();
         parser = new ExpressParser(Maps.of("begin", begin, "end", end));
 
-        predicate = o ->{
+        predicate = o -> {
             parser.addBinding(Maps.of("o", o));
-            if (null == begin){
-                if(null == end){
+            if (null == begin) {
+                if (null == end) {
                     return true;
-                }else{
+                } else {
                     if (RIGHT_BRACKET_EQUAL.equals(endAli)) {
                         return parser.parse("o <= end");
                     } else if (RIGHT_BRACKET.equals(endAli)) {
                         return parser.parse("o < end");
                     }
                 }
-            }else {
-                if(null == end){
+            } else {
+                if (null == end) {
                     if (LEFT_BRACKET_EQUAL.equals(beginAli)) {
                         return parser.parse("begin <= o");
                     } else if (LEFT_BRACKET.equals(beginAli)) {
                         return parser.parse("begin < o");
                     }
-                }else{
+                } else {
                     if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET_EQUAL.equals(endAli)) {
                         return parser.parse("begin <= o && o <= end");
                     } else if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET.equals(endAli)) {
@@ -142,7 +180,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private RangeEntity parseRange(String input) {
         input = input.trim();
         Matcher matcher = rangePattern.matcher(input);
-        if(matcher.find()){
+        if (matcher.find()) {
             String beginAli = matcher.group(1);
             String begin = matcher.group(2);
             String end = matcher.group(4);
@@ -163,6 +201,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                 Date beginDate = parseDate(begin);
                 Date endDate = parseDate(end);
                 if (null != beginDate && null != endDate) {
+                    if(beginDate.compareTo(endDate) > 0){
+                        log.error("时间的范围起始点不正确，起点时间不应该大于终点时间");
+                        return null;
+                    }
                     return RangeEntity.build(beginAli, beginDate, endDate, endAli);
                 } else {
                     log.error("range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
@@ -178,31 +220,57 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         return null;
     }
 
-
-    private Number parseNum(String data){
+    private Number parseNum(String data) {
         try {
             return Numbers.parseDecimal(data);
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return null;
         }
     }
 
     /**
      * 解析时间
-     * 时间格式为如下
-     * yyyy
-     * yyyy-MM
-     * yyyy-MM-dd
-     * yyyy-MM-dd HH
-     * yyyy-MM-dd HH:mm
-     * yyyy-MM-dd HH:mm:ss
-     * yyyy-MM-dd HH:mm:ss.SSS
+     * <ul>时间格式为如下
+     * <li>yyyy<li/>
+     * <li>yyyy-MM<li/>
+     * <li>yyyy-MM-dd<li/>
+     * <li>yyyy-MM-dd HH<li/>
+     * <li>yyyy-MM-dd HH:mm<li/>
+     * <li>yyyy-MM-dd HH:mm:ss<li/>
+     * <li>yyyy-MM-dd HH:mm:ss.SSS<li/>
+     * <ul/>
      *
      * @param data 可以为指定的几个时间格式，也可以为两个时间函数
      * @return yyyy-MM-dd HH:mm:ss.SSS 格式的时间类型
      */
-    private Date parseDate(String data){
-        // todo
+    private Date parseDate(String data) {
+        if (StringUtils.isEmpty(data) || NULL_STR.equals(data)){
+            return null;
+        }
+        if (data.equals(NOW)) {
+            return new Date();
+        }
+        try {
+            if (yPattern.matcher(data).matches()) {
+                return yFormat.parse(data);
+            } else if (ymPattern.matcher(data).matches()) {
+                return ymFormat.parse(data);
+            } else if (ymdPattern.matcher(data).matches()) {
+                return ymdFormat.parse(data);
+            } else if (ymdhPattern.matcher(data).matches()) {
+                return ymdhFormat.parse(data);
+            } else if (ymdhmPattern.matcher(data).matches()) {
+                return ymdhmFormat.parse(data);
+            } else if (ymdhmsPattern.matcher(data).matches()) {
+                return ymdhmsFormat.parse(data);
+            } else if (ymdhmssPattern.matcher(data).matches()) {
+                return ymdhmssFormat.parse(data);
+            }
+            log.error("解析时间错误, data={}", data);
+        } catch (Exception e) {
+            log.error("解析时间错误, data={}, e={}", data, e);
+        }
+        return null;
     }
 
     /**
@@ -211,20 +279,33 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * @param data past或者future两个函数
      * @return 时间范围的实体()
      */
-    private RangeEntity parseRangeDate(String data){
-        // todo
+    private RangeEntity parseRangeDate(String data) {
+        if (data.equals(PAST)) {
+            // 过去，则范围为(null, now)
+            return RangeEntity.build(LEFT_BRACKET, null, new Date(), RIGHT_BRACKET);
+        } else if (data.equals(FUTURE)) {
+            // 未来，则范围为(now, null)
+            return RangeEntity.build(LEFT_BRACKET, new Date(), null, RIGHT_BRACKET);
+        }
+        return null;
     }
 
     @Data
     @Accessors(chain = true)
-    static class RangeEntity{
+    static class RangeEntity {
+
         String beginAli = null;
         Object begin;
         Object end;
         String endAli = null;
+        Boolean dateFlag = false;
 
-        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli){
-            return new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
+        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli) {
+            RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
+            if ((begin instanceof Date) || (end instanceof Date)){
+                result.setDateFlag(true);
+            }
+            return result;
         }
     }
 }
