@@ -172,16 +172,24 @@ Checks.check("test1", entity);
 这里是将注解的属性作为匹配器，只要配置了这个属性，那么就相当于启用了这个匹配器，匹配器可以有多个，只要匹配上任何一个，那么就算匹配上。注解 `@FieldWhiteMatcher` 或者`@FieldBlackMatcher`中的属性进行用法介绍。
 
 ```java
+/**
+ * 属性白名单匹配器
+ * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）、String和java.util.Date类型，属性的所有可用的值
+ *
+ * @author zhouzhenyong
+ * @since 2019/3/7 下午9:47
+ */
+@Repeatable(FieldWhiteMatchers.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldWhiteMatcher {
 
     /**
-     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MikiConstant#DEFAULT_GROUP}
+     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MkConstant#DEFAULT_GROUP}
      * @return 分组
      */
-    String group() default MikiConstant.DEFAULT_GROUP;
-    
+    String[] group() default {MkConstant.DEFAULT_GROUP};
+
     /**
      * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      * @return 只允许的值的列表
@@ -206,7 +214,23 @@ public @interface FieldWhiteMatcher {
     /**
      * 数据范围的判断
      *
-     * @return 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * @return
+     * 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * 如果是时间类型，则也可以进行比较，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数
+     * past: 表示过去
+     * now: 表示现在
+     * future: 表示未来
+     * 同时也支持范围中包含函数（其中范围内部暂时不支持past和future，因为这两个函数没有具体的时间），比如：
+     * past 跟(nul, now)表示的相同
+     * future 跟(now, null)表示的相同
+     * 支持具体的范围，比如：("2019-08-03 12:00:32", now)，其中对应的时间类型，目前支持这么几种格式
+     * yyyy
+     * yyyy-MM
+     * yyyy-MM-dd
+     * yyyy-MM-dd HH
+     * yyyy-MM-dd HH:mm
+     * yyyy-MM-dd HH:mm:ss
+     * yyyy-MM-dd HH:mm:ss.SSS
      */
     String range() default "";
 
@@ -329,7 +353,9 @@ public enum  BEnum {
 }
 ```
 <h2 id="range">range</h2>
-表示修饰数字类型数据的范围
+表示修饰类型数据的范围，目前支持两种类型，一个是数字（包括byte, short, int, Long, float, double及包装类以及其他的数字类型），一个是时间类型：java.util.Date以及它的继承类，只需要可以比较大小即可
+
+### 数字类型
 
 | 范围 | 详情 |
 | ------ | ------ |
@@ -360,6 +386,42 @@ public class RangeEntity1 {
     private Integer age2;
 }
 ```
+### 时间类型
+这里表示的是时间范围，用法跟上面的数字是相同的，但是这里是字符，此外，对于时间的类型，这里也增加了额外的几个函数，用于简化表示
+
+| 函数名 | 表示 |
+| ------ | ------ |
+| now | 当前时间 |
+| past | 过去的时间范围，跟(null, now)相同 |
+| future | 表示未来的时间范围，跟(now, null)相同 |
+
+#### 用例
+|表示|描述|
+| ------ | ------ |
+| ['2019-02-12 13:23:50.281', '2019-02-22 13:23:50.281'] | 表示匹配在该时间之内的值，包括边界值 |
+| ('2018-02-12 13:23:50.281', '2018-02-22 13:23:50.281'] | 不包括左边界值 |
+| ('2018-02-12 13:23', '2018-02-22 13:23:50.281'] | 开始时间是当前下午13点23分00 |
+| ('2018-02-12 13:23:50.281', now] | 从过去的时间到现在 |
+| (now), '2020-02-12 13:23:50.281'] | 从现在到以后的某个时间 |
+| (null, '2020-02-12 13:23:50.281') | 从过去到以后的某个时间 |
+| past | 过去的任何时间 |
+| future | 未来的任何时间 |
+
+其中时间的格式支持如下这么几中
+| 类型 | 表示 |
+| ------ | ------ |
+| yyyy | 年 |
+| yyyy-MM | 年月 |
+| yyyy-MM-dd | 年月日 |
+| yyyy-MM-dd HH | 年月日时 |
+| yyyy-MM-dd HH:mm | 年月日时分 |
+| yyyy-MM-dd HH:mm:ss | 年月日时分秒 |
+| yyyy-MM-dd HH:mm:ss.SSS | 年月日时分秒毫秒 |
+
+#### 注意
+1.对于其中的字符，(null, now)这种添加字符也是可以识别的，比如('null', 'now')，past和future一样
+2.对于时间的范围，如果起点比终点大则会解析失败
+
 <h2 id="condition">condition</h2>
 是条件表达式语句，该条件表达式中支持Java的所有运算符和java.lang.math的所有函数，且也支持类自定义的两个占位符。现在列举如下：
 
@@ -470,23 +532,25 @@ class全路径#函数名，比如：com.xxx.AEntity#isValid，其中isValid的�
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#ageValid")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#nameValid")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#nameValid")
     private String name;
 
-    @FieldBlackMatcher(judge = "JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid")
     private String address;
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#ratioJudge")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;
 }
 ```
-其中系统的匹配判决函数
+对于用户自定义的匹配类，这里分为两种，一种就是普通的类非Spring，如下，这种在处理上面的判决的时候，会进行单例化，对于spring的方式，则可以采用Bean的方式，下面进行介绍
+### 1.用户自定义回调非spring
 
+其中系统的匹配判决函数
 ```java
 public class JudgeCls {
 
@@ -533,6 +597,61 @@ public class JudgeCls {
     }
 }
 ```
+
+### 2.用户自定义匹配器spring方式
+对于业务系统中，对于常见的spring方式加载的Bean，我们这里也做了适配，可以将用户的匹配器作为一个Bean存在，不过需要多做一次处理，需要在对应的位置配置下扫描指定的路径：
+```java
+@ComponentScan(value = "com.simonalong.mikilin.util")
+```
+然后用户的匹配器就可以这样写，这样就可以使用spring中的其他bean来进行更多的处理了
+```java
+@Service
+public class JudgeCls {
+
+    /**
+     * 年龄是否合法
+     */
+    public boolean ageValid(Integer age) {
+        if(null == age){
+            return false;
+        }
+        if (age >= 0 && age < 200) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 名称是否合法
+     */
+    private boolean nameValid(String name) {
+        if(null == name){
+            return false;
+        }
+        List<String> blackList = Arrays.asList("women", "haode");
+        if (blackList.contains(name)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 地址匹配
+     */
+    private boolean addressInvalid(String address){
+        if(null == address){
+            return true;
+        }
+        List<String> blackList = Arrays.asList("beijing", "hangzhou");
+        if (blackList.contains(address)) {
+            return true;
+        }
+        return false;
+    }
+}
+```
+
 <h2 id="disable">disable</h2>
 表示是否启用该注解，true启用，false不启用
 
@@ -705,19 +824,19 @@ def "测试指定的属性age"() {
 ```java
 @Data
 @Accessors(chain = true)
-public class GroupEntity {
+public class GroupMultiEntity {
 
     @FieldBlackMatchers({
-        @FieldBlackMatcher(range = "[50, 100]"),
-        @FieldBlackMatcher(group = "test1", range = "[12, 23]"),
-        @FieldBlackMatcher(group = "test2", range = "[1, 10]")
+        @FieldBlackMatcher(range = "[10, 20)"),
+        @FieldBlackMatcher(group = "test0", range = "[70, 80)"),
+        @FieldBlackMatcher(group = {"test1","test2"}, range = "[20, 30)"),
+        @FieldBlackMatcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)"),
     })
     private Integer age;
 
     @FieldWhiteMatchers({
-        @FieldWhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
-        @FieldWhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
-        @FieldWhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
+        @FieldWhiteMatcher(value = {"hangzhou", "guangzhou"}),
+        @FieldWhiteMatcher(group = {"test2", "test3"}, value = {"beijing", "shanghai"}),
     })
     private String name;
 }
@@ -764,10 +883,32 @@ def "测试指定分组"() {
     23  | "beijing"   | false
     50  | "beijing"   | true
     100 | "guangzhou" | false
+}    
+
+def "分组多个组合_测试default"() {
+    given:
+    GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+    expect:
+    def act = Checks.check(entity);
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println Checks.errMsg
+    }
+
+    where:
+    age | name       | result
+    20  | "shanghai" | false
+    25  | "beijing"  | false
+    30  | "beijing"  | false
+    30  | "shanghai" | true
 }
+    
 ```
 
 更全面的测试详见代码中的测试类
+#### 注意
+如果核查按照指定的分组，则如果没有配置该分组的，则不会核查到
 
 <h1 id="注意点">四、注意点：</h1>
 1.如果是集合类型，那么该工具只支持泛型中的直接指明的类型，比如

@@ -18,6 +18,7 @@ public class GroupMultiEntity {
 
     @FieldBlackMatchers({
         @FieldBlackMatcher(range = "[10, 20)"),
+        @FieldBlackMatcher(group = "test0", range = "[70, 80)"),
         @FieldBlackMatcher(group = {"test1","test2"}, range = "[20, 30)"),
         @FieldBlackMatcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)"),
     })

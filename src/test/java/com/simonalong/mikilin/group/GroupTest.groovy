@@ -141,4 +141,29 @@ class GroupTest extends Specification {
         40  | "zhengzhou" | false
         40  | "shanghai"  | true
     }
+
+    /**
+     * 测试组在两个属性中都存在
+     * @return
+     */
+    def "分组多个组合_测试组test0"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test0", entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        20  | "beijing"   | true
+        25  | "beijing"   | true
+        70  | "beijing"   | false
+        79  | "hangzhou"  | false
+        80  | "zhengzhou" | true
+        90  | "shanghai"  | true
+    }
 }

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * 属性黑名单匹配器
- * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）和 String类型，属性的所有禁用的值
+ * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）、String和java.util.Date类型，属性的所有可用的值
  *
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:50
