@@ -13,16 +13,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#ageValid")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#nameValid")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#nameValid")
     private String name;
 
-    @FieldBlackMatcher(judge = "JudgeCheck#addressInvalid")
+    @FieldBlackMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid")
     private String address;
 
-    @FieldWhiteMatcher(judge = "JudgeCheck#ratioJudge")
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;

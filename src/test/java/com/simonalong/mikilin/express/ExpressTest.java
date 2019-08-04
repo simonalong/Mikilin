@@ -1,6 +1,9 @@
 package com.simonalong.mikilin.express;
 
 import com.simonalong.mikilin.util.Maps;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,10 +15,15 @@ public class ExpressTest {
 
     @Test
     public void testScript(){
-        ExpressParser express = new ExpressParser(Maps.of("start", 1, "end", 100));
-        express.addBinding(Maps.of("o", 10));
-//        Assert.assertFalse(express.parse("1==2"));
+        Date begin = getDate(2019, 2, 3, 12, 00, 32);
+        Date end = getDate(2019, 9, 3, 12, 00, 32);
+        ExpressParser express = new ExpressParser(Maps.of("begin", begin, "end", end));
+        express.addBinding(Maps.of("o", new Date()));
         Assert.assertTrue(express.parse("import static java.lang.Math.*",
-            "min(12,32) > 10"));
+            "begin <= o && o <= end"));
+    }
+
+    private Date getDate(Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer second){
+        return Date.from(LocalDateTime.of(year, month, day, hour, minute, second).atZone(ZoneId.systemDefault()).toInstant());
     }
 }

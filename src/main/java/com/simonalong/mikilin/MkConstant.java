@@ -4,7 +4,7 @@ package com.simonalong.mikilin;
  * @author zhouzhenyong
  * @since 2019/6/15 上午9:17
  */
-public interface MikiConstant {
+public interface MkConstant {
 
     /**
      * 默认的分组

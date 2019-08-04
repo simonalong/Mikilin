@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,9 +43,10 @@ public class ClassUtil {
     }
 
     /**
-     * 判断一个类型是否我们常用的底层对象
+     * 判断一个类型是否我们需要核查的类型
      * 1.是基本类型或者基本类型的包装类型 Boolean Byte Character Short Integer Long Double Float
      * 2.String 类型
+     * 2.java.util.Date 类型
      *
      * 注意:
      * 其中void.class.isPrimitive() 返回true，我们这里不需要这种
@@ -52,17 +54,24 @@ public class ClassUtil {
      * @param cls 待校验的类
      * @return true=是基类，false=非基类
      */
-    public boolean isBaseField(Class<?> cls) {
-        boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class)) || cls.equals(String.class);
+    public boolean isCheckedField(Class<?> cls) {
+        boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class));
         if (baseFlag) {
             return true;
         } else {
-            try{
-                if(!cls.equals(Void.class)) {
-                    return ((Class) cls.getField("TYPE").get(null)).isPrimitive();
-                }
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                return false;
+            if(cls.equals(Void.class)) {
+               return false;
+            }
+            if (cls.equals(String.class)){
+                return true;
+            }
+
+            if (cls.equals(Date.class)){
+                return true;
+            }
+            try {
+                return ((Class) cls.getField("TYPE").get(null)).isPrimitive();
+            } catch (IllegalAccessException | NoSuchFieldException ignored) {
             }
             return false;
         }

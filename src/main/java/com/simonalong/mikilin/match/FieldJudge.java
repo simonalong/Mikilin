@@ -49,7 +49,7 @@ public class FieldJudge {
     public Boolean judgeWhite(Object object, Object value, CheckDelegate checkDelegate) {
         List<String> errMsgList = new ArrayList<>();
 
-        Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
+        boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
             if (m.match(object, name, value)) {
                 return true;
             } else {

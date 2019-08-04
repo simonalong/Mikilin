@@ -38,9 +38,7 @@ public final class Checks {
      * 对象属性核查映射
      */
     private Map<String, Set<String>> objectFieldCheckMap;
-
     private CheckDelegate delegate;
-    private ThreadLocal<String> localGroup;
 
     static {
         init();
@@ -51,17 +49,16 @@ public final class Checks {
         blackGroupMap = new ConcurrentHashMap<>(2);
         objectFieldCheckMap = new ConcurrentHashMap<>(16);
         delegate = new CheckDelegate();
-        localGroup = new ThreadLocal<>();
     }
 
     /**
-     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
      * @param object 待核查对象
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object) {
-        return check(MikiConstant.DEFAULT_GROUP, object);
+        return check(MkConstant.DEFAULT_GROUP, object);
     }
 
     /**
@@ -72,25 +69,25 @@ public final class Checks {
      * @return true：成功，false：核查失败
      */
     public boolean check(Object object, String... fieldSet){
-        return check(MikiConstant.DEFAULT_GROUP, object, fieldSet);
+        return check(MkConstant.DEFAULT_GROUP, object, fieldSet);
     }
 
     /**
-     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @return true：成功，false：核查失败
      */
     public boolean check(String group, Object object) {
-        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
+        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             delegate.append("数据为空");
             return false;
         }
 
-        // 基本类型不核查，直接返回核查成功
-        if (ClassUtil.isBaseField(object.getClass())) {
+        // 待核查类型不核查，直接返回核查成功
+        if (ClassUtil.isCheckedField(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
@@ -101,20 +98,20 @@ public final class Checks {
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MikiConstant#DEFAULT_GROUP}
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @return true：成功，false：核查失败
      */
     public boolean check(String group, Object object, String... fieldSet) {
-        String groupDelete = (null == group || "".equals(group)) ? MikiConstant.DEFAULT_GROUP : group;
+        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             delegate.append("数据为空");
             return false;
         }
 
-        // 基本类型不核查，直接返回核查成功
-        if (ClassUtil.isBaseField(object.getClass())) {
+        // 待核查类型不核查，直接返回核查成功
+        if (ClassUtil.isCheckedField(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
@@ -140,9 +137,9 @@ public final class Checks {
      * @param group 分组
      * @param object 待核查的对象
      * @param fieldSet 待核查的属性
-     * @param objectFieldMap 对象的属性映射表，key为类的simpleName，value为当前类的属性的集合
-     * @param whiteSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的可用值
-     * @param blackSet 属性的白名单映射表，key为类的simpleName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @param objectFieldMap 对象的属性映射表，key为类的canonicalName，value为当前类的属性的集合
+     * @param whiteSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
+     * @param blackSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
@@ -195,10 +192,14 @@ public final class Checks {
         }
         // 剥离外部的一些壳之后类的类型
         String objectClsName = cls.getCanonicalName();
+        // 若已经解析，则不再解析
+        if (objectFieldCheckMap.containsKey(objectClsName)){
+            return;
+        }
 
         Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
         if (!CollectionUtil.isEmpty(fieldSet)) {
-            // 基本类型用于获取注解的属性
+            // 待核查类型用于获取注解的属性
             fieldSet.forEach(f -> {
                 FieldWhiteMatcher whiteMatcher = f.getAnnotation(FieldWhiteMatcher.class);
                 if (null != whiteMatcher && !whiteMatcher.disable()) {
@@ -229,9 +230,9 @@ public final class Checks {
                 }
             });
 
-            // 非基本类型拆分开进行迭代分析
-            fieldSet.stream().filter(f -> !ClassUtil.isBaseField(f.getType())).forEach(f -> {
-                // 该属性对应的类型是否添加了注解 TypeCheck
+            // 非待核查类型拆分开进行迭代分析
+            fieldSet.stream().filter(f -> !ClassUtil.isCheckedField(f.getType())).forEach(f -> {
+                // 该属性对应的类型是否添加了注解 Check
                 Check check = f.getAnnotation(Check.class);
                 if (null != check) {
                     addObjectFieldMap(objectClsName, f.getName());
@@ -256,25 +257,25 @@ public final class Checks {
 
     private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
         FieldWhiteMatcher fieldWhiteMatcher) {
-        groupMather.compute(fieldWhiteMatcher.group(), (k, v) -> {
+        Arrays.asList(fieldWhiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher);
             } else {
                 v.addWhite(objectName, field, fieldWhiteMatcher);
                 return v;
             }
-        });
+        }));
     }
 
     private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
         FieldBlackMatcher fieldBlackMatcher) {
-        groupMather.compute(fieldBlackMatcher.group(), (k, v) -> {
+        Arrays.asList(fieldBlackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher);
             } else {
                 v.addBlack(objectName, field, fieldBlackMatcher);
                 return v;
             }
-        });
+        }));
     }
 }

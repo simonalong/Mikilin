@@ -5,6 +5,7 @@ import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.util.SingleFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -65,14 +66,18 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
         Integer index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);
+        // 是否包含函数标志
+        AtomicReference<Boolean> containFlag = new AtomicReference<>(false);
 
         try {
             Class<?> cls = Class.forName(classStr);
             Object object = SingleFactory.getSingle(cls);
             String booleanStr = "boolean";
             judgeMatcher.judgeStr = judge;
+
             // 这里对系统回调支持两种回调方式
             Stream.of(cls.getDeclaredMethods()).filter(m -> m.getName().equals(funStr)).forEach(m -> {
+                containFlag.set(true);
                 Class<?> returnType = m.getReturnType();
                 if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
                     || returnType.getSimpleName().equals(booleanStr)) {
@@ -104,9 +109,18 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                     log.error("函数{}返回值不是boolean，添加匹配器失败");
                 }
             });
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            if (e instanceof ClassNotFoundException) {
+                log.error("类{}路径没有找到", classStr, e);
+            } else {
+                e.printStackTrace();
+            }
         }
+
+        if(!containFlag.get()){
+            log.error("类{}不包含函数{}", classStr, funStr);
+        }
+
         return judgeMatcher;
     }
 }

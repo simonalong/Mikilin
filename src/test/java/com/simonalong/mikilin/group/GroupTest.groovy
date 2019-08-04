@@ -71,4 +71,99 @@ class GroupTest extends Specification {
         50  | "beijing"   | true
         100 | "guangzhou" | true
     }
+
+    def "分组多个组合_测试default"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check(entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name       | result
+        20  | "shanghai" | false
+        25  | "beijing"  | false
+        30  | "beijing"  | false
+        30  | "shanghai" | true
+    }
+
+    /**
+     * 其中test1在组的name中不存在，则就不进行核查，只核查age
+     * @return
+     */
+    def "分组多个组合_测试组test1"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test1", entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        10  | "hangzhou"  | true
+        20  | "hangzhou"  | false
+        25  | "hangzhou"  | false
+        30  | "shanghai"  | true
+        30  | "zhengzhou" | true
+    }
+
+    /**
+     * 测试组在两个属性中都存在
+     * @return
+     */
+    def "分组多个组合_测试组test2"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test2", entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        10  | "beijing"   | true
+        20  | "beijing"   | false
+        25  | "beijing"   | false
+        30  | "beijing"   | true
+        40  | "beijing"   | true
+        40  | "hangzhou"  | false
+        40  | "zhengzhou" | false
+        40  | "shanghai"  | true
+    }
+
+    /**
+     * 测试组在两个属性中都存在
+     * @return
+     */
+    def "分组多个组合_测试组test0"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
+
+        expect:
+        def act = Checks.check("test0", entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println Checks.errMsg
+        }
+
+        where:
+        age | name        | result
+        20  | "beijing"   | true
+        25  | "beijing"   | true
+        70  | "beijing"   | false
+        79  | "hangzhou"  | false
+        80  | "zhengzhou" | true
+        90  | "shanghai"  | true
+    }
 }

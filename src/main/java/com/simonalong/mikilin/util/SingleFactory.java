@@ -20,6 +20,13 @@ public class SingleFactory {
             return null;
         }
 
+        try {
+            T result = SpringBeanUtils.getBean(tClass);
+            if (null != result) {
+                return result;
+            }
+        }catch (Exception ignored){}
+
         return (T) dataMap.computeIfAbsent(tClass.getCanonicalName(), k->{
             try {
                 Constructor constructor = tClass.getDeclaredConstructor();

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Accessors(chain = true)
 public class ExpressParser {
 
-    GroovyScriptFactory groovy = GroovyScriptFactory.getInstance();
+    private GroovyScriptFactory groovy = GroovyScriptFactory.getInstance();
 
     private Binding binding;
 
