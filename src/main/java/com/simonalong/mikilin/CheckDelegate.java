@@ -39,7 +39,7 @@ public final class CheckDelegate {
 
     /**
      * 判断自定义结构的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
-     * @param object 为集合、Map和自定义结构，其中基本类型，为另外一个重载函数
+     * @param object 为集合、Map和自定义结构，其中待核查类型，为另外一个重载函数
      * @param fieldSet 待核查的属性的集合
      * @param objectFieldMap 自定义对象属性的核查影射，key为类的名字，value为类中对应的属性名字
      * @param whiteSet 对象属性集合的可用值列表
@@ -57,7 +57,7 @@ public final class CheckDelegate {
         }
 
         Class cls = object.getClass();
-        if(ClassUtil.isBaseField(cls)){
+        if(ClassUtil.isCheckedField(cls)){
             // 底层基本校验类型，则放过
             return true;
         } else if(Collection.class.isAssignableFrom(cls)){
@@ -112,11 +112,11 @@ public final class CheckDelegate {
     private boolean available(Object object, Field field,  Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteSet,Map<String, MatcherManager> blackSet) {
         Class cls = field.getType();
-        if(ClassUtil.isBaseField(cls)){
-            // 基本类型，则直接校验
+        if(ClassUtil.isCheckedField(cls)){
+            // 待核查类型，则直接校验
             return primaryFieldAvailable(object, field, whiteSet, blackSet);
         } else {
-            // 不是基本类型，则按照复杂类型处理
+            // 不是待核查类型，则按照复杂类型处理
             try {
                 field.setAccessible(true);
                 if(available(field.get(object), objectFieldMap, whiteSet, blackSet)){

@@ -2,6 +2,7 @@ package com.simonalong.mikilin.match;
 
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +49,9 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements Builde
 
     @Override
     public EnumTypeMatcher build(Class<? extends Enum>[] obj) {
+        if (Arrays.asList(obj).isEmpty()) {
+            return null;
+        }
         enumClass = obj;
         return this;
     }

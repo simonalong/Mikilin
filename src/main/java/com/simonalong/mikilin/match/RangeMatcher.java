@@ -4,20 +4,15 @@ import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.util.Maps;
-import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.time.Year;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.function.Predicate;
-import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.syntax.Numbers;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +22,7 @@ import org.springframework.util.StringUtils;
  * @since 2019/4/11 下午8:51
  */
 @Slf4j
-//@SuppressWarnings("all")
+@SuppressWarnings("all")
 public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<RangeMatcher, String> {
 
     private static final String LEFT_BRACKET_EQUAL = "[";
@@ -47,11 +42,11 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private static final Pattern ymdhmssPattern = Pattern.compile("^(\\d){4}-(\\d){2}-(\\d){2} (\\d){2}:(\\d){2}:(\\d){2}.(\\d){3}$");
     private static final SimpleDateFormat yFormat = new SimpleDateFormat("yyyy");
     private static final SimpleDateFormat ymFormat = new SimpleDateFormat("yyyy-MM");
-    private static final SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy_MM_dd");
-    private static final SimpleDateFormat ymdhFormat = new SimpleDateFormat("yyyy_MM_dd HH");
-    private static final SimpleDateFormat ymdhmFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm");
-    private static final SimpleDateFormat ymdhmsFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
-    private static final SimpleDateFormat ymdhmssFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat ymdhFormat = new SimpleDateFormat("yyyy-MM-dd HH");
+    private static final SimpleDateFormat ymdhmFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static final SimpleDateFormat ymdhmsFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat ymdhmssFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     /**
      * 全是数字匹配
      */
@@ -59,7 +54,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     /**
      * 时间或者数字范围匹配
      */
-    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(\\S+),(\\s)*(\\S+)(\\)|\\]){1}$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.+),(\\s)*(.+)(\\)|\\]){1}$");
     /**
      * 判决对象
      */
@@ -86,7 +81,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                 } catch (Exception ignore) {}
             }
             return match(name, value);
-        } else if (value instanceof Data) {
+        } else if (value instanceof Date) {
             return match(name, value);
         } else {
             setWhiteMsg("属性[{0}]的值[{1}]不是数字也不是时间类型", name, value);
@@ -195,7 +190,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             }
 
             // 如果是数字，则按照数字解析
-            if (digitPattern.matcher(begin).matches() && digitPattern.matcher(end).matches()) {
+            if (digitPattern.matcher(begin).matches() || digitPattern.matcher(end).matches()) {
                 return RangeEntity.build(beginAli, parseNum(begin), parseNum(end), endAli);
             } else {
                 Date beginDate = parseDate(begin);
@@ -206,8 +201,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                         return null;
                     }
                     return RangeEntity.build(beginAli, beginDate, endDate, endAli);
-                } else {
+                } else if(null == beginDate && null == endDate){
                     log.error("range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
+                } else {
+                    return RangeEntity.build(beginAli, beginDate, endDate, endAli);
                 }
                 return null;
             }
@@ -222,6 +219,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
 
     private Number parseNum(String data) {
         try {
+            if (NULL_STR.equals(data)){
+                return null;
+            }
             return Numbers.parseDecimal(data);
         } catch (NumberFormatException e) {
             return null;
@@ -244,6 +244,8 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * @return yyyy-MM-dd HH:mm:ss.SSS 格式的时间类型
      */
     private Date parseDate(String data) {
+        data = data.trim();
+        data = data.replace('\'',' ').trim();
         if (StringUtils.isEmpty(data) || NULL_STR.equals(data)){
             return null;
         }

@@ -52,7 +52,7 @@ public final class Checks {
     }
 
     /**
-     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
      * @param object 待核查对象
      * @return true：成功，false：核查失败
@@ -73,7 +73,7 @@ public final class Checks {
     }
 
     /**
-     * 自定义的复杂类型校验，基本类型校验不校验，直接返回true
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
      * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
@@ -86,8 +86,8 @@ public final class Checks {
             return false;
         }
 
-        // 基本类型不核查，直接返回核查成功
-        if (ClassUtil.isBaseField(object.getClass())) {
+        // 待核查类型不核查，直接返回核查成功
+        if (ClassUtil.isCheckedField(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
@@ -110,8 +110,8 @@ public final class Checks {
             return false;
         }
 
-        // 基本类型不核查，直接返回核查成功
-        if (ClassUtil.isBaseField(object.getClass())) {
+        // 待核查类型不核查，直接返回核查成功
+        if (ClassUtil.isCheckedField(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
@@ -199,7 +199,7 @@ public final class Checks {
 
         Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
         if (!CollectionUtil.isEmpty(fieldSet)) {
-            // 基本类型用于获取注解的属性
+            // 待核查类型用于获取注解的属性
             fieldSet.forEach(f -> {
                 FieldWhiteMatcher whiteMatcher = f.getAnnotation(FieldWhiteMatcher.class);
                 if (null != whiteMatcher && !whiteMatcher.disable()) {
@@ -230,8 +230,8 @@ public final class Checks {
                 }
             });
 
-            // 非基本类型拆分开进行迭代分析
-            fieldSet.stream().filter(f -> !ClassUtil.isBaseField(f.getType())).forEach(f -> {
+            // 非待核查类型拆分开进行迭代分析
+            fieldSet.stream().filter(f -> !ClassUtil.isCheckedField(f.getType())).forEach(f -> {
                 // 该属性对应的类型是否添加了注解 Check
                 Check check = f.getAnnotation(Check.class);
                 if (null != check) {
