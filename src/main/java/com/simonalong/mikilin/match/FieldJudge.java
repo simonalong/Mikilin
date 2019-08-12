@@ -43,10 +43,10 @@ public class FieldJudge {
      *
      * @param object 待校验的属性的对象
      * @param value 待校验的数据，就是属性的值
-     * @param checkDelegate 核查的代理对象
+     * @param context 核查上下文
      * @return true：满足任何一个非空白名单，false：不满足任何非空白名单
      */
-    public Boolean judgeWhite(Object object, Object value, CheckDelegate checkDelegate) {
+    public Boolean judgeWhite(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
 
         boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
@@ -64,7 +64,7 @@ public class FieldJudge {
             errMsgList.clear();
             return true;
         }
-        checkDelegate.append(errMsgList.toString());
+        context.append(errMsgList.toString());
         return false;
     }
 
@@ -75,12 +75,12 @@ public class FieldJudge {
      *
      * @param object 待校验的属性的对象
      * @param value 待校验的属性的值
-     * @param checkDelegate 核查的代理对象
+     * @param context 核查上下文
      * @return true：满足任何一个黑名单，false：所有黑名单都不满足
      */
-    public Boolean judgeBlack(Object object, Object value, CheckDelegate checkDelegate) {
+    public Boolean judgeBlack(Object object, Object value, MkContext context) {
         AtomicReference<String> errMsg = new AtomicReference<>();
-        Boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
+        boolean result = matcherList.stream().filter(m -> !m.isEmpty()).anyMatch(m -> {
             if (m.match(object, name, value)) {
                 errMsg.set(m.getBlackMsg());
                 return true;
@@ -89,7 +89,7 @@ public class FieldJudge {
         });
 
         if (result) {
-            checkDelegate.append(errMsg.get());
+            context.append(errMsg.get());
             return true;
         }
         return false;
@@ -108,7 +108,7 @@ public class FieldJudge {
         return matcherList.stream().allMatch(Matcher::isEmpty);
     }
 
-    public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck) {
+    public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, validCheck.value()))
@@ -117,11 +117,11 @@ public class FieldJudge {
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
-            .addMatcher(JudgeMatcher.build(field, validCheck.judge()))
+            .addMatcher(JudgeMatcher.build(field, validCheck.judge(), context))
             .setDisable(validCheck.disable());
     }
 
-    public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck) {
+    public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, invalidCheck.value()))
@@ -130,7 +130,7 @@ public class FieldJudge {
             .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
-            .addMatcher(JudgeMatcher.build(field, invalidCheck.judge()))
+            .addMatcher(JudgeMatcher.build(field, invalidCheck.judge(), context))
             .setDisable(invalidCheck.disable());
     }
 

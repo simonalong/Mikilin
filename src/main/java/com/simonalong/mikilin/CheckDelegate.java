@@ -1,10 +1,10 @@
 package com.simonalong.mikilin;
 
 import com.simonalong.mikilin.match.FieldJudge;
+import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -17,13 +17,12 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public final class CheckDelegate {
 
-    private ThreadLocal<StringBuilder> errMsg;
     private ThreadLocal<String> localGroup;
+    private MkContext context;
 
-    CheckDelegate(){
-        errMsg = new ThreadLocal<>();
+    CheckDelegate(MkContext context){
         localGroup = new ThreadLocal<>();
-        initErrMsg();
+        this.context = context;
     }
 
     void setGroup(String group){
@@ -50,7 +49,7 @@ public final class CheckDelegate {
      */
     boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet){
-        initErrMsg();
+        context.init();
         if (null == object) {
             // 对于对象中的其他属性不核查
             return true;
@@ -62,7 +61,7 @@ public final class CheckDelegate {
             return true;
         } else if(Collection.class.isAssignableFrom(cls)){
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
-            Collection collection = Collection.class.cast(object);
+            Collection collection = (Collection) object;
             if (!CollectionUtil.isEmpty(collection)){
                 return collection.stream().allMatch(c-> available(c, fieldSet, objectFieldMap, whiteSet, blackSet));
             }else{
@@ -71,13 +70,13 @@ public final class CheckDelegate {
             }
         } else if(Map.class.isAssignableFrom(cls)) {
             // Map 结构中的数据的判断，目前只判断value中的值
-            Map map = Map.class.cast(object);
+            Map map = (Map) object;
             if (!CollectionUtil.isEmpty(map)) {
                 if(map.values().stream().filter(Objects::nonNull)
                     .allMatch(v -> available(v, fieldSet, objectFieldMap, whiteSet, blackSet))){
                     return true;
                 }
-                append("Map的value中有不合法");
+                context.append("Map的value中有不合法");
                 return false;
             } else {
                 // 为空则忽略
@@ -95,7 +94,7 @@ public final class CheckDelegate {
                 return true;
             }
 
-            append("类型[{0}]核查失败", object.getClass().getSimpleName());
+            context.append("类型[{0}]核查失败", object.getClass().getSimpleName());
             return false;
         }
     }
@@ -123,7 +122,7 @@ public final class CheckDelegate {
                     return true;
                 }
 
-                append("类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
+                context.append("类型[{0}]的属性[{1}]核查失败", object.getClass().getSimpleName(), field.getName());
                 return false;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -272,7 +271,7 @@ public final class CheckDelegate {
         }
 
         String group = localGroup.get();
-        if (groupMather.containsKey(group)){
+        if (groupMather.containsKey(group)) {
             Map<String, FieldJudge> fieldValueSetMap = groupMather.get(group).getJudge(object.getClass().getCanonicalName());
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
                 FieldJudge fieldJudge = fieldValueSetMap.get(field.getName());
@@ -282,9 +281,9 @@ public final class CheckDelegate {
                     try {
                         data = field.get(object);
                         if (whiteOrBlack) {
-                            return fieldJudge.judgeWhite(object, data, this);
+                            return fieldJudge.judgeWhite(object, data, context);
                         } else {
-                            return fieldJudge.judgeBlack(object, data, this);
+                            return fieldJudge.judgeBlack(object, data, context);
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -295,23 +294,8 @@ public final class CheckDelegate {
         return false;
     }
 
-    private void append(String errMsgStr, Object... keys){
-        errMsg.get().append("-->").append(MessageFormat.format(errMsgStr, keys));
-    }
-
-    public void append(String errMsgStr){
-        errMsg.get().append("-->").append(errMsgStr);
-    }
-
-    private void initErrMsg(){
-        errMsg.remove();
-        errMsg.set(new StringBuilder().append("数据校验失败"));
-    }
-
     String getErrMsg(){
-        String msg = errMsg.get().toString();
-        initErrMsg();
-        return msg;
+        return context.getErrMsg();
     }
 
     boolean isEmpty(Object object) {

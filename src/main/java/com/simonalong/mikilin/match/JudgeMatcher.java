@@ -2,6 +2,8 @@ package com.simonalong.mikilin.match;
 
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.exception.JudgeException;
+import com.simonalong.mikilin.funcation.MultiPredicate;
 import com.simonalong.mikilin.util.SingleFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,21 +22,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JudgeMatcher extends AbstractBlackWhiteMatcher {
 
-    private BiPredicate<Object, Object> biPredicate = null;
-    private Predicate<Object> predicate = null;
+    private Predicate<Object> valuePre = null;
+    private BiPredicate<Object, Object> objValuePre = null;
+    private BiPredicate<Object, Object> valueContextPre = null;
+    private MultiPredicate<Object, Object, MkContext> objValueContextPre = null;
     private String judgeStr;
+    private MkContext context;
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        if (null != predicate) {
-            if (predicate.test(value)) {
+        if (null != valuePre) {
+            if (valuePre.test(value)) {
                 setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, value, judgeStr);
                 return true;
             } else {
                 setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, value, judgeStr);
             }
-        } else if (null != biPredicate) {
-            if (biPredicate.test(object, value)) {
+        } else if (null != valueContextPre) {
+            if (valueContextPre.test(value, context)) {
+                setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, value, judgeStr);
+                return true;
+            } else {
+                setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, value, judgeStr);
+            }
+        } else if (null != objValuePre) {
+            if (objValuePre.test(object, value)) {
+                setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, value, judgeStr);
+                return true;
+            } else {
+                setWhiteMsg("属性[{0}]的值[{1}]命中白名单回调[{2}]", name, value, judgeStr);
+            }
+        } else if (null != objValueContextPre) {
+            if (objValueContextPre.test(object, value, context)) {
                 setBlackMsg("属性[{0}]的值[{1}]命中黑名单回调[{2}]", name, value, judgeStr);
                 return true;
             } else {
@@ -46,18 +65,21 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
 
     @Override
     public boolean isEmpty() {
-        return null == predicate && null == biPredicate;
+        return null == valuePre && null == objValuePre && null == valueContextPre && null == objValueContextPre;
     }
 
     /**
-     * 将一个类中的函数转换为一个过滤器
+     * 将一个类中的函数转换为一个系统自定义的过滤匹配器
      *
+     * <p>
+     * 过滤器可以有多种类型，根据参数的不同有不同的类型
+     * <p/>
      * @param field 属性
      * @param judge 回调判决，这里是类和对应的函数组成
      * @return 匹配器的判决器
      */
     @SuppressWarnings("all")
-    public static JudgeMatcher build(Field field, String judge) {
+    public static JudgeMatcher build(Field field, String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
         }
@@ -74,6 +96,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
             Object object = SingleFactory.getSingle(cls);
             String booleanStr = "boolean";
             judgeMatcher.judgeStr = judge;
+            judgeMatcher.context = context;
 
             // 这里对系统回调支持两种回调方式
             Stream.of(cls.getDeclaredMethods()).filter(m -> m.getName().equals(funStr)).forEach(m -> {
@@ -84,29 +107,73 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                     Integer paramsCnt = m.getParameterCount();
                     // 一个参数，则该参数为属性的类型
                     if (1 == paramsCnt) {
-                        judgeMatcher.predicate = f -> {
+                        judgeMatcher.valuePre = v -> {
                             try {
                                 m.setAccessible(true);
-                                return (boolean) m.invoke(object, f);
+                                return (boolean) m.invoke(object, v);
                             } catch (IllegalAccessException | InvocationTargetException e) {
                                 e.printStackTrace();
                             }
                             return false;
                         };
                     } else if (2 == paramsCnt) {
-                        // 两个参数，则第一个为核查的对象的值，第二个为当前修饰的属性的值
-                        judgeMatcher.biPredicate = (obj, f) -> {
+                        Class p2Cls = m.getParameterTypes()[1];
+                        if (MkContext.class.isAssignableFrom(p2Cls)) {
+                            // 两个参数，则第一个为核查的对象，第二个为参数为属性的值
+                            judgeMatcher.valueContextPre = (v, c) -> {
+                                try {
+                                    m.setAccessible(true);
+                                    return (boolean) m.invoke(object, v, c);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                                return false;
+                            };
+                        } else {
+                            // 两个参数，则第一个为待核查的属性的值，第二个为MkConstext
+                            judgeMatcher.objValuePre = (o, v) -> {
+                                try {
+                                    m.setAccessible(true);
+                                    return (boolean) m.invoke(object, o, v);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                                return false;
+                            };
+                        }
+                    } else if (3 == paramsCnt) {
+                        Class p3Cls = m.getParameterTypes()[2];
+                        // 三个参数，这个时候，第一个参数是核查的对象，第二个参数为属性的值，第三个参数为contexts
+                        if(MkContext.class.isAssignableFrom(p3Cls)) {
+                            judgeMatcher.objValueContextPre = (o, v, c) -> {
+                                try {
+                                    m.setAccessible(true);
+                                    return (boolean) m.invoke(object, o, v, c);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                                return false;
+                            };
+                        } else {
                             try {
-                                m.setAccessible(true);
-                                return (boolean) m.invoke(object, obj, f);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw new JudgeException("函数"+funStr+"参数匹配失败，三个参数的时候，第三个参数需要为MkContext类型");
+                            } catch (JudgeException e) {
                                 e.printStackTrace();
                             }
-                            return false;
-                        };
+                        }
+                    } else {
+                        try {
+                            throw new JudgeException("函数"+funStr+"的参数匹配失败，最多三个参数");
+                        } catch (JudgeException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
-                    log.error("函数{}返回值不是boolean，添加匹配器失败");
+                    try {
+                        throw new JudgeException("函数"+funStr+"返回值不是boolean，添加匹配器失败");
+                    } catch (JudgeException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         } catch (Exception e) {
@@ -118,7 +185,11 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
         }
 
         if(!containFlag.get()){
-            log.error("类{}不包含函数{}", classStr, funStr);
+            try {
+                throw new JudgeException("类"+classStr+"不包含函数" + funStr);
+            } catch (JudgeException e) {
+                e.printStackTrace();
+            }
         }
 
         return judgeMatcher;

@@ -16,7 +16,7 @@ public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<Ty
     @Override
     public boolean match(Object object, String nam, Object value) {
         if (value instanceof String) {
-            if (fieldModel.valid(String.class.cast(value))) {
+            if (fieldModel.valid((String) value)) {
                 setBlackMsg("属性[{0}]的值[{1}]命中[FieldModel-{2}]", nam, value, fieldModel.getName());
                 return true;
             } else {

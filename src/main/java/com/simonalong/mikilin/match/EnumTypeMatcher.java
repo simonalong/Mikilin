@@ -22,7 +22,7 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements Builde
         if(value instanceof String) {
             String target = String.class.cast(value);
             if (enumClass.length > 0) {
-                Boolean result = Stream.of(enumClass).filter(Class::isEnum).anyMatch(e -> {
+                boolean result = Stream.of(enumClass).filter(Class::isEnum).anyMatch(e -> {
                     try {
                         Enum.valueOf(e, target);
                         return true;

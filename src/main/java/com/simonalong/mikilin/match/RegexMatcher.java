@@ -17,7 +17,7 @@ public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     @Override
     public boolean match(Object object, String name, Object value) {
         if (value instanceof String) {
-            if (pattern.matcher(String.class.cast(value)).matches()) {
+            if (pattern.matcher((String) value).matches()) {
                 setBlackMsg("属性[{0}]的值[{1}]命中正则表达式黑名单[{2}]", name, value, pattern.pattern());
                 return true;
             } else {

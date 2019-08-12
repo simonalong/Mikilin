@@ -34,7 +34,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        Boolean result = predicate.test(object, (Number) value);
+        boolean result = predicate.test(object, (Number) value);
         if(result){
             setBlackMsg("属性[{0}]的值[{1}]命中黑名单表达式[{2}]", name, value, express);
             return true;

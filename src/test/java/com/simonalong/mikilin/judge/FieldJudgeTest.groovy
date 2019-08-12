@@ -56,4 +56,60 @@ class FieldJudgeTest extends Specification {
         1f     | 1f     | true
         10f    | 1f     | false
     }
+
+    def "测试上下文两个参数"(){
+        given:
+        JudgeEntity entity = new JudgeEntity().setTwoPa(twoPa)
+
+        expect:
+        boolean actResult = Checks.check(entity, "twoPa")
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        twoPa   | result
+        "hello" | true
+        "jo"    | false
+        "ok"    | false
+    }
+
+    def "测试上下文三个参数"() {
+        given:
+        JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
+
+        expect:
+        boolean actResult = Checks.check(entity, "threePa")
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        threePa | result
+        "hello" | true
+        "word"  | true
+        "ok"    | false
+        "haode" | false
+    }
+
+    def "测试上下文三个参数异常情况"() {
+        given:
+        JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
+
+        expect:
+        boolean actResult = Checks.check(entity, "threePa")
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        threePa | result
+        "hello" | true
+        "word"  | true
+        "ok"    | false
+        "haode" | false
+    }
 }
