@@ -125,7 +125,7 @@ public class FieldJudge {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, invalidCheck.value()))
-            .addMatcher(MatcherFactory.build(TypeMatcher.class, invalidCheck.type()))
+            .addMatcher(MatcherFactory.build(TypeMatcher.class, invalidCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, invalidCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
             .addMatcher(MatcherFactory.build(ConditionMatcher.class, invalidCheck.condition()))

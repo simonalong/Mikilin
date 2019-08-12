@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/3/10 下午3:54
  */
-class FieldTypeTest extends Specification {
+class FieldModelTest extends Specification {
 
     def "身份证测试"() {
         given:

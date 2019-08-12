@@ -4,23 +4,23 @@ import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 
 /**
- * 指定的类型判断，对应{@link FieldWhiteMatcher#type()}或者{@link FieldBlackMatcher#type()}
+ * 指定的类型判断，对应{@link FieldWhiteMatcher#type()}或者{@link FieldBlackMatcher#model()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50
  */
-public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<TypeMatcher, FieldType> {
+public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<TypeMatcher, FieldModel> {
 
-    private FieldType fieldType;
+    private FieldModel fieldModel;
 
     @Override
     public boolean match(Object object, String nam, Object value) {
         if (value instanceof String) {
-            if (fieldType.valid(String.class.cast(value))) {
-                setBlackMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, value, fieldType.getName());
+            if (fieldModel.valid(String.class.cast(value))) {
+                setBlackMsg("属性[{0}]的值[{1}]命中[FieldModel-{2}]", nam, value, fieldModel.getName());
                 return true;
             } else {
-                setWhiteMsg("属性[{0}]的值[{1}]命中[FieldType-{2}]", nam, value, fieldType.name());
+                setWhiteMsg("属性[{0}]的值[{1}]命中[FieldModel-{2}]", nam, value, fieldModel.name());
             }
         }
         return false;
@@ -28,15 +28,15 @@ public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<Ty
 
     @Override
     public boolean isEmpty() {
-        return null == fieldType;
+        return null == fieldModel;
     }
 
     @Override
-    public TypeMatcher build(FieldType obj) {
-        if (obj.equals(FieldType.DEFAULT)) {
+    public TypeMatcher build(FieldModel obj) {
+        if (obj.equals(FieldModel.DEFAULT)) {
             return null;
         }
-        this.fieldType = obj;
+        this.fieldModel = obj;
         return this;
     }
 }
