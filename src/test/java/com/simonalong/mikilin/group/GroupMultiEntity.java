@@ -20,6 +20,7 @@ public class GroupMultiEntity {
         @FieldBlackMatcher(range = "[10, 20)"),
         @FieldBlackMatcher(group = "test0", range = "[70, 80)"),
         @FieldBlackMatcher(group = {"test1","test2"}, range = "[20, 30)"),
+        // 下面的会覆盖上面的默认组
         @FieldBlackMatcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)"),
     })
     private Integer age;

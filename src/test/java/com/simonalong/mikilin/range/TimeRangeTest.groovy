@@ -38,6 +38,7 @@ class TimeRangeTest extends Specification {
      * 测试解析现在
      * @return
      */
+    // todo 有问题
     def "测试时间范围test2"() {
         given:
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
@@ -60,6 +61,7 @@ class TimeRangeTest extends Specification {
      * 测试解析过去
      * @return
      */
+    // todo 有问题
     def "测试时间范围test3"() {
         given:
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
@@ -83,6 +85,7 @@ class TimeRangeTest extends Specification {
      * 测试未来 future
      * @return
      */
+    // todo 有问题
     def "测试时间范围test4"() {
         given:
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)

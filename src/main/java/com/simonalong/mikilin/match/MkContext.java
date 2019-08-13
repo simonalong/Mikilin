@@ -1,10 +1,12 @@
 package com.simonalong.mikilin.match;
 
+import com.simonalong.mikilin.util.CollectionUtil;
 import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * @author zhouzhenyong
- * @since 2019-08-12 13:52
+ * @since 2019-08-12 20:52
  */
 public class MkContext {
 
@@ -31,6 +33,13 @@ public class MkContext {
 
     public void append(String errMsgStr){
         errMsg.get().append("-->").append(errMsgStr);
+    }
+
+    public void append(List<String> errMsgList){
+        if (CollectionUtil.isEmpty(errMsgList)){
+            return;
+        }
+        errMsgList.forEach(this::append);
     }
 
     private void initErrMsg(){
