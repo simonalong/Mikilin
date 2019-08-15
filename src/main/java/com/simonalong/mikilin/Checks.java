@@ -92,7 +92,7 @@ public final class Checks {
         }
 
         // 待核查类型不核查，直接返回核查成功
-        if (ClassUtil.isCheckedField(object.getClass())) {
+        if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
@@ -116,7 +116,7 @@ public final class Checks {
         }
 
         // 待核查类型不核查，直接返回核查成功
-        if (ClassUtil.isCheckedField(object.getClass())) {
+        if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
@@ -236,7 +236,7 @@ public final class Checks {
             });
 
             // 非待核查类型拆分开进行迭代分析
-            fieldSet.stream().filter(f -> !ClassUtil.isCheckedField(f.getType())).forEach(f -> {
+            fieldSet.stream().filter(f -> !ClassUtil.isCheckedType(f.getType())).forEach(f -> {
                 // 该属性对应的类型是否添加了注解 Check
                 Check check = f.getAnnotation(Check.class);
                 if (null != check) {

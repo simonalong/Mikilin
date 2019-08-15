@@ -10,12 +10,14 @@ import com.simonalong.mikilin.match.matcher.MatcherFactory;
 import com.simonalong.mikilin.match.matcher.RangeMatcher;
 import com.simonalong.mikilin.match.matcher.RegexMatcher;
 import com.simonalong.mikilin.match.matcher.ModelMatcher;
+import com.simonalong.mikilin.match.matcher.TypeMatcher;
 import com.simonalong.mikilin.match.matcher.ValueMather;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Singular;
 import lombok.experimental.Accessors;
 
 /**
@@ -129,6 +131,7 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
             .addMatcher(JudgeMatcher.build(field, validCheck.judge(), context))
+            .addMatcher(TypeMatcher.build(validCheck.type()))
             .setDisable(validCheck.disable());
     }
 
@@ -142,6 +145,7 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
             .addMatcher(JudgeMatcher.build(field, invalidCheck.judge(), context))
+            .addMatcher(TypeMatcher.build(invalidCheck.type()))
             .setDisable(invalidCheck.disable());
     }
 

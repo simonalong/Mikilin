@@ -30,7 +30,7 @@ final class MatcherManager {
     MatcherManager addWhite(String objectName, Field field, FieldWhiteMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromValid(field, validValue, context)).build();
+                return Maps.of(field.getName(), FieldJudge.buildFromValid(field, validValue, context)).build();
             } else {
                 v.put(field.getName(), FieldJudge.buildFromValid(field, validValue, context));
                 return v;
@@ -43,7 +43,7 @@ final class MatcherManager {
     MatcherManager addBlack(String objectName, Field field, FieldBlackMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context)).build();
+                return Maps.of(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context)).build();
             } else {
                 v.put(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context));
                 return v;

@@ -24,7 +24,7 @@ public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             } else {
                 setWhiteMsg("属性 {0} 的值 {1} 没命中正则表达式白名单 {2} ", name, value, pattern.pattern());
             }
-        }else{
+        } else {
             setWhiteMsg("属性 {0} 的值 {1} 不是String类型", name, value);
         }
         return false;

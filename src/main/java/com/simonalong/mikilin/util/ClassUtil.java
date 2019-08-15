@@ -21,12 +21,13 @@ public class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性，包括继承的
+     *
      * @param cls 待获取的类
      * @return 类的所有属性
      */
-    public Set<Field> allFieldsOfClass(Class<?> cls){
+    public Set<Field> allFieldsOfClass(Class<?> cls) {
         Set<Field> fieldSet = new HashSet<>();
-        while (cls != null){
+        while (cls != null) {
             fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
             cls = cls.getSuperclass();
         }
@@ -35,38 +36,42 @@ public class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性（包括继承的）的类
+     *
      * @param cls 待获取的类
      * @return 类的属性对应的类
      */
-    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls){
+    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls) {
         return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toSet());
     }
 
     /**
      * 判断一个类型是否我们需要核查的类型
-     * 1.是基本类型或者基本类型的包装类型 Boolean Byte Character Short Integer Long Double Float
-     * 2.String 类型
+     * 1.是基本类型或者基本类型的包装类型 Boolean Byte Character Short Integer Long Double Float 2.String 类型
      * 2.java.util.Date 类型
      *
-     * 注意:
-     * 其中void.class.isPrimitive() 返回true，我们这里不需要这种
+     * 注意: 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      *
      * @param cls 待校验的类
      * @return true=是基类，false=非基类
      */
-    public boolean isCheckedField(Class<?> cls) {
+    public boolean isCheckedType(Class<?> cls) {
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class));
         if (baseFlag) {
             return true;
         } else {
-            if(cls.equals(Void.class)) {
-               return false;
+            if (Void.class.isAssignableFrom(cls)) {
+                return false;
             }
-            if (cls.equals(String.class)){
+
+            if (Number.class.isAssignableFrom(cls)){
                 return true;
             }
 
-            if (cls.equals(Date.class)){
+            if (String.class.isAssignableFrom(cls)) {
+                return true;
+            }
+
+            if (Date.class.isAssignableFrom(cls)) {
                 return true;
             }
             try {
@@ -80,8 +85,7 @@ public class ClassUtil {
     /**
      * 将集合或者Map的Class文件进行拆解开，获取对应的值的类
      *
-     * 注意：
-     * 当前集合泛型只处理基本的 ParameterizedType，其他暂时不支持（TypeVariable, WildcardType, GenericArrayType）
+     * 注意： 当前集合泛型只处理基本的 ParameterizedType，其他暂时不支持（TypeVariable, WildcardType, GenericArrayType）
      *
      * @param type 待拆分的类
      * @return 拆分之后类的类型
@@ -102,8 +106,8 @@ public class ClassUtil {
     }
 
     /**
-     * 将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类
-     * 例如：{@code Map<String, AEntity>} 到 {@code Class<AEntity>}，{@code List<BEntity>} 到 {@code Class<BEntity>}
+     * 将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类 例如：{@code Map<String, AEntity>} 到 {@code Class<AEntity>}，{@code List<BEntity>}
+     * 到 {@code Class<BEntity>}
      *
      * @param object 待拆解的类
      * @return 拆解后类的类型

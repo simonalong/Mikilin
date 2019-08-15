@@ -55,7 +55,7 @@ public final class CheckDelegate {
         }
 
         Class cls = object.getClass();
-        if (ClassUtil.isCheckedField(cls)) {
+        if (ClassUtil.isCheckedType(cls)) {
             // 底层基本校验类型，则放过
             return true;
         } else if (Collection.class.isAssignableFrom(cls)) {
@@ -108,32 +108,55 @@ public final class CheckDelegate {
      *
      * @param object 对象
      * @param field 属性
-     * @param whiteSet 属性值可用值列表
-     * @param blackSet 属性值的不用值列表
+     * @param whiteGroupMather 属性值可用值列表
+     * @param blackGroupMather 属性值的不用值列表
      * @param objectFieldMap 对象核查的属性映射
      * @return true 可用， false 不可用
      */
     private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
+        Map<String, MatcherManager> whiteGroupMather, Map<String, MatcherManager> blackGroupMather) {
         Class cls = field.getType();
-        if (ClassUtil.isCheckedField(cls)) {
-            // 待核查类型，则直接校验
-            return primaryFieldAvailable(object, field, whiteSet, blackSet);
-        } else {
-            // 不是待核查类型，则按照复杂类型处理
-            try {
-                field.setAccessible(true);
-                if (available(field.get(object), objectFieldMap, whiteSet, blackSet)) {
-                    return true;
-                }
 
-                context.append("类型 {0} 的属性 {1} 核查失败", object.getClass().getSimpleName(), field.getName());
-                return false;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+
+        if (ClassUtil.isCheckedType(cls)) {
+            // 待核查类型，则直接校验
+            return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
+        } else {
+            // 不是待核查类型，先判断是否添加了黑白名单注解配置，否则按照复杂类型处理
+            if (matcherContainField(object, field, whiteGroupMather, blackGroupMather)) {
+                return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
+            }else{
+                try {
+                    field.setAccessible(true);
+                    if (available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather)) {
+                        return true;
+                    }
+
+                    context.append("类型 {0} 的属性 {1} 核查失败", object.getClass().getSimpleName(), field.getName());
+                    return false;
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return true;
+    }
+
+    /**
+     * 判断黑白名单是否都不包含该属性
+     *
+     * @param object 对象
+     * @param field 属性
+     * @param whiteGroupMather 属性值可用值列表
+     * @param blackGroupMather 属性值的不用值列表
+     * @return true：都不包含该属性，false：有包含该属性
+     */
+    private boolean matcherContainField(Object object, Field field, Map<String, MatcherManager> whiteGroupMather,
+        Map<String, MatcherManager> blackGroupMather){
+        boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
+        boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
+        // 黑白名单有任何一个不空，则可以进行匹配
+        return !whiteEmpty || !blackEmpty;
     }
 
     private boolean available(Object object, Map<String, Set<String>> objectFieldMap,

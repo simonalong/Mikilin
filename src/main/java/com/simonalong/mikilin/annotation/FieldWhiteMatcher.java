@@ -102,6 +102,11 @@ public @interface FieldWhiteMatcher {
     String judge() default "";
 
     /**
+     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
+     */
+    Class<?>[] type() default {};
+
+    /**
      * 是否启用核查
      * @return true：禁用核查，false：启用核查
      */
