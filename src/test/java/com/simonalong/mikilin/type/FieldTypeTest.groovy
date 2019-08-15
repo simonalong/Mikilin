@@ -69,7 +69,7 @@ class FieldTypeTest extends Specification {
     }
 
     /**
-     * 可以让一切类型通过
+     * 可以让一切数字类型通过
      * @return
      */
     def "测试不明写类继承关系2"() {
