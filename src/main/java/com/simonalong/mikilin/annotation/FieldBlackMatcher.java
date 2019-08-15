@@ -102,6 +102,11 @@ public @interface FieldBlackMatcher {
     String judge() default "";
 
     /**
+     * 匹配属性为对应的类型
+     */
+    Class<?>[] type() default {};
+
+    /**
      * 是否不可用
      * @return true：禁用核查，false：启用核查
      */
