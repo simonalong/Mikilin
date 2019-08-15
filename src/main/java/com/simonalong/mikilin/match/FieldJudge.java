@@ -9,7 +9,7 @@ import com.simonalong.mikilin.match.matcher.Matcher;
 import com.simonalong.mikilin.match.matcher.MatcherFactory;
 import com.simonalong.mikilin.match.matcher.RangeMatcher;
 import com.simonalong.mikilin.match.matcher.RegexMatcher;
-import com.simonalong.mikilin.match.matcher.TypeMatcher;
+import com.simonalong.mikilin.match.matcher.ModelMatcher;
 import com.simonalong.mikilin.match.matcher.ValueMather;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -123,7 +123,7 @@ public class FieldJudge {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, validCheck.value()))
-            .addMatcher(MatcherFactory.build(TypeMatcher.class, validCheck.model()))
+            .addMatcher(MatcherFactory.build(ModelMatcher.class, validCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
@@ -136,7 +136,7 @@ public class FieldJudge {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, invalidCheck.value()))
-            .addMatcher(MatcherFactory.build(TypeMatcher.class, invalidCheck.model()))
+            .addMatcher(MatcherFactory.build(ModelMatcher.class, invalidCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, invalidCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
             .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))

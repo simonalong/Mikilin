@@ -11,7 +11,7 @@ import com.simonalong.mikilin.match.FieldModel;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50
  */
-public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<TypeMatcher, FieldModel> {
+public class ModelMatcher extends AbstractBlackWhiteMatcher implements Builder<ModelMatcher, FieldModel> {
 
     private FieldModel fieldModel;
 
@@ -34,7 +34,7 @@ public class TypeMatcher extends AbstractBlackWhiteMatcher implements Builder<Ty
     }
 
     @Override
-    public TypeMatcher build(FieldModel obj) {
+    public ModelMatcher build(FieldModel obj) {
         if (obj.equals(FieldModel.DEFAULT)) {
             return null;
         }
