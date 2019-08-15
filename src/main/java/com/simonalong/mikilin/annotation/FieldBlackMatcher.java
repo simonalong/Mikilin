@@ -27,6 +27,11 @@ public @interface FieldBlackMatcher {
     String[] group() default {MkConstant.DEFAULT_GROUP};
 
     /**
+     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
+     */
+    Class<?>[] type() default {};
+
+    /**
      * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      * @return 禁用的值的列表
      */
@@ -100,11 +105,6 @@ public @interface FieldBlackMatcher {
      * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
      */
     String judge() default "";
-
-    /**
-     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
-     */
-    Class<?>[] type() default {};
 
     /**
      * 是否不可用
