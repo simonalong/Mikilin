@@ -124,6 +124,7 @@ public class FieldJudge {
     public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
+            .addMatcher(TypeMatcher.build(validCheck.type()))
             .addMatcher(ValueMather.build(field, validCheck.value()))
             .addMatcher(MatcherFactory.build(ModelMatcher.class, validCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
@@ -131,13 +132,13 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
             .addMatcher(JudgeMatcher.build(field, validCheck.judge(), context))
-            .addMatcher(TypeMatcher.build(validCheck.type()))
             .setDisable(validCheck.disable());
     }
 
     public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
+            .addMatcher(TypeMatcher.build(invalidCheck.type()))
             .addMatcher(ValueMather.build(field, invalidCheck.value()))
             .addMatcher(MatcherFactory.build(ModelMatcher.class, invalidCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, invalidCheck.enumType()))
@@ -145,7 +146,6 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
             .addMatcher(JudgeMatcher.build(field, invalidCheck.judge(), context))
-            .addMatcher(TypeMatcher.build(invalidCheck.type()))
             .setDisable(invalidCheck.disable());
     }
 
