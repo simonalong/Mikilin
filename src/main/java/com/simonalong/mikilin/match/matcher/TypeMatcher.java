@@ -6,7 +6,7 @@ import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.match.FieldModel;
 
 /**
- * 指定的类型判断，对应{@link FieldWhiteMatcher#type()}或者{@link FieldBlackMatcher#model()}
+ * 指定的类型判断，对应{@link FieldWhiteMatcher#model()}或者{@link FieldBlackMatcher#model()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

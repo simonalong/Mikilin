@@ -123,7 +123,7 @@ public class FieldJudge {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(ValueMather.build(field, validCheck.value()))
-            .addMatcher(MatcherFactory.build(TypeMatcher.class, validCheck.type()))
+            .addMatcher(MatcherFactory.build(TypeMatcher.class, validCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))

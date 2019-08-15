@@ -102,7 +102,7 @@ public @interface FieldBlackMatcher {
     String judge() default "";
 
     /**
-     * 匹配属性为对应的类型
+     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
      */
     Class<?>[] type() default {};
 

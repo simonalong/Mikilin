@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.type;
+package com.simonalong.mikilin.model;
 
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.match.FieldModel;
@@ -8,14 +8,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2019/3/10 下午3:38
+ * @since 2019/3/10 下午9:50
  */
 @Data
 @Accessors(chain = true)
-public class IdCardEntity {
+public class FixPhoneEntity {
 
-    @FieldWhiteMatcher(type = FieldModel.ID_CARD)
-    private String idCardValid;
-    @FieldBlackMatcher(model = FieldModel.ID_CARD)
-    private String idCardInValid;
+    @FieldWhiteMatcher(model = FieldModel.FIXED_PHONE)
+    private String fixedPhone;
+    @FieldBlackMatcher(model = FieldModel.FIXED_PHONE)
+    private String fixedPhoneInValid;
 }

@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.type;
+package com.simonalong.mikilin.model;
 
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.match.FieldModel;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IpEntity {
 
-    @FieldWhiteMatcher(type = FieldModel.IP_ADDRESS)
+    @FieldWhiteMatcher(model = FieldModel.IP_ADDRESS)
     private String ipValid;
     @FieldBlackMatcher(model = FieldModel.IP_ADDRESS)
     private String ipInvalid;

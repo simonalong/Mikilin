@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.type
+package com.simonalong.mikilin.model
 
 import com.simonalong.mikilin.Checks
 import org.junit.Assert
