@@ -1,13 +1,18 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
 
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
+import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.ToString.Exclude;
 
 /**
  * 正则表达式判断，对应{@link FieldWhiteMatcher#condition()}或者{@link FieldBlackMatcher#condition()}
@@ -15,10 +20,14 @@ import java.util.regex.Pattern;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
-public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Builder<ConditionMatcher, String> {
+public class ConditionMatcher extends AbstractBlackWhiteMatcher {
 
     private static final String ROOT = "#root";
     private static final String CURRENT = "#current";
+    /**
+     * 表达式中的变量和实际的变量名字的对应
+     */
+    private Map<String, String> fieldNameMap = new HashMap<>(6);
     /**
      * 判决对象
      */
@@ -31,15 +40,16 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
      * 表达式
      */
     private String express;
+    private Field currentField;
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        Boolean result = predicate.test(object, (Number) value);
+        boolean result = predicate.test(object, (Number) value);
         if(result){
-            setBlackMsg("属性[{0}]的值[{1}]命中黑名单表达式[{2}]", name, value, express);
+            setBlackMsg("属性 {0} 的值 {1} 命中禁用条件 {2} ", name, value, replaceSystem(express));
             return true;
         }else{
-            setBlackMsg("属性[{0}]的值[{1}]没有命中白名单表达式[{2}]", name, value, express);
+            setWhiteMsg("属性 {0} 的值 {1} 不符合条件 {2} ", name, value, replaceSystem(express));
             return false;
         }
     }
@@ -49,18 +59,20 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
         return null == predicate;
     }
 
-    @Override
-    public ConditionMatcher build(String obj) {
+    public static ConditionMatcher build(Field field, String obj) {
         if (null == obj || "".equals(obj)) {
             return null;
         }
-        express = obj;
-        parser = new ExpressParser();
-        predicate = (root, current) -> {
-            parser.addBinding(parseConditionExpress(express, root, current));
-            return parser.parse("import static java.lang.Math.*\n", rmvfix(express));
+
+        ConditionMatcher matcher = new ConditionMatcher();
+        matcher.express = obj;
+        matcher.currentField = field;
+        matcher.parser = new ExpressParser();
+        matcher.predicate = (root, current) -> {
+            matcher.parser.addBinding(matcher.parseConditionExpress(matcher.express, root, matcher.currentField, current));
+            return matcher.parser.parse("import static java.lang.Math.*\n", matcher.rmvfix(matcher.express));
         };
-        return this;
+        return matcher;
     }
 
     /**
@@ -72,7 +84,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
      * @return 返回对应的替换的数据映射
      */
     @SuppressWarnings("unchecked")
-    private Maps parseConditionExpress(String express, Object root, Number current) {
+    private Maps parseConditionExpress(String express, Object root, Field currentField, Number current) {
         Maps maps = Maps.of();
         String regex = "(#root)\\.(\\w+)";
         Matcher m = Pattern.compile(regex).matcher(express);
@@ -80,12 +92,15 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
             String fieldFullName = m.group();
             Object fieldValue = getFieldValue(fieldFullName, root);
             if (null != fieldValue) {
-                maps.put(rmvfix(fieldFullName), fieldValue);
+                String rmvFieldName = rmvfix(fieldFullName);
+                maps.put(rmvFieldName, fieldValue);
+                fieldNameMap.put(fieldFullName, rmvFieldName);
             }
         }
 
         if (express.contains(CURRENT)) {
             maps.put(rmvfix(CURRENT), current);
+            fieldNameMap.put(CURRENT, currentField.getName());
         }
 
         return maps;
@@ -123,4 +138,13 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher implements Build
         return str;
     }
 
+    /**
+     * 替换系统内置的变量，比如："#root.age + #current < 100"  返回 "age + testInteger < 100"
+     * @return 替换后的字符串表达式
+     */
+    private String replaceSystem(String str) {
+        AtomicReference<String> temStr = new AtomicReference<>(str);
+        fieldNameMap.forEach((key, value) -> temStr.set(temStr.get().replace(key, value)));
+        return temStr.get();
+    }
 }

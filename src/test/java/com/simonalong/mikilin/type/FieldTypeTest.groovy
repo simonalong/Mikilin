@@ -1,107 +1,96 @@
 package com.simonalong.mikilin.type
 
 import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.regex.RegexEntity
 import org.junit.Assert
 import spock.lang.Specification
 
 /**
  * @author zhouzhenyong
- * @since 2019/3/10 下午3:54
+ * @since 2019/8/15 下午10:49
  */
 class FieldTypeTest extends Specification {
 
-    def "身份证测试"() {
+    def "测试基本类型"() {
         given:
-        IdCardEntity entity = new IdCardEntity().setIdCardValid(valid).setIdCardInValid(invalid)
+        TypeEntity entity = new TypeEntity().setData(intData)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = Checks.check(entity, "data")
         if (!result) {
             println Checks.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        valid                | invalid              | result
-        "28712381"           | "411928199102226311" | false
-        "28712381"           | "28712381"           | false
-        "411928199102226311" | "28712381"           | true
-        "411928199102226311" | "411928199102226311" | false
+        intData | result
+        12      | true
+        12      | true
+        12      | true
     }
 
-    def "手机号测试"() {
+    def "测试明写继承关系类型"() {
         given:
-        PhoneEntity entity = new PhoneEntity().setPhoneValid(valid).setPhoneInValid(invalid)
+        TypeEntity entity = new TypeEntity().setName(name)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = Checks.check(entity, "name")
         if (!result) {
             println Checks.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        valid         | invalid       | result
-        "1387772"     | "15700092345" | false
-        "28712381"    | "28712381"    | false
-        "15700092345" | "28712381"    | true
-        "15700092345" | "15700092345" | false
+        name   | result
+        'asd'  | true
+        "abad" | true
     }
 
-    def "固定电话测试"() {
+    def "测试不明写类继承关系1"() {
         given:
-        FixPhoneEntity entity = new FixPhoneEntity().setFixedPhone(valid).setFixedPhoneInValid(invalid)
+        TypeEntity entity = new TypeEntity().setObj(obj)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = Checks.check(entity, "obj")
         if (!result) {
             println Checks.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        valid          | invalid        | result
-        "1387772"      | "0393-3879765" | false
-        "28712381"     | "28712381"     | false
-        "0393-3879765" | "28712381"     | true
-        "0393-3879765" | "0393-3879765" | false
+        obj    | result
+        'c'    | false
+        "abad" | false
+        1232   | true
+        1232l  | false
+        1232f  | true
+        12.0f  | true
+        -12    | true
     }
 
-    def "邮箱测试"() {
+    /**
+     * 可以让一切数字类型通过
+     * @return
+     */
+    def "测试不明写类继承关系2"() {
         given:
-        MailEntity entity = new MailEntity().setMailValid(valid).setMailInValid(invalid)
+        TypeEntity entity = new TypeEntity().setNum(obj)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = Checks.check(entity, "num")
         if (!result) {
             println Checks.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        valid            | invalid          | result
-        "123@"           | "123lan@163.com" | false
-        "123@"           | "123@"           | false
-        "123lan@163.com" | "123@"           | true
-        "123lan@163.com" | "123lan@163.com" | false
-    }
-
-    def "IP测试"() {
-        given:
-        IpEntity entity = new IpEntity().setIpValid(valid).setIpInvalid(invalid)
-
-        expect:
-        boolean actResult = Checks.check(entity)
-        if (!result) {
-            println Checks.getErrMsg()
-        }
-        Assert.assertEquals(result, actResult)
-
-        where:
-        valid             | invalid           | result
-        "192.231asdf"     | "192.123.231.222" | false
-        "192.231asdf"     | "192.231asdf"     | false
-        "192.123.231.222" | "192.231asdf"     | true
-        "192.123.231.222" | "192.123.231.222" | false
+        obj    | result
+        'c'    | false
+        "abad" | false
+        1232   | true
+        1232l  | true   // 这里跟上面的例子的区别
+        1232f  | true
+        12.0f  | true
+        -12    | true
     }
 }

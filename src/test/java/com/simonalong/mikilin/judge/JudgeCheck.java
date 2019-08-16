@@ -1,5 +1,6 @@
 package com.simonalong.mikilin.judge;
 
+import com.simonalong.mikilin.match.MkContext;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,10 +57,34 @@ public class JudgeCheck {
      *
      * mRatio + nRatio < 1.0
      */
-    private boolean ratioJudge(JudgeEntity judgeEntity, Float nRatio){
+    private boolean ratioJudge(JudgeEntity judgeEntity, Float nRatio) {
         if(null == nRatio || null == judgeEntity){
             return false;
         }
         return nRatio + judgeEntity.getMRatio() < 10.0f;
+    }
+
+    /**
+     * 两个函数
+     */
+    private boolean twoParam(String funName, MkContext context) {
+        if (funName.equals("hello")){
+            context.append("匹配上字段'hello'");
+           return true;
+        }
+        context.append("没有匹配上字段'hello'");
+        return false;
+    }
+
+    /**
+     * 三个函数
+     */
+    private boolean threeParam(JudgeEntity judgeEntity, String temK, MkContext context) {
+        if (temK.equals("hello") || temK.equals("word")){
+            context.append("匹配上字段'hello'和'word'");
+            return true;
+        }
+        context.append("没有匹配上字段'hello'和'word'");
+        return false;
     }
 }

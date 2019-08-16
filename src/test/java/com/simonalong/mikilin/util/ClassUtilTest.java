@@ -13,27 +13,27 @@ public class ClassUtilTest extends BaseTest {
 
     @Test
     public void isCheckedFieldTest(){
-        Assert.assertTrue(ClassUtil.isCheckedField(char.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(byte.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(short.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(int.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(long.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(float.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(double.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(boolean.class));
-        Assert.assertFalse(ClassUtil.isCheckedField(void.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Character.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Byte.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Short.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Integer.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Long.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Float.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Double.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Boolean.class));
-        Assert.assertFalse(ClassUtil.isCheckedField(Void.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(char.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(byte.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(short.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(int.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(long.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(float.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(double.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(boolean.class));
+        Assert.assertFalse(ClassUtil.isCheckedType(void.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Character.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Byte.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Short.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Integer.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Long.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Float.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Double.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Boolean.class));
+        Assert.assertFalse(ClassUtil.isCheckedType(Void.class));
 
         // 非基本类型
-        Assert.assertTrue(ClassUtil.isCheckedField(String.class));
-        Assert.assertTrue(ClassUtil.isCheckedField(Date.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(String.class));
+        Assert.assertTrue(ClassUtil.isCheckedType(Date.class));
     }
 }

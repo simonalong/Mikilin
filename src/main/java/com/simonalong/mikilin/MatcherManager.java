@@ -3,6 +3,7 @@ package com.simonalong.mikilin;
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.match.FieldJudge;
+import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.Maps;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -21,17 +22,17 @@ final class MatcherManager {
      */
     private Map<String, Map<String, FieldJudge>> targetFieldMap;
 
-    MatcherManager(){
+    MatcherManager() {
         targetFieldMap = new ConcurrentHashMap<>(16);
     }
 
     @SuppressWarnings("unchecked")
-    MatcherManager addWhite(String objectName, Field field, FieldWhiteMatcher validValue){
+    MatcherManager addWhite(String objectName, Field field, FieldWhiteMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromValid(field, validValue)).build();
+                return Maps.of(field.getName(), FieldJudge.buildFromValid(field, validValue, context)).build();
             } else {
-                v.put(field.getName(), FieldJudge.buildFromValid(field, validValue));
+                v.put(field.getName(), FieldJudge.buildFromValid(field, validValue, context));
                 return v;
             }
         });
@@ -39,19 +40,19 @@ final class MatcherManager {
     }
 
     @SuppressWarnings("unchecked")
-    MatcherManager addBlack(String objectName, Field field, FieldBlackMatcher validValue){
+    MatcherManager addBlack(String objectName, Field field, FieldBlackMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
-                return Maps.of().add(field.getName(), FieldJudge.buildFromInvalid(field, validValue)).build();
+                return Maps.of(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context)).build();
             } else {
-                v.put(field.getName(), FieldJudge.buildFromInvalid(field, validValue));
+                v.put(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context));
                 return v;
             }
         });
         return this;
     }
 
-    public Map<String, FieldJudge> getJudge(String targetClassName){
+    Map<String, FieldJudge> getJudge(String targetClassName) {
         return targetFieldMap.get(targetClassName);
     }
 }

@@ -1,7 +1,8 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
 
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.match.Builder;
 import java.util.regex.Pattern;
 
 /**
@@ -10,21 +11,21 @@ import java.util.regex.Pattern;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50
  */
-public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<RegexMatcher, String>{
+public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<RegexMatcher, String> {
 
     private Pattern pattern;
 
     @Override
     public boolean match(Object object, String name, Object value) {
         if (value instanceof String) {
-            if (pattern.matcher(String.class.cast(value)).matches()) {
-                setBlackMsg("属性[{0}]的值[{1}]命中正则表达式黑名单[{2}]", name, value, pattern.pattern());
+            if (pattern.matcher((String) value).matches()) {
+                setBlackMsg("属性 {0} 的值 {1} 命中正则表达式黑名单 {2} ", name, value, pattern.pattern());
                 return true;
             } else {
-                setWhiteMsg("属性[{0}]的值[{1}]没命中正则表达式白名单[{2}]", name, value, pattern.pattern());
+                setWhiteMsg("属性 {0} 的值 {1} 没命中正则表达式白名单 {2} ", name, value, pattern.pattern());
             }
-        }else{
-            setWhiteMsg("属性[{0}]的值[{1}]不是String类型", name, value);
+        } else {
+            setWhiteMsg("属性 {0} 的值 {1} 不是String类型", name, value);
         }
         return false;
     }

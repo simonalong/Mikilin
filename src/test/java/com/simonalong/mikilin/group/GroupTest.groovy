@@ -88,7 +88,8 @@ class GroupTest extends Specification {
         20  | "shanghai" | false
         25  | "beijing"  | false
         30  | "beijing"  | false
-        30  | "shanghai" | true
+        30  | "shanghai" | false
+        40  | "hangzhou" | true
     }
 
     /**

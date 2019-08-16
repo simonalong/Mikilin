@@ -51,9 +51,10 @@ class TimeRangeTest extends Specification {
 
         where:
         date                             | time                                       | result
-        getDate(2019, 8, 20, 00, 00, 00) | getDate(2019, 8, 10, 00, 00, 00).getTime() | true
-        getDate(2019, 8, 24, 00, 00, 00) | getDate(2019, 8, 10, 00, 00, 00).getTime() | false
-        getDate(2019, 8, 20, 00, 00, 00) | getDate(2019, 8, 14, 00, 00, 00).getTime() | false
+        getDate(2099, 8, 20, 00, 00, 00) | getDate(2099, 8, 10, 00, 00, 00).getTime() | true
+        getDate(2009, 8, 24, 00, 00, 00) | getDate(2099, 8, 10, 00, 00, 00).getTime() | false
+        getDate(2099, 8, 20, 00, 00, 00) | getDate(2009, 8, 14, 00, 00, 00).getTime() | false
+        getDate(2009, 8, 20, 00, 00, 00) | getDate(2009, 8, 14, 00, 00, 00).getTime() | false
     }
 
     /**
@@ -73,10 +74,10 @@ class TimeRangeTest extends Specification {
 
         where:
         date                             | time                                       | result
-        getDate(2018, 8, 20, 00, 00, 00) | getDate(2019, 7, 10, 00, 00, 00).getTime() | true
-        getDate(2019, 8, 4, 11, 56, 00)  | getDate(2019, 8, 4, 11, 56, 00).getTime()  | true
-        getDate(2018, 8, 24, 00, 00, 00) | getDate(2019, 8, 10, 00, 00, 00).getTime() | false
-        getDate(2019, 8, 20, 00, 00, 00) | getDate(2018, 8, 14, 00, 00, 00).getTime() | false
+        getDate(2008, 8, 20, 00, 00, 00) | getDate(2009, 7, 10, 00, 00, 00).getTime() | true
+        getDate(2099, 8, 24, 00, 00, 00) | getDate(2009, 8, 10, 00, 00, 00).getTime() | false
+        getDate(2009, 8, 20, 00, 00, 00) | getDate(2099, 8, 14, 00, 00, 00).getTime() | false
+        getDate(2099, 8, 20, 00, 00, 00) | getDate(2099, 8, 14, 00, 00, 00).getTime() | false
     }
 
     /**
@@ -96,11 +97,10 @@ class TimeRangeTest extends Specification {
 
         where:
         date                             | time                                       | result
-        getDate(2019, 8, 20, 00, 00, 00) | getDate(2019, 9, 10, 00, 00, 00).getTime() | true
-        getDate(2019, 8, 4, 12, 56, 00)  | getDate(2019, 8, 14, 11, 56, 00).getTime() | true
-        getDate(2019, 8, 4, 11, 56, 00)  | getDate(2019, 8, 4, 11, 56, 00).getTime()  | false
-        getDate(2018, 8, 24, 00, 00, 00) | getDate(2019, 7, 10, 00, 00, 00).getTime() | false
-        getDate(2019, 8, 20, 00, 00, 00) | getDate(2018, 7, 14, 00, 00, 00).getTime() | false
+        getDate(2099, 8, 20, 00, 00, 00) | getDate(2099, 9, 10, 00, 00, 00).getTime() | true
+        getDate(2009, 8, 4, 12, 56, 00)  | getDate(2099, 8, 14, 11, 56, 00).getTime() | false
+        getDate(2099, 8, 4, 11, 56, 00)  | getDate(2009, 8, 4, 11, 56, 00).getTime()  | false
+        getDate(2009, 8, 24, 00, 00, 00) | getDate(2009, 7, 10, 00, 00, 00).getTime() | false
     }
 
     /**

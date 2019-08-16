@@ -1,11 +1,15 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
 
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
+import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,9 +52,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private static final SimpleDateFormat ymdhmsFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final SimpleDateFormat ymdhmssFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     /**
-     * 全是数字匹配
+     * 全是数字匹配（整数，浮点数，0，负数）
      */
-    private Pattern digitPattern = Pattern.compile("^\\d*$");
+    private Pattern digitPattern = Pattern.compile("^(-?[1-9]\\d*)|0|(-?[1-9]\\d*.\\d*)|(0.\\d*[1-9]\\d*)|(0?.0+)$");
     /**
      * 时间或者数字范围匹配
      */
@@ -71,6 +75,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * 表达式
      */
     private String express;
+    /**
+     * 存放now这个时间的map
+     */
+    private Map<String, Date> timeMap = new HashMap<>();
 
     @Override
     public boolean match(Object object, String name, Object value) {
@@ -84,7 +92,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
         } else if (value instanceof Date) {
             return match(name, value);
         } else {
-            setWhiteMsg("属性[{0}]的值[{1}]不是数字也不是时间类型", name, value);
+            setWhiteMsg("属性 {0} 的值 {1} 不是数字也不是时间类型", name, value);
         }
         return false;
     }
@@ -92,10 +100,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private Boolean match(String name, Object value) {
         Boolean result = predicate.test(value);
         if (result) {
-            setBlackMsg("属性[{0}]的值[{1}]位于黑名单对应的范围[{2}]中", name, value, express);
+            setBlackMsg("属性 {0} 的值 {1} 位于黑名单对应的范围 {2} 中", name, ymdhmssFormat.format(value), replaceSystem(express));
             return true;
         } else {
-            setWhiteMsg("属性[{0}]的值[{1}]没有在白名单对应的范围[{2}]中", name, value, express);
+            setWhiteMsg("属性 {0} 的值 {1} 没有在白名单对应的范围 {2} 中", name, ymdhmssFormat.format(value), replaceSystem(express));
             return false;
         }
     }
@@ -250,7 +258,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             return null;
         }
         if (data.equals(NOW)) {
-            return new Date();
+            Date now = new Date();
+            timeMap.put(NOW, now);
+            return now;
         }
         try {
             if (yPattern.matcher(data).matches()) {
@@ -290,6 +300,20 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             return RangeEntity.build(LEFT_BRACKET, new Date(), null, RIGHT_BRACKET);
         }
         return null;
+    }
+
+    /**
+     * 替换系统内置的变量
+     * @return 替换后的字符串表达式
+     */
+    private String replaceSystem(String str) {
+        AtomicReference<String> result = new AtomicReference<>(str);
+        timeMap.entrySet().stream().forEach(e->{
+            if(str.contains(e.getKey())){
+                result.set(str.replace(e.getKey(), ymdhmssFormat.format(e.getValue())));
+            }
+        });
+        return result.get();
     }
 
     @Data

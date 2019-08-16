@@ -15,7 +15,7 @@ class CheckTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age)
 
         expect:
-        def act = Checks.check(entity, "name");
+        def act = Checks.check(entity, "name", "age");
         Assert.assertEquals(result, act)
         if (!act) {
             println Checks.errMsg
@@ -25,8 +25,9 @@ class CheckTest extends Specification {
         name     | age | result
         "nihao"  | 12  | false
         "ok"     | 32  | false
+        "ok"     | 2   | false
         "hehe"   | 20  | true
-        "haohao" | 40  | true
+        "haohao" | 30  | true
     }
 
     def "测试指定的属性age"() {
@@ -60,10 +61,10 @@ class CheckTest extends Specification {
         }
 
         where:
-        name     | age | address | result
-        "nihao"  | 12  | "beijing" | true
-        "ok"     | 32  | "shanghai" | true
-        "hehe"   | 20  | "hangzhou" | false
+        name     | age | address     | result
+        "nihao"  | 12  | "beijing"   | true
+        "ok"     | 32  | "shanghai"  | true
+        "hehe"   | 20  | "hangzhou"  | false
         "haohao" | 40  | "zhengzhou" | false
     }
 }

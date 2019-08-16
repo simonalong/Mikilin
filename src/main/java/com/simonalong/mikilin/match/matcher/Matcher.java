@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
 
 /**
  * @author zhouzhenyong
@@ -24,6 +24,13 @@ public interface Matcher {
      * @return true=空，false=非空
      */
     boolean isEmpty();
+
+    /**
+     * 判断当前匹配器是否为空
+     *
+     * @return true=非空，false=空
+     */
+    boolean isNotEmpty();
 
     /**
      * 白名单匹配不上的信息

@@ -5,6 +5,7 @@ import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldBlackMatchers;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatchers;
+import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
 import java.lang.reflect.Field;
@@ -23,7 +24,6 @@ import lombok.experimental.UtilityClass;
  * @since 2018/12/25 下午4:16
  */
 @UtilityClass
-@SuppressWarnings("unchecked")
 public final class Checks {
 
     /**
@@ -39,6 +39,10 @@ public final class Checks {
      */
     private Map<String, Set<String>> objectFieldCheckMap;
     private CheckDelegate delegate;
+    /**
+     * 核查上下文
+     */
+    private MkContext context;
 
     static {
         init();
@@ -48,7 +52,8 @@ public final class Checks {
         whiteGroupMap = new ConcurrentHashMap<>(2);
         blackGroupMap = new ConcurrentHashMap<>(2);
         objectFieldCheckMap = new ConcurrentHashMap<>(16);
-        delegate = new CheckDelegate();
+        context = new MkContext();
+        delegate = new CheckDelegate(context);
     }
 
     /**
@@ -82,12 +87,12 @@ public final class Checks {
     public boolean check(String group, Object object) {
         String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
-            delegate.append("数据为空");
+            context.append("数据为空");
             return false;
         }
 
         // 待核查类型不核查，直接返回核查成功
-        if (ClassUtil.isCheckedField(object.getClass())) {
+        if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
@@ -106,12 +111,12 @@ public final class Checks {
     public boolean check(String group, Object object, String... fieldSet) {
         String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
-            delegate.append("数据为空");
+            context.append("数据为空");
             return false;
         }
 
         // 待核查类型不核查，直接返回核查成功
-        if (ClassUtil.isCheckedField(object.getClass())) {
+        if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
             return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
@@ -231,7 +236,7 @@ public final class Checks {
             });
 
             // 非待核查类型拆分开进行迭代分析
-            fieldSet.stream().filter(f -> !ClassUtil.isCheckedField(f.getType())).forEach(f -> {
+            fieldSet.stream().filter(f -> !ClassUtil.isCheckedType(f.getType())).forEach(f -> {
                 // 该属性对应的类型是否添加了注解 Check
                 Check check = f.getAnnotation(Check.class);
                 if (null != check) {
@@ -259,9 +264,9 @@ public final class Checks {
         FieldWhiteMatcher fieldWhiteMatcher) {
         Arrays.asList(fieldWhiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher);
+                return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher, context);
             } else {
-                v.addWhite(objectName, field, fieldWhiteMatcher);
+                v.addWhite(objectName, field, fieldWhiteMatcher, context);
                 return v;
             }
         }));
@@ -271,9 +276,9 @@ public final class Checks {
         FieldBlackMatcher fieldBlackMatcher) {
         Arrays.asList(fieldBlackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher);
+                return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher, context);
             } else {
-                v.addBlack(objectName, field, fieldBlackMatcher);
+                v.addBlack(objectName, field, fieldBlackMatcher, context);
                 return v;
             }
         }));

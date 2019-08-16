@@ -10,12 +10,4 @@ import org.junit.runners.JUnit4;
  */
 @RunWith(JUnit4.class)
 public class BaseTest {
-
-    protected void show(Object ...obj){
-        if(null == obj){
-            show("obj is null");
-        }else{
-            System.out.println(obj.toString());
-        }
-    }
 }

@@ -1,4 +1,6 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
+
+import com.simonalong.mikilin.match.Builder;
 
 /**
  * 匹配器工厂，用于根据对应的匹配器类型和入参，创建指定的匹配器

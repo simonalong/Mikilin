@@ -26,4 +26,10 @@ public class JudgeEntity {
     private Float mRatio;
 
     private Float nRatio;
+
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#twoParam")
+    private String twoPa;
+
+    @FieldWhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#threeParam")
+    private String threePa;
 }

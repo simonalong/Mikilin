@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.match;
+package com.simonalong.mikilin.match.matcher;
 
 import java.text.MessageFormat;
 
@@ -17,6 +17,11 @@ public abstract class AbstractBlackWhiteMatcher implements Matcher{
 
     void setWhiteMsg(String pattern, Object... arguments){
         this.whiteMsg = MessageFormat.format(pattern, arguments);
+    }
+
+    @Override
+    public boolean isNotEmpty(){
+        return !isEmpty();
     }
 
     @Override

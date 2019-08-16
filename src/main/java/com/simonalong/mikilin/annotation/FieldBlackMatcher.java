@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.annotation;
 
 import com.simonalong.mikilin.MkConstant;
-import com.simonalong.mikilin.match.FieldType;
+import com.simonalong.mikilin.match.FieldModel;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -27,6 +27,11 @@ public @interface FieldBlackMatcher {
     String[] group() default {MkConstant.DEFAULT_GROUP};
 
     /**
+     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
+     */
+    Class<?>[] type() default {};
+
+    /**
      * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      * @return 禁用的值的列表
      */
@@ -36,7 +41,7 @@ public @interface FieldBlackMatcher {
      * 禁用的值对应的类型
      * @return 对应的枚举类型
      */
-    FieldType type() default FieldType.DEFAULT;
+    FieldModel model() default FieldModel.DEFAULT;
 
     /**
      * 枚举类型的判断

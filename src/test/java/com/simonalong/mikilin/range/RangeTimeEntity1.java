@@ -16,7 +16,7 @@ public class RangeTimeEntity1 {
 
     @FieldWhiteMatchers({
         @FieldWhiteMatcher(group = "test1", range = "['2019-07-13 12:00:23.321', '2019-07-23 12:00:23.321']"),
-        @FieldWhiteMatcher(group = "test2", range = "(now, '2019-08-23 12:00:23.321']"),
+        @FieldWhiteMatcher(group = "test2", range = "(now, '2199-08-23 12:00:23.321']"),
         @FieldWhiteMatcher(group = "test3", range = "past"),
         @FieldWhiteMatcher(group = "test4", range = "future"),
     })
@@ -24,7 +24,7 @@ public class RangeTimeEntity1 {
 
     @FieldWhiteMatchers({
         @FieldWhiteMatcher(group = "test1", range = "['2019-08-03 12:00:23.321', '2019-08-13 12:00:23.321']"),
-        @FieldWhiteMatcher(group = "test2", range = "(now, '2019-08-13 12:00:23.321']"),
+        @FieldWhiteMatcher(group = "test2", range = "(now, '2199-08-13 12:00:23.321']"),
         @FieldWhiteMatcher(group = "test3", range = "past"),
         @FieldWhiteMatcher(group = "test4", range = "future"),
         @FieldWhiteMatcher(group = "test5", range = "[100, 30000]"),
