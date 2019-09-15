@@ -58,7 +58,7 @@ public class FieldJudge {
      */
     public Boolean judgeWhite(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        Long whiteMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
+        long whiteMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
             .filter(m -> {
                 if (m.match(object, name, value)) {
                     return true;
@@ -91,7 +91,7 @@ public class FieldJudge {
      */
     public Boolean judgeBlack(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        Long blackMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
+        long blackMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
             .filter(m -> {
                 if (m.match(object, name, value)) {
                     errMsgList.add(m.getBlackMsg());

@@ -17,6 +17,9 @@ public class TypeMatcher extends AbstractBlackWhiteMatcher {
     private List<Class<?>> clsList = new ArrayList<>();
 
     public static TypeMatcher build(Class<?>[] tClasses) {
+        if (null == tClasses || Arrays.asList(tClasses).isEmpty()) {
+            return null;
+        }
         TypeMatcher matcher = new TypeMatcher();
         matcher.clsList.addAll(Arrays.asList(tClasses));
         return matcher;

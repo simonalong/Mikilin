@@ -1,11 +1,13 @@
 package com.simonalong.mikilin.match.matcher;
 
+import com.alibaba.fastjson.JSON;
 import com.simonalong.mikilin.annotation.FieldBlackMatcher;
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +70,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      */
     private Boolean dateFlag = false;
     /**
+     * 属性的类型：0-数字类型，1-时间类型，2-集合类型
+     */
+    private Integer dataType;
+    /**
      * 表达式解析对象
      */
     private ExpressParser parser;
@@ -88,23 +94,40 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                     value = new Date(Number.class.cast(value).longValue());
                 } catch (Exception ignore) {}
             }
-            return match(name, value);
+            return match(name, value, RangeDataType.NUM_TYPE);
         } else if (value instanceof Date) {
-            return match(name, value);
+            return match(name, value, RangeDataType.DATE_TYPE);
+        } else if (value instanceof Collection) {
+            return match(name, Collection.class.cast(value).size(), RangeDataType.COLLECTION_TYPE);
         } else {
             setWhiteMsg("属性 {0} 的值 {1} 不是数字也不是时间类型", name, value);
         }
         return false;
     }
 
-    private Boolean match(String name, Object value) {
+    private Boolean match(String name, Object value, RangeDataType dataType) {
         Boolean result = predicate.test(value);
         if (result) {
-            setBlackMsg("属性 {0} 的值 {1} 位于黑名单对应的范围 {2} 中", name, ymdhmssFormat.format(value), replaceSystem(express));
+            setBlackMsg("属性 {0} 的值 {1} 位于黑名单对应的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return true;
         } else {
-            setWhiteMsg("属性 {0} 的值 {1} 没有在白名单对应的范围 {2} 中", name, ymdhmssFormat.format(value), replaceSystem(express));
+            setWhiteMsg("属性 {0} 的值 {1} 没有在白名单对应的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return false;
+        }
+    }
+
+    private Object format(Object value, RangeDataType dataType){
+        switch (dataType){
+            case NUM_TYPE:{
+                return value;
+            }
+            case DATE_TYPE:{
+                return ymdhmssFormat.format(value);
+            }
+            case COLLECTION_TYPE:{
+                return "集合个数 " + JSON.toJSONString(value);
+            }
+            default:return "";
         }
     }
 
@@ -332,6 +355,18 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
                 result.setDateFlag(true);
             }
             return result;
+        }
+    }
+
+    public enum RangeDataType {
+        DATE_TYPE("时间类型"),
+        NUM_TYPE("数字类型"),
+        COLLECTION_TYPE("集合类型");
+
+        private String name;
+
+        RangeDataType(String name) {
+            this.name = name;
         }
     }
 }

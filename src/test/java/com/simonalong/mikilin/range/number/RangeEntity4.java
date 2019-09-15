@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.range;
+package com.simonalong.mikilin.range.number;
 
 import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
 import lombok.Data;

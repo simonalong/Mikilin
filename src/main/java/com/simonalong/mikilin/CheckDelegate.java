@@ -1,5 +1,6 @@
 package com.simonalong.mikilin;
 
+import com.simonalong.mikilin.annotation.Check;
 import com.simonalong.mikilin.match.FieldJudge;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
@@ -48,7 +49,7 @@ public final class CheckDelegate {
      */
     boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
-        context.init();
+//        context.init();
         if (null == object) {
             // 对于对象中的其他属性不核查
             return true;
@@ -62,9 +63,7 @@ public final class CheckDelegate {
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
             Collection collection = (Collection) object;
             if (!CollectionUtil.isEmpty(collection)) {
-                Long unAvailableCount = collection.stream()
-                    .filter(c -> !available(c, fieldSet, objectFieldMap, whiteSet, blackSet)).count();
-                return 0 == unAvailableCount;
+                return collection.stream().allMatch(c -> available(c, fieldSet, objectFieldMap, whiteSet, blackSet));
             } else {
                 // 为空则忽略
                 return true;
@@ -74,9 +73,8 @@ public final class CheckDelegate {
             Map map = (Map) object;
             if (!CollectionUtil.isEmpty(map)) {
                 // 检查所有不合法属性
-                Long unAvailableCount = map.values().stream().filter(Objects::nonNull)
-                    .filter(v -> !available(v, fieldSet, objectFieldMap, whiteSet, blackSet)).count();
-                if (0 == unAvailableCount) {
+                boolean allMatch = map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, fieldSet, objectFieldMap, whiteSet, blackSet));
+                if (allMatch) {
                     return true;
                 }
                 context.append("Map的value中有不合法");
@@ -92,13 +90,15 @@ public final class CheckDelegate {
             }
 
             // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查所有的属性
-            Long unAvailableCount = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains)
+            long unAvailableCount = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains)
                 .filter(f -> !available(object, f, objectFieldMap, whiteSet, blackSet)).count();
             if (0 == unAvailableCount) {
                 return true;
             }
 
             context.append("类型 {0} 核查失败", object.getClass().getSimpleName());
+            // todo delete
+//            System.out.println("error4 : "+context.getErrMsg());
             return false;
         }
     }
@@ -117,29 +117,31 @@ public final class CheckDelegate {
         Map<String, MatcherManager> whiteGroupMather, Map<String, MatcherManager> blackGroupMather) {
         Class cls = field.getType();
 
-
         if (ClassUtil.isCheckedType(cls)) {
             // 待核查类型，则直接校验
             return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
         } else {
+            boolean result = true;
             // 不是待核查类型，先判断是否添加了黑白名单注解配置，否则按照复杂类型处理
             if (matcherContainField(object, field, whiteGroupMather, blackGroupMather)) {
-                return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
-            }else{
+                result = primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
+            }
+
+            // 包含拆解注解，则要查看拆解后的处理
+            if (field.isAnnotationPresent(Check.class)) {
                 try {
                     field.setAccessible(true);
-                    if (available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather)) {
-                        return true;
-                    }
-
-                    context.append("类型 {0} 的属性 {1} 核查失败", object.getClass().getSimpleName(), field.getName());
-                    return false;
+                    result &= available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
+
+            if(!result) {
+                context.append("类型 {0} 的属性 {1} 核查失败", object.getClass().getSimpleName(), field.getName());
+            }
+            return result;
         }
-        return true;
     }
 
     /**
