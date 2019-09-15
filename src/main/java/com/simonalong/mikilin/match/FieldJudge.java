@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Singular;
 import lombok.experimental.Accessors;
 
 /**
@@ -121,6 +120,7 @@ public class FieldJudge {
         return matcherList.stream().allMatch(Matcher::isEmpty);
     }
 
+    @SuppressWarnings("all")
     public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
@@ -135,6 +135,7 @@ public class FieldJudge {
             .setDisable(validCheck.disable());
     }
 
+    @SuppressWarnings("all")
     public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
