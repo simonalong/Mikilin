@@ -16,7 +16,7 @@ import java.util.Set;
  * @since 2018/12/24 下午10:31
  */
 @SuppressWarnings("unchecked")
-public final class CheckDelegate {
+final class CheckDelegate {
 
     private ThreadLocal<String> localGroup;
     private MkContext context;
