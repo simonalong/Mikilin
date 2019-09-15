@@ -97,8 +97,6 @@ public final class CheckDelegate {
             }
 
             context.append("类型 {0} 核查失败", object.getClass().getSimpleName());
-            // todo delete
-//            System.out.println("error4 : "+context.getErrMsg());
             return false;
         }
     }
