@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.value;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AEntity {
-    @FieldWhiteMatcher({"a", "b", "c", "null"})
+    @WhiteMatcher({"a", "b", "c", "null"})
     private String name;
-    @FieldBlackMatcher({"null"})
+    @BlackMatcher({"null"})
     private Integer age;
     private String address;
 }

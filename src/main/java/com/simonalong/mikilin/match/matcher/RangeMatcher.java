@@ -1,8 +1,8 @@
 package com.simonalong.mikilin.match.matcher;
 
 import com.alibaba.fastjson.JSON;
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
@@ -22,7 +22,7 @@ import org.codehaus.groovy.syntax.Numbers;
 import org.springframework.util.StringUtils;
 
 /**
- * 正则表达式判断，对应{@link FieldWhiteMatcher#range()}或者{@link FieldBlackMatcher#range()}
+ * 正则表达式判断，对应{@link WhiteMatcher#range()}或者{@link BlackMatcher#range()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51

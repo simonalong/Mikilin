@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.condition;
 
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,12 +12,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ConditionEntity1 {
 
-    @FieldWhiteMatcher(condition = "#current + #root.num2 > 100")
+    @WhiteMatcher(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
-    @FieldWhiteMatcher(condition = "#current < 20")
+    @WhiteMatcher(condition = "#current < 20")
     private Integer num2;
 
-    @FieldWhiteMatcher(condition = "(++#current) >31")
+    @WhiteMatcher(condition = "(++#current) >31")
     private Integer num3;
 }

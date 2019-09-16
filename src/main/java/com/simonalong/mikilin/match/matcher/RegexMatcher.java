@@ -1,12 +1,12 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.Builder;
 import java.util.regex.Pattern;
 
 /**
- * 正则表达式判断，对应{@link FieldWhiteMatcher#regex()}或者{@link FieldBlackMatcher#regex()}
+ * 正则表达式判断，对应{@link WhiteMatcher#regex()}或者{@link BlackMatcher#regex()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

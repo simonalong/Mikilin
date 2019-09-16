@@ -1,12 +1,12 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.match.FieldModel;
 
 /**
- * 指定的类型判断，对应{@link FieldWhiteMatcher#model()}或者{@link FieldBlackMatcher#model()}
+ * 指定的类型判断，对应{@link WhiteMatcher#model()}或者{@link BlackMatcher#model()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50

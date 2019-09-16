@@ -1,13 +1,13 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * 属性实际运行时候的类型匹配，对应{@link FieldWhiteMatcher#type()}或者{@link FieldBlackMatcher#type()}
+ * 属性实际运行时候的类型匹配，对应{@link WhiteMatcher#type()}或者{@link BlackMatcher#type()}
  *
  * @author zhouzhenyong
  * @since 2019/8/15 下午10:34

@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.value;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,6 +15,6 @@ public class WhiteBEntity {
 
     @Check
     private BEntity bEntity;
-    @FieldWhiteMatcher({"a", "b"})
+    @WhiteMatcher({"a", "b"})
     private String name;
 }

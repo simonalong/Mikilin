@@ -1,9 +1,8 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.express.ExpressParser;
-import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -12,10 +11,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.ToString.Exclude;
 
 /**
- * 正则表达式判断，对应{@link FieldWhiteMatcher#condition()}或者{@link FieldBlackMatcher#condition()}
+ * 正则表达式判断，对应{@link WhiteMatcher#condition()}或者{@link BlackMatcher#condition()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51

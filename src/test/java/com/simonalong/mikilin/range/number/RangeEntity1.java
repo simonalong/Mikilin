@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.number;
 
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RangeEntity1 {
 
-    @FieldWhiteMatcher(range = "[0,100]")
+    @WhiteMatcher(range = "[0,100]")
     private Integer age1;
 
-    @FieldWhiteMatcher(range = "[0, 100]")
+    @WhiteMatcher(range = "[0, 100]")
     private Integer age2;
 }

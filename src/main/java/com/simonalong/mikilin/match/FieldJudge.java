@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.match;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.matcher.ConditionMatcher;
 import com.simonalong.mikilin.match.matcher.EnumTypeMatcher;
 import com.simonalong.mikilin.match.matcher.JudgeMatcher;
@@ -41,7 +41,7 @@ public class FieldJudge {
     private List<Matcher> matcherList = new ArrayList<>();
 
     /**
-     * 属性核查禁用标示，对应{@link FieldWhiteMatcher#disable()}或者{@link FieldBlackMatcher#disable()}
+     * 属性核查禁用标示，对应{@link WhiteMatcher#disable()}或者{@link BlackMatcher#disable()}
      */
     private Boolean disable;
 
@@ -121,7 +121,7 @@ public class FieldJudge {
     }
 
     @SuppressWarnings("all")
-    public static FieldJudge buildFromValid(Field field, FieldWhiteMatcher validCheck, MkContext context) {
+    public static FieldJudge buildFromValid(Field field, WhiteMatcher validCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(TypeMatcher.build(validCheck.type()))
@@ -136,7 +136,7 @@ public class FieldJudge {
     }
 
     @SuppressWarnings("all")
-    public static FieldJudge buildFromInvalid(Field field, FieldBlackMatcher invalidCheck, MkContext context) {
+    public static FieldJudge buildFromInvalid(Field field, BlackMatcher invalidCheck, MkContext context) {
         return new FieldJudge()
             .setName(field.getName())
             .addMatcher(TypeMatcher.build(invalidCheck.type()))

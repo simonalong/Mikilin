@@ -1,14 +1,14 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.Builder;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 枚举类型多个判断，对应{@link FieldWhiteMatcher#enumType()}或者{@link FieldBlackMatcher#enumType()}
+ * 枚举类型多个判断，对应{@link WhiteMatcher#enumType()}或者{@link BlackMatcher#enumType()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51

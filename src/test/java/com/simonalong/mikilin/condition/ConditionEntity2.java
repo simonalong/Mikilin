@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.condition;
 
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ConditionEntity2 {
 
-    @FieldWhiteMatcher(condition = "#root.judge")
+    @WhiteMatcher(condition = "#root.judge")
     private Integer age;
 
     private Boolean judge;

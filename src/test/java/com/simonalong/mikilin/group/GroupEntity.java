@@ -1,9 +1,9 @@
 package com.simonalong.mikilin.group;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldBlackMatchers;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatchers;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.BlackMatchers;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatchers;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,17 +15,17 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class GroupEntity {
 
-    @FieldBlackMatchers({
-        @FieldBlackMatcher(range = "[50, 100]"),
-        @FieldBlackMatcher(group = "test1", range = "[12, 23]"),
-        @FieldBlackMatcher(group = "test2", range = "[1, 10]")
+    @BlackMatchers({
+        @BlackMatcher(range = "[50, 100]"),
+        @BlackMatcher(group = "test1", range = "[12, 23]"),
+        @BlackMatcher(group = "test2", range = "[1, 10]")
     })
     private Integer age;
 
-    @FieldWhiteMatchers({
-        @FieldWhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
-        @FieldWhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
-        @FieldWhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
+    @WhiteMatchers({
+        @WhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
+        @WhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
+        @WhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
     })
     private String name;
 }

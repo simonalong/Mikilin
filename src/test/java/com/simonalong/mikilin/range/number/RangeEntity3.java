@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.range.number;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,10 +13,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RangeEntity3 {
 
-    @FieldWhiteMatcher(range = "[0.00,3.00]")
+    @WhiteMatcher(range = "[0.00,3.00]")
     private Float height;
 
-    @FieldBlackMatcher(range = "[10,10000]")
+    @BlackMatcher(range = "[10,10000]")
     private Double money;
 
 }

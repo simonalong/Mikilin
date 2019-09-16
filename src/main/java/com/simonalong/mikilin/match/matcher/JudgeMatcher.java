@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.exception.JudgeException;
 import com.simonalong.mikilin.funcation.MultiPredicate;
 import com.simonalong.mikilin.match.MkContext;
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统自行判断，对应{@link FieldWhiteMatcher#judge()}或者{@link FieldBlackMatcher#judge()}
+ * 系统自行判断，对应{@link WhiteMatcher#judge()}或者{@link BlackMatcher#judge()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:52

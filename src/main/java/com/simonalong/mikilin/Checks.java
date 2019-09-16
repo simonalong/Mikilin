@@ -1,10 +1,10 @@
 package com.simonalong.mikilin;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldBlackMatchers;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatchers;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.BlackMatchers;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatchers;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
@@ -206,19 +206,19 @@ public final class Checks {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 待核查类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                FieldWhiteMatcher whiteMatcher = f.getAnnotation(FieldWhiteMatcher.class);
+                WhiteMatcher whiteMatcher = f.getAnnotation(WhiteMatcher.class);
                 if (null != whiteMatcher && !whiteMatcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
                     addWhiteValueMap(whiteGroupMap, objectClsName, f, whiteMatcher);
                 }
 
-                FieldBlackMatcher blackMatcher = f.getAnnotation(FieldBlackMatcher.class);
+                BlackMatcher blackMatcher = f.getAnnotation(BlackMatcher.class);
                 if (null != blackMatcher && !blackMatcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
                     addBlackValueMap(blackGroupMap, objectClsName, f, blackMatcher);
                 }
 
-                FieldWhiteMatchers whiteMatchers = f.getAnnotation(FieldWhiteMatchers.class);
+                WhiteMatchers whiteMatchers = f.getAnnotation(WhiteMatchers.class);
                 if (null != whiteMatchers) {
                     Stream.of(whiteMatchers.value()).forEach(w-> {
                         addObjectFieldMap(objectClsName, f.getName());
@@ -226,7 +226,7 @@ public final class Checks {
                     });
                 }
 
-                FieldBlackMatchers blackMatchers = f.getAnnotation(FieldBlackMatchers.class);
+                BlackMatchers blackMatchers = f.getAnnotation(BlackMatchers.class);
                 if (null != blackMatchers) {
                     Stream.of(blackMatchers.value()).forEach(w-> {
                         addObjectFieldMap(objectClsName, f.getName());
@@ -261,24 +261,24 @@ public final class Checks {
     }
 
     private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
-        FieldWhiteMatcher fieldWhiteMatcher) {
-        Arrays.asList(fieldWhiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
+        WhiteMatcher whiteMatcher) {
+        Arrays.asList(whiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatcherManager().addWhite(objectName, field, fieldWhiteMatcher, context);
+                return new MatcherManager().addWhite(objectName, field, whiteMatcher, context);
             } else {
-                v.addWhite(objectName, field, fieldWhiteMatcher, context);
+                v.addWhite(objectName, field, whiteMatcher, context);
                 return v;
             }
         }));
     }
 
     private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
-        FieldBlackMatcher fieldBlackMatcher) {
-        Arrays.asList(fieldBlackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
+        BlackMatcher blackMatcher) {
+        Arrays.asList(blackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatcherManager().addBlack(objectName, field, fieldBlackMatcher, context);
+                return new MatcherManager().addBlack(objectName, field, blackMatcher, context);
             } else {
-                v.addBlack(objectName, field, fieldBlackMatcher, context);
+                v.addBlack(objectName, field, blackMatcher, context);
                 return v;
             }
         }));

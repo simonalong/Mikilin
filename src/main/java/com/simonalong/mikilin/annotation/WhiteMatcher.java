@@ -15,10 +15,10 @@ import java.lang.annotation.Target;
  * @author zhouzhenyong
  * @since 2019/3/7 下午9:47
  */
-@Repeatable(FieldWhiteMatchers.class)
+@Repeatable(WhiteMatchers.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldWhiteMatcher {
+public @interface WhiteMatcher {
 
     /**
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MkConstant#DEFAULT_GROUP}
