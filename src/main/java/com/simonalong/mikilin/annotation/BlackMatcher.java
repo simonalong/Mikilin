@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 public @interface BlackMatcher {
 
     /**
-     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MkConstant#DEFAULT_GROUP}
+     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
      * @return 分组
      */
     String[] group() default {MkConstant.DEFAULT_GROUP};

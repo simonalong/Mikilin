@@ -31,6 +31,7 @@ public class RangeTimeEntity1 {
         @WhiteMatcher(group = "test6", range = "('2019-07-13 12:00:23.321', now]"),
         @WhiteMatcher(group = "test7", range = "(null, now)"),
         @WhiteMatcher(group = "test8", range = "('null', 'now')"),
+        @WhiteMatcher(group = "test9", range = "['2019-08', '2019-08-13 12:00:23.321']"),
     })
     private Long time;
 
