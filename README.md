@@ -15,9 +15,6 @@
 
 ## 快速入门
 本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsg`获取错误信息。其中匹配方式，采用的是只要任何一个属性没有匹配上，则认为没有通过。而对于黑名单匹配器，采用的是只要有任何一个匹配上了，则认为没有通过。
-> @WhiteMatcher
-> Checks.check(Object obj)
-> Checks.getErrMsg()
 
 ```java
 @Repeatable(WhiteMatchers.class)
@@ -603,4 +600,5 @@ def "测试指定分组"() {
 }
 ```
 
-更多详细用法请见：[Mikilin文档](https://persimon.gitbook.io/mikilin/)
+### 更多详细用法请见：
+[Mikilin文档](https://persimon.gitbook.io/mikilin/)
