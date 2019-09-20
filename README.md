@@ -16,6 +16,56 @@
 ## 快速入门
 本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsg`获取错误信息。其中匹配方式，采用的是只要任何一个属性没有匹配上，则认为没有通过。而对于黑名单匹配器，采用的是只要有任何一个匹配上了，则认为没有通过。
 
+#### 核查函数
+```java
+/**
+* 核查对象
+*/
+public boolean check(Object object){}
+/**
+* 核查对象的某些属性
+*/
+public boolean check(Object object, String... fieldSet){}
+/**
+* 根据分组核查属性
+*/
+public boolean check(String group, Object object) {}
+/**
+* 核查分组中的对象的某些属性
+*/
+public boolean check(String group, Object object, String... fieldSet){}
+/**
+* 核查失败时候的异常信息
+*/
+public String getErrMsg() {}
+```
+
+#### 注解
+```java
+/**
+* 白名单匹配器
+*/
+@WhiteMatcher
+/**
+* 白名单多个匹配器，不同的分组
+*/
+@WhiteMatchers
+/**
+* 黑名单匹配器
+*/
+@BlackMatcher
+/**
+* 黑名单多个匹配器，不同的分组
+*/
+@BlackMatchers
+/**
+* 复杂对象解析器，修饰属性，只有添加该注解，则复杂的属性，才会进行解析
+*/
+@Check
+```
+
+### 具体详情
+
 ```java
 @Repeatable(WhiteMatchers.class)
 @Target(ElementType.FIELD)
