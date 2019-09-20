@@ -240,7 +240,7 @@ def "IP测试"() {
 ```
 
 ### 只要匹配对应范围的数据
-目前该属性只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
+目前该属性不只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
 ```java
 @Data
 @Accessors(chain = true)
@@ -362,8 +362,8 @@ public class CollectionSizeEntityA {
 }
 ```
 
-### 只要求属性匹配某个表达式匹配
-这里的表达式只要是任何返回true的表达式即可，其中提供两个占位符，#current和#root，其中#current表示修饰的当前属性的值，#root表示的是当前属性所在的对象的值，可以通过#root.xxx访问其他的属性。该表达式支持java中的任何符号操作，此外还支持java.util.math中的所有静态函数，比如：min、max和abs等等
+### 只要求属性匹配某个Boolean表达式
+这里的表达式只要是任何返回Boolean的表达式即可，框架提供两个占位符，#current和#root，其中#current表示当前属性的值，#root表示的是当前属性所在的对象的值，可以通过#root.xxx访问其他的属性。该表达式支持java中的任何符号操作，此外还支持java.lang.math中的所有静态函数，比如：min、max和abs等等
 ```java
 @Data
 @Accessors(chain = true)
@@ -411,7 +411,7 @@ public class ConditionEntity {
 }
 ```
 
-### 只要符合自定义的表达式匹配
+### 只要符合自定义的正则表达式匹配
 ```java
 @Data
 @Accessors(chain = true)
@@ -600,5 +600,42 @@ def "测试指定分组"() {
 }
 ```
 
+### 核查类型的某个属性
+上面我们说到，可以核查整个对象，但是如果我们只想核查对象中的某几个属性，那么应该怎么办呢，这里增加了这么个方法`check(Object object, String... fieldSet)`，后者为要核查的属性名字
+
+```java
+@Data
+@Accessors(chain = true)
+public class TestEntity {
+
+    @BlackMatcher({"nihao", "ok"})
+    private String name;
+    @WhiteMatcher(range = "[12, 32]")
+    private Integer age;
+    @WhiteMatcher({"beijing", "shanghai"})
+    private String address;
+}
+```
+
+```java
+def "测试指定的属性age"() {
+    given:
+    TestEntity entity = new TestEntity().setName(name).setAge(age)
+
+    expect:
+    def act = Checks.check(entity, "age");
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println Checks.errMsg
+    }
+
+    where:
+    name     | age | result
+    "nihao"  | 12  | true
+    "ok"     | 32  | true
+    "hehe"   | 20  | true
+    "haohao" | 40  | false
+}
+```
 ### 更多详细用法请见：
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
