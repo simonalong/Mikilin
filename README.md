@@ -64,7 +64,8 @@ public String getErrMsg() {}
 @Check
 ```
 
-### 具体详情
+### 具体用例
+#### 注解
 
 ```java
 @Repeatable(WhiteMatchers.class)
@@ -167,7 +168,7 @@ public @interface WhiteMatcher {
 }
 ```
 
-### 只要指定的值
+#### 只要指定的值
 ```java
 @Data
 @Accessors(chain = true)
@@ -201,7 +202,7 @@ def "只有指定的值才能通过"() {
 }
 ```
 
-### 只要固定的一些枚举
+#### 只要固定的一些枚举
 ```java
 @Data
 @AllArgsConstructor
@@ -255,7 +256,7 @@ def "枚举类型测试"() {
 }
 ```
 
-### 只要匹配指定的内置类型通过
+#### 只要匹配指定的内置类型通过
 目前内置了常见的几种类型：身份证号、手机号、固定电话、邮箱、IP地址
 ```java
 @Data
@@ -289,7 +290,7 @@ def "IP测试"() {
 }
 ```
 
-### 只要匹配对应范围的数据
+#### 只要匹配对应范围的数据
 目前该属性不只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
 ```java
 @Data
@@ -327,7 +328,7 @@ public class RangeEntity4 {
     private Integer num5;
 }
 ```
-#### 表示时间类型
+##### 表示时间类型
 修饰的类型可以为Date类型，也可以为Long类型
 ```java
 @Data
@@ -395,7 +396,7 @@ public class RangeTimeEntity {
     private Date date10;
 }
 ```
-#### 集合的范围
+##### 集合的范围
 集合这里只核查集合的数据大小
 ```java
 @Data
@@ -412,7 +413,7 @@ public class CollectionSizeEntityA {
 }
 ```
 
-### 只要求属性匹配某个Boolean表达式
+#### 只要求属性匹配某个Boolean表达式
 这里的表达式只要是任何返回Boolean的表达式即可，框架提供两个占位符，#current和#root，其中#current表示当前属性的值，#root表示的是当前属性所在的对象的值，可以通过#root.xxx访问其他的属性。该表达式支持java中的任何符号操作，此外还支持java.lang.math中的所有静态函数，比如：min、max和abs等等
 ```java
 @Data
@@ -461,7 +462,7 @@ public class ConditionEntity {
 }
 ```
 
-### 只要符合自定义的正则表达式匹配
+#### 只要符合自定义的正则表达式匹配
 ```java
 @Data
 @Accessors(chain = true)
@@ -475,7 +476,7 @@ public class RegexEntity {
 }
 ```
 
-### 用户自定义匹配
+#### 用户自定义匹配
 上面都是系统内置的一些匹配，如果用户想自定义匹配，可以自行扩展，需要通过该函数指定一个全限定名的类和函数指定即可，目前支持的参数类型有如下几种，比如
 ```java
 @Data
@@ -565,7 +566,7 @@ public class JudgeCheck {
 }
 ```
 
-#### spring的Bean自定义匹配器
+##### spring的Bean自定义匹配器
 上面看到了，我们指定一个全限定路径即可设置过滤器，其实是反射了一个代理类，在真实的业务场景中，我们的bean是用spring进行管理的，因此这里增加了一个通过spring管理的匹配器，如下
 使用时候需要在指定为扫描一下如下路径即可
 
@@ -596,7 +597,7 @@ public class JudgeCls {
 }
 ```
 
-### 不同场景校验的规则不同
+#### 不同场景校验的规则不同
 上面看到，每个属性只有一种核查规则，但是如果我们要在不同的场景中使用不同的规则，那么这个时候应该怎么办呢，分组就来了，新增一个注解`WhiteMatchers`
 ```java
 @Target(ElementType.FIELD)
@@ -650,7 +651,7 @@ def "测试指定分组"() {
 }
 ```
 
-### 核查类型的某个属性
+#### 核查类型的某个属性
 上面我们说到，可以核查整个对象，但是如果我们只想核查对象中的某几个属性，那么应该怎么办呢，这里增加了这么个方法`check(Object object, String... fieldSet)`，后者为要核查的属性名字
 
 ```java
