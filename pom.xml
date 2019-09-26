@@ -7,7 +7,7 @@
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
 
     <name>Mikilin</name>
     <url>https://github.com/SimonAlong/Mikilin</url>
