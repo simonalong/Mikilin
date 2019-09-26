@@ -1,8 +1,6 @@
-package com.simonalong.mikilin.range
+package com.simonalong.mikilin.range.date
 
 import com.simonalong.mikilin.Checks
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher
-import com.simonalong.mikilin.annotation.FieldWhiteMatchers
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -191,6 +189,30 @@ class TimeRangeTest extends Specification {
         getDate(2019, 7, 24, 2, 7, 00).getTime()   | true
         getDate(2019, 9, 4, 12, 06, 00).getTime()  | false
     }
+
+    /**
+     * 测试带上特殊的字符 ('null', 'now')
+     * @return
+     */
+    def "测试时间范围test9"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
+
+        expect:
+        boolean actResult = Checks.check("test9", range)
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        time                                       | result
+        getDate(2019, 8, 01, 00, 00, 00).getTime() | true
+        getDate(2019, 7, 31, 2, 7, 00).getTime()   | false
+        getDate(2019, 8, 01, 00, 00, 00).getTime()  | true
+    }
+
+
 
     def getDate(def year, def month, def day, def hour, def minute, def second) {
         return Date.from(LocalDateTime.of(year, month, day, hour, minute, second).atZone(ZoneId.systemDefault()).toInstant())

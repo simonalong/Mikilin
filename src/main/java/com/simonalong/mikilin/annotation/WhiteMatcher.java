@@ -9,19 +9,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 属性黑名单匹配器
+ * 属性白名单匹配器
  * 修饰基本的属性（Boolean Byte Character Short Integer Long Double Float）、String和java.util.Date类型，属性的所有可用的值
  *
  * @author zhouzhenyong
- * @since 2019/3/7 下午9:50
+ * @since 2019/3/7 下午9:47
  */
-@Repeatable(FieldBlackMatchers.class)
+@Repeatable(WhiteMatchers.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldBlackMatcher {
+public @interface WhiteMatcher {
 
     /**
-     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link MkConstant#DEFAULT_GROUP}
+     * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
      * @return 分组
      */
     String[] group() default {MkConstant.DEFAULT_GROUP};
@@ -32,13 +32,13 @@ public @interface FieldBlackMatcher {
     Class<?>[] type() default {};
 
     /**
-     * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
-     * @return 禁用的值的列表
+     * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * @return 只允许的值的列表
      */
     String[] value() default {};
 
     /**
-     * 禁用的值对应的类型
+     * 可用的值对应的类型
      * @return 对应的枚举类型
      */
     FieldModel model() default FieldModel.DEFAULT;
@@ -48,12 +48,13 @@ public @interface FieldBlackMatcher {
      *
      * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的Names，Integer是枚举的下标
      *
-     * @return 如果位于枚举类型内部，则拦截，否则认为核查通过
+     * @return 该属性为枚举对应的类，否则不生效
      */
     Class<? extends Enum>[] enumType() default {};
 
     /**
      * 数据范围的判断
+     * <p> 该字段修饰的类型可以为数值类型，也可以为时间类型，也可以为集合类型（集合类型用来测试集合的size个数的范围）
      *
      * @return
      * 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
@@ -94,7 +95,7 @@ public @interface FieldBlackMatcher {
     String condition() default "";
 
     /**
-     * 禁用的值对应的正则表达式
+     * 可用的值对应的正则表达式
      * @return 对应的正则表达式
      */
     String regex() default "";
@@ -107,7 +108,7 @@ public @interface FieldBlackMatcher {
     String judge() default "";
 
     /**
-     * 是否不可用
+     * 是否启用核查
      * @return true：禁用核查，false：启用核查
      */
     boolean disable() default false;

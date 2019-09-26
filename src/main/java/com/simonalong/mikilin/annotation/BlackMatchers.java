@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FieldBlackMatchers {
+public @interface BlackMatchers {
 
-    FieldBlackMatcher[] value();
+    BlackMatcher[] value();
 }

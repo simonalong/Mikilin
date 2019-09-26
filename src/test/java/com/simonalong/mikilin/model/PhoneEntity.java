@@ -1,8 +1,8 @@
 package com.simonalong.mikilin.model;
 
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.FieldModel;
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class PhoneEntity {
 
-    @FieldWhiteMatcher(model = FieldModel.PHONE_NUM)
+    @WhiteMatcher(model = FieldModel.PHONE_NUM)
     private String phoneValid;
-    @FieldBlackMatcher(model = FieldModel.PHONE_NUM)
+    @BlackMatcher(model = FieldModel.PHONE_NUM)
     private String phoneInValid;
 }

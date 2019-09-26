@@ -1,21 +1,22 @@
-package com.simonalong.mikilin.deadline;
+package com.simonalong.mikilin.range.collection;
 
 import com.simonalong.mikilin.annotation.Check;
 import com.simonalong.mikilin.annotation.WhiteMatcher;
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2019/8/3 上午10:40
+ * @since 2019-09-15 21:24
  */
 @Data
 @Accessors(chain = true)
-public class DeadBEntity {
+public class CollectionSizeEntityA {
 
-    @WhiteMatcher({"a", "b"})
     private String name;
 
     @Check
-    private DeadAEntity deadAEntity;
+    @WhiteMatcher(range = "(0, 2]")
+    private List<CollectionSizeEntityB> bList;
 }

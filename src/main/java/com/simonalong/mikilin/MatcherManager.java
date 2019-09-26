@@ -1,7 +1,7 @@
 package com.simonalong.mikilin;
 
-import com.simonalong.mikilin.annotation.FieldBlackMatcher;
-import com.simonalong.mikilin.annotation.FieldWhiteMatcher;
+import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.match.FieldJudge;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.Maps;
@@ -27,7 +27,7 @@ final class MatcherManager {
     }
 
     @SuppressWarnings("unchecked")
-    MatcherManager addWhite(String objectName, Field field, FieldWhiteMatcher validValue, MkContext context) {
+    MatcherManager addWhite(String objectName, Field field, WhiteMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of(field.getName(), FieldJudge.buildFromValid(field, validValue, context)).build();
@@ -40,7 +40,7 @@ final class MatcherManager {
     }
 
     @SuppressWarnings("unchecked")
-    MatcherManager addBlack(String objectName, Field field, FieldBlackMatcher validValue, MkContext context) {
+    MatcherManager addBlack(String objectName, Field field, BlackMatcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context)).build();
