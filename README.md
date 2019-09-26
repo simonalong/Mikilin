@@ -13,6 +13,9 @@
 - 高性能：所有的核查均是内存直接调用，第一次构建匹配树后，后面就无须重建
 - 可扩展：针对一些不好核查的属性，可以设置自定义匹配，可以通过自定义匹配器类，也可以使用spring的Bean作为系统匹配器类
 
+## 使用文档
+[Mikilin文档](https://persimon.gitbook.io/mikilin/)
+
 ## 快速入门
 本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsg`获取错误信息。
 
@@ -697,5 +700,3 @@ def "测试指定的属性age"() {
     "haohao" | 40  | false
 }
 ```
-### 更多详细用法请见：
-[Mikilin文档](https://persimon.gitbook.io/mikilin/)
