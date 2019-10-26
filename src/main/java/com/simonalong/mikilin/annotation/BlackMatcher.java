@@ -32,7 +32,7 @@ public @interface BlackMatcher {
     Class<?>[] type() default {};
 
     /**
-     * 禁用的值, 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * 如果要匹配值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
      * @return 禁用的值的列表
      */
     String[] value() default {};
@@ -57,8 +57,9 @@ public @interface BlackMatcher {
      * <p> 该字段修饰的类型可以为数值类型，也可以为时间类型，也可以为集合类型（集合类型用来测试集合的size个数的范围）
      *
      * @return
-     * 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
-     * 如果是时间类型，则也可以进行比较，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数
+     * 如果是数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * 如果是集合类型，则比较的是集合的size大小，使用和上面一样，比如：[a,b]等等
+     * 如果是时间类型，可以使用这种，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数关键字
      * past: 表示过去
      * now: 表示现在
      * future: 表示未来
@@ -81,7 +82,7 @@ public @interface BlackMatcher {
      *
      * 根据Java的运算符构造出来对应的条件表达式来进行判断，而其中的数据不仅可以和相关的数据做条件判断，还可和当前修饰的类的其他数据进行判断，
      * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性，比如：{@code #current + #root.ratioB + #root.ratioC == 100}
-     * 其中#current表示当前的属性，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
+     * 其中#current表示当前的属性的值，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
      *
      * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
      * 算术运算符：{@code  "+"、"-"、"*"、"/"、"％"、"++"、"--"}
@@ -103,7 +104,7 @@ public @interface BlackMatcher {
     /**
      * 系统自己编码判断
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考测试类{@link com.simonalong.mikilin.judge.JudgeCheck}
      */
     String judge() default "";
 

@@ -1,6 +1,7 @@
-package com.simonalong.mikilin.value
+package com.simonalong.mikilin.value.str
 
 import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.value.bool.BooleanEntity
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -8,7 +9,28 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/3/10 下午10:11
  */
-class FieldJudgeTest extends Specification {
+class StringValueTest extends Specification {
+
+
+
+    def "number类型测试"(){
+        given:
+        BooleanEntity entity = new BooleanEntity()
+        entity.setFlag(flag)
+
+        expect:
+        boolean actResult = Checks.check(entity)
+        if (!actResult) {
+            println Checks.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        flag  | result
+        true  | true
+        false | false
+        null  | true
+    }
 
     def "复杂类型白名单测试"() {
         given:
