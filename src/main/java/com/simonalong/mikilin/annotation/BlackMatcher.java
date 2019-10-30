@@ -104,7 +104,7 @@ public @interface BlackMatcher {
     /**
      * 系统自己编码判断
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考测试类{@link com.simonalong.mikilin.judge.JudgeCheck}
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考对应测试类
      */
     String judge() default "";
 
