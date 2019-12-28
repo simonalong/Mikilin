@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.type
 
 import com.simonalong.mikilin.Checks
-import com.simonalong.mikilin.regex.RegexEntity
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -18,7 +17,7 @@ class FieldTypeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "data")
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -36,7 +35,7 @@ class FieldTypeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "name")
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -53,7 +52,7 @@ class FieldTypeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "obj")
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -79,7 +78,7 @@ class FieldTypeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "num")
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

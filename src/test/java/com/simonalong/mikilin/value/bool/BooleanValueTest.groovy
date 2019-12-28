@@ -18,7 +18,7 @@ class BooleanValueTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

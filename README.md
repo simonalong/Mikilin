@@ -16,14 +16,14 @@
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
 ## 快速入门
-本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsg`获取错误信息。
+本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsgChain`获取所有错误信息或者通过`Checks.getErrMsg`获取某一项错误信息。
 
 ### 引入
 ```xml
 <dependency>
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.3</version>
 </dependency>
 ```
 
@@ -48,7 +48,9 @@ public void test1(){
     WhiteAEntity whiteAEntity = new WhiteAEntity();
     whiteAEntity.setName("d");
     if (!Checks.check(whiteAEntity)) {
-        // 输出：数据校验失败-->属性 name 的值 d 不在白单中 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        System.out.println(Checks.getErrMsgChain());
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
         System.out.println(Checks.getErrMsg());
     }
 }
@@ -75,7 +77,11 @@ public boolean check(String group, Object object) {}
 */
 public boolean check(String group, Object object, String... fieldSet){}
 /**
-* 核查失败时候的异常信息
+* 返回错误信息链
+*/
+public String getErrMsgChain() {}
+/**
+* 获取最后设置错误信息
 */
 public String getErrMsg() {}
 ```
@@ -105,7 +111,7 @@ public String getErrMsg() {}
 ```
 
 ### 匹配器
-匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都
+匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都作为属性，每个属性定位是能够匹配该领域的所有类型
 
 ```java
 @Repeatable(WhiteMatchers.class)
@@ -229,7 +235,7 @@ def "只有指定的值才能通过"() {
     expect:
     boolean actResult = Checks.check(entity)
     if (!actResult) {
-        println Checks.getErrMsg()
+        println Checks.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 
@@ -318,7 +324,7 @@ def "IP测试"() {
     expect:
     boolean actResult = Checks.check(entity)
     if (!result) {
-        println Checks.getErrMsg()
+        println Checks.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 

@@ -19,7 +19,7 @@ class GroupTest extends Specification {
         def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -40,7 +40,7 @@ class GroupTest extends Specification {
         def act = Checks.check("test1", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -60,7 +60,7 @@ class GroupTest extends Specification {
         def act = Checks.check("test1", entity, "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -80,7 +80,7 @@ class GroupTest extends Specification {
         def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -104,7 +104,7 @@ class GroupTest extends Specification {
         def act = Checks.check("test1", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -128,7 +128,7 @@ class GroupTest extends Specification {
         def act = Checks.check("test2", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -155,7 +155,7 @@ class GroupTest extends Specification {
         def act = Checks.check("test0", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:

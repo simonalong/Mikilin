@@ -108,10 +108,10 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     private Boolean match(String name, Object value, RangeDataType dataType) {
         Boolean result = predicate.test(value);
         if (result) {
-            setBlackMsg("属性 {0} 的 {1} 位于黑名单对应的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
+            setBlackMsg("属性 {0} 的 {1} 位于禁用的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return true;
         } else {
-            setWhiteMsg("属性 {0} 的 {1} 没有在白名单对应的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
+            setWhiteMsg("属性 {0} 的 {1} 没有命中只允许的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return false;
         }
     }

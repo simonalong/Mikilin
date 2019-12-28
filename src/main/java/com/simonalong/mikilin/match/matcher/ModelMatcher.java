@@ -19,10 +19,10 @@ public class ModelMatcher extends AbstractBlackWhiteMatcher implements Builder<M
     public boolean match(Object object, String nam, Object value) {
         if (value instanceof String) {
             if (fieldModel.valid((String) value)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中[FieldModel-{2}]", nam, value, fieldModel.getName());
+                setBlackMsg("属性 {0} 的值 {1} 命中不允许的类型 [FieldModel-{2}]", nam, value, fieldModel.getName());
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 命中[FieldModel-{2}]", nam, value, fieldModel.name());
+                setWhiteMsg("属性 {0} 的值 {1} 没有命中只允许类型 [FieldModel-{2}]", nam, value, fieldModel.name());
             }
         }
         return false;

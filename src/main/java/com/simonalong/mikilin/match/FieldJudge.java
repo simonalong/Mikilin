@@ -62,8 +62,10 @@ public class FieldJudge {
                 if (m.match(object, name, value)) {
                     return true;
                 } else {
-                    if (null != m.getWhiteMsg()) {
-                        errMsgList.add(m.getWhiteMsg());
+                    String whiteErrMsg = m.getWhiteMsg();
+                    if (null != whiteErrMsg) {
+                        errMsgList.add(whiteErrMsg);
+                        context.setLastErrMsg(whiteErrMsg);
                     }
                     return false;
                 }
@@ -94,6 +96,7 @@ public class FieldJudge {
             .filter(m -> {
                 if (m.match(object, name, value)) {
                     errMsgList.add(m.getBlackMsg());
+                    context.setLastErrMsg(m.getBlackMsg());
                     return true;
                 }
                 return false;
