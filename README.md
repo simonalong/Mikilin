@@ -49,8 +49,10 @@ public void test1(){
     WhiteAEntity whiteAEntity = new WhiteAEntity();
     whiteAEntity.setName("d");
     if (!Checks.check(whiteAEntity)) {
-        // 输出：数据校验失败-->属性 name 的值 d 不在白单中 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
         System.out.println(Checks.getErrMsgChain());
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
+        System.out.println(Checks.getErrMsg());
     }
 }
 ```

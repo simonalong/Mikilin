@@ -26,7 +26,7 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
             setBlackMsg("属性 {0} 的值 {1} 位于禁用值 {2}中", fieldName, value, values.toString());
             return true;
         } else {
-            setWhiteMsg("属性 {0} 的值 {1} 没有命中只允许列表 {2} 中", fieldName, value, values.toString());
+            setWhiteMsg("属性 {0} 的值 {1} 不在只可用列表 {2} 中", fieldName, value, values.toString());
             return false;
         }
     }
