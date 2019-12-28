@@ -28,6 +28,7 @@ public @interface WhiteMatcher {
 
     /**
      * 匹配属性为对应的类型，比如Integer.class，Long.class等等
+     * @return 指定的类型
      */
     Class<?>[] type() default {};
 

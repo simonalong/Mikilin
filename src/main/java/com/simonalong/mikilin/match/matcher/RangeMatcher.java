@@ -202,6 +202,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * 解析时间范围格式
      *
      * @param input 时间范围格式
+     * @return 解析后的时间范围类型
      */
     private RangeEntity parseRange(String input) {
         input = input.trim();
@@ -261,15 +262,17 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
 
     /**
      * 解析时间
-     * <ul>时间格式为如下
-     * <li>yyyy<li/>
-     * <li>yyyy-MM<li/>
-     * <li>yyyy-MM-dd<li/>
-     * <li>yyyy-MM-dd HH<li/>
-     * <li>yyyy-MM-dd HH:mm<li/>
-     * <li>yyyy-MM-dd HH:mm:ss<li/>
-     * <li>yyyy-MM-dd HH:mm:ss.SSS<li/>
-     * <ul/>
+     * <p>
+     *     时间格式为如下
+     * <ul>
+     * <li>yyyy
+     * <li>yyyy-MM
+     * <li>yyyy-MM-dd
+     * <li>yyyy-MM-dd HH
+     * <li>yyyy-MM-dd HH:mm
+     * <li>yyyy-MM-dd HH:mm:ss
+     * <li>yyyy-MM-dd HH:mm:ss.SSS
+     * </ul>
      *
      * @param data 可以为指定的几个时间格式，也可以为两个时间函数
      * @return yyyy-MM-dd HH:mm:ss.SSS 格式的时间类型
@@ -327,6 +330,8 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
 
     /**
      * 替换系统内置的变量
+     *
+     * @param str 待替换的字符
      * @return 替换后的字符串表达式
      */
     private String replaceSystem(String str) {

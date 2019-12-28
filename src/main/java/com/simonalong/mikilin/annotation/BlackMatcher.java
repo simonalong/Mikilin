@@ -27,7 +27,8 @@ public @interface BlackMatcher {
     String[] group() default {MkConstant.DEFAULT_GROUP};
 
     /**
-     * 匹配属性为对应的类型，比如Integer.class，Long.class等等
+     * 匹配属性为对应的类型或者其子类，比如Integer.class，Long.class等等
+     * @return 指定的类型
      */
     Class<?>[] type() default {};
 
