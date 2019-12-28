@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.value.num
 
 import com.simonalong.mikilin.Checks
-import com.simonalong.mikilin.value.bool.BooleanEntity
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -19,7 +18,7 @@ class IntegerValueTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

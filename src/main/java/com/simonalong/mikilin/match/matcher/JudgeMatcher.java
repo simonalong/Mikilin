@@ -34,31 +34,31 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
     public boolean match(Object object, String name, Object value) {
         if (null != valuePre) {
             if (valuePre.test(value)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中黑名单回调 {2} ", name, value, judgeStr);
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 命中白名单回调 {2} ", name, value, judgeStr);
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
             }
         } else if (null != valueContextPre) {
             if (valueContextPre.test(value, context)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中黑名单回调 {2} ", name, value, judgeStr);
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 命中白名单回调 {2} ", name, value, judgeStr);
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
             }
         } else if (null != objValuePre) {
             if (objValuePre.test(object, value)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中黑名单回调 {2} ", name, value, judgeStr);
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 命中白名单回调 {2} ", name, value, judgeStr);
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
             }
         } else if (null != objValueContextPre) {
             if (objValueContextPre.test(object, value, context)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中黑名单回调 {2} ", name, value, judgeStr);
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 命中白名单回调 {2} ", name, value, judgeStr);
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
             }
         }
         return false;

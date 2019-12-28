@@ -34,10 +34,10 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements
                 });
 
                 if (result) {
-                    setBlackMsg("属性 {0} 对象 {1} 命中黑名单枚举 {2} 中的类型", name, value, getEnumStr(enumClass));
+                    setBlackMsg("属性 {0} 对象 {1} 命中不允许的枚举 {2} 中的类型", name, value, getEnumStr(enumClass));
                     return true;
                 }else{
-                    setWhiteMsg("属性 {0} 对象 {1} 没有命中白名单枚举 {2} 中的类型", name, value, getEnumStr(enumClass));
+                    setWhiteMsg("属性 {0} 对象 {1} 没有命中枚举 {2} 中的类型", name, value, getEnumStr(enumClass));
                 }
             }
         }

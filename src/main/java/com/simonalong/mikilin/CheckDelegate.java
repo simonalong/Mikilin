@@ -321,8 +321,12 @@ final class CheckDelegate {
         return false;
     }
 
-    String getErrMsg() {
-        return context.getErrMsg();
+    String getErrMsgChain() {
+        return context.getErrMsgChain();
+    }
+
+    String getErrMsg () {
+        return context.getLastErrMsg();
     }
 
     boolean isEmpty(Object object) {

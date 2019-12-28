@@ -19,7 +19,7 @@ class RangeTest extends Specification {
         expect:
         boolean actResult = Checks.check(range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -42,7 +42,7 @@ class RangeTest extends Specification {
         expect:
         boolean actResult = Checks.check(range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -66,7 +66,7 @@ class RangeTest extends Specification {
         expect:
         boolean actResult = Checks.check(range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -93,7 +93,7 @@ class RangeTest extends Specification {
         expect:
         boolean actResult = Checks.check(range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

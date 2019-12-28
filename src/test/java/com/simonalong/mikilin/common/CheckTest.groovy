@@ -18,7 +18,7 @@ class CheckTest extends Specification {
         def act = Checks.check(entity, "name", "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -38,7 +38,7 @@ class CheckTest extends Specification {
         def act = Checks.check(entity, "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -57,7 +57,7 @@ class CheckTest extends Specification {
         def act = Checks.check(entity, "address");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:

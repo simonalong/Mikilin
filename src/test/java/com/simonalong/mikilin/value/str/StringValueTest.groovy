@@ -21,7 +21,7 @@ class StringValueTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -40,7 +40,7 @@ class StringValueTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -61,7 +61,7 @@ class StringValueTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         where:
@@ -81,7 +81,7 @@ class StringValueTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         where:
@@ -106,7 +106,7 @@ class StringValueTest extends Specification {
 
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         expect:
@@ -134,7 +134,7 @@ class StringValueTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         where:
@@ -155,7 +155,7 @@ class StringValueTest extends Specification {
         expect:
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         where:
@@ -174,7 +174,7 @@ class StringValueTest extends Specification {
 
         Assert.assertEquals(result, Checks.check(entity))
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
 
         expect:

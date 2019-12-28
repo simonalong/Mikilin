@@ -20,7 +20,7 @@ class FieldJudgeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "name", "age", "address")
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -47,7 +47,7 @@ class FieldJudgeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "mRatio")
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -64,7 +64,7 @@ class FieldJudgeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "twoPa")
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -82,7 +82,7 @@ class FieldJudgeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "threePa")
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -101,7 +101,7 @@ class FieldJudgeTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity, "threePa")
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

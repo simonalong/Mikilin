@@ -19,10 +19,10 @@ public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     public boolean match(Object object, String name, Object value) {
         if (value instanceof String) {
             if (pattern.matcher((String) value).matches()) {
-                setBlackMsg("属性 {0} 的值 {1} 命中正则表达式黑名单 {2} ", name, value, pattern.pattern());
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用的正则表达式 {2} ", name, value, pattern.pattern());
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值 {1} 没命中正则表达式白名单 {2} ", name, value, pattern.pattern());
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许的正则表达式 {2} ", name, value, pattern.pattern());
             }
         } else {
             setWhiteMsg("属性 {0} 的值 {1} 不是String类型", name, value);

@@ -19,7 +19,7 @@ class DeadLineTest extends Specification {
         def act = Checks.check(aEntity)
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:

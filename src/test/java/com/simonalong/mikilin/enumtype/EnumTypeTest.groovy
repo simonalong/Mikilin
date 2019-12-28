@@ -18,7 +18,7 @@ class EnumTypeTest extends Specification {
         def act = Checks.check(judgeEntity)
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
