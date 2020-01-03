@@ -78,6 +78,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
      *
      * @param express 表达式
      * @param root 当前属性所在的对象
+     * @param currentField 当前属性
      * @param current 当前属性的值
      * @return 返回对应的替换的数据映射
      */
@@ -137,7 +138,8 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
     }
 
     /**
-     * 替换系统内置的变量，比如："#root.age + #current < 100"  返回 "age + testInteger < 100"
+     * 替换系统内置的变量，比如："{@code #root.age + #current < 100}  返回 {@code age + testInteger < 100}
+     * @param str 输入的字符
      * @return 替换后的字符串表达式
      */
     private String replaceSystem(String str) {

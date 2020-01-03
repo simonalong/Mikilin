@@ -158,6 +158,20 @@ public final class Checks {
         }
     }
 
+    /**
+     * 返回错误信息链
+     * <p>
+     *     返回的结果是这种{@code xxxx没有匹配上 --> xxx的属性不符合需求 --> ...}
+     * @return 多个匹配错误的信息
+     */
+    public String getErrMsgChain() {
+        return delegate.getErrMsgChain();
+    }
+
+    /**
+     * 获取其中一个错误信息（即最后的一个错误信息）
+     * @return 错误信息
+     */
     public String getErrMsg() {
         return delegate.getErrMsg();
     }

@@ -49,7 +49,6 @@ final class CheckDelegate {
      */
     boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
-//        context.init();
         if (null == object) {
             // 对于对象中的其他属性不核查
             return true;
@@ -322,8 +321,12 @@ final class CheckDelegate {
         return false;
     }
 
-    String getErrMsg() {
-        return context.getErrMsg();
+    String getErrMsgChain() {
+        return context.getErrMsgChain();
+    }
+
+    String getErrMsg () {
+        return context.getLastErrMsg();
     }
 
     boolean isEmpty(Object object) {

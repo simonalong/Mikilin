@@ -23,10 +23,10 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
     @Override
     public boolean match(Object object, String fieldName, Object value) {
         if (values.contains(value)) {
-            setBlackMsg("属性 {0} 的值 {1} 位于黑名单{2}中", fieldName, value, values.toString());
+            setBlackMsg("属性 {0} 的值 {1} 位于禁用值 {2}中", fieldName, value, values.toString());
             return true;
         } else {
-            setWhiteMsg("属性 {0} 的值 {1} 不在白单中 {2} 中", fieldName, value, values.toString());
+            setWhiteMsg("属性 {0} 的值 {1} 不在只可用列表 {2} 中", fieldName, value, values.toString());
             return false;
         }
     }
@@ -43,8 +43,8 @@ public class ValueMather extends AbstractBlackWhiteMatcher {
      * @param values 属性的可用的或者不可用列表String形式
      * @return 值匹配器
      */
-    public static ValueMather build(Field field, String[] values){
-        if(null == values || 0 == values.length){
+    public static ValueMather build(Field field, String[] values) {
+        if (null == values || 0 == values.length) {
             return null;
         }
 

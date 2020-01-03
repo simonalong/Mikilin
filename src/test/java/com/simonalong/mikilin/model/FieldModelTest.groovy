@@ -17,7 +17,7 @@ class FieldModelTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -36,7 +36,7 @@ class FieldModelTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -55,6 +55,7 @@ class FieldModelTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!result) {
+            println Checks.getErrMsgChain()
             println Checks.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
@@ -74,7 +75,7 @@ class FieldModelTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -93,7 +94,7 @@ class FieldModelTest extends Specification {
         expect:
         boolean actResult = Checks.check(entity)
         if (!result) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

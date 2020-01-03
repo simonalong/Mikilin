@@ -16,17 +16,48 @@
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
 ## 快速入门
-本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsg`获取错误信息。
+本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsgChain`获取所有错误信息或者通过`Checks.getErrMsg`获取某一项错误信息。
 
-## 引入
+### 引入
 ```xml
 <dependency>
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.3</version>
 </dependency>
 ```
 
+### 使用
+该框架使用极其简单，如下：给需要拦截的属性添加注解即可
+```java
+@Data
+@Accessors(chain = true)
+public class WhiteAEntity {
+    
+    // 修饰属性name，只允许对应的值为a，b,c和null
+    @WhiteMatcher({"a","b","c","null"})
+    private String name;
+    private String address;
+}
+```
+
+在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
+```java
+@Test
+public void test1(){
+    WhiteAEntity whiteAEntity = new WhiteAEntity();
+    whiteAEntity.setName("d");
+    if (!Checks.check(whiteAEntity)) {
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        System.out.println(Checks.getErrMsgChain());
+        // 输出：属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
+        System.out.println(Checks.getErrMsg());
+    }
+}
+```
+
+## 详细介绍
+从上面用例可以看到该框架使用非常简单。但是框架的功能性却很强大，那么强大在哪，在于注解属性的多样性，后面一一介绍。对于属性这里的核查函数其实就是只有一个，不同的重载
 #### 核查函数
 ```java
 /**
@@ -46,7 +77,11 @@ public boolean check(String group, Object object) {}
 */
 public boolean check(String group, Object object, String... fieldSet){}
 /**
-* 核查失败时候的异常信息
+* 返回错误信息链
+*/
+public String getErrMsgChain() {}
+/**
+* 获取最后设置错误信息
 */
 public String getErrMsg() {}
 ```
@@ -75,8 +110,8 @@ public String getErrMsg() {}
 @Check
 ```
 
-### 具体用例
-#### 注解
+### 匹配器
+匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都作为属性，每个属性定位是能够匹配该领域的所有类型
 
 ```java
 @Repeatable(WhiteMatchers.class)
@@ -96,7 +131,7 @@ public @interface WhiteMatcher {
     Class<?>[] type() default {};
 
     /**
-     * 可用的值， 如果允许值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * 如果要匹配值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null，修饰的对象可以为Number类型也可以为String类型，也可以为Boolean类型
      * @return 只允许的值的列表
      */
     String[] value() default {};
@@ -121,8 +156,9 @@ public @interface WhiteMatcher {
      * <p> 该字段修饰的类型可以为数值类型，也可以为时间类型，也可以为集合类型（集合类型用来测试集合的size个数的范围）
      *
      * @return
-     * 如果是数值类型，且位于范围之内，则核查成功，当前支持的核查功能：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
-     * 如果是时间类型，则也可以进行比较，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数
+     * 如果是数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * 如果是集合类型，则比较的是集合的size大小，使用和上面一样，比如：[a,b]等等
+     * 如果是时间类型，可以使用这种，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数关键字
      * past: 表示过去
      * now: 表示现在
      * future: 表示未来
@@ -145,7 +181,7 @@ public @interface WhiteMatcher {
      *
      * 根据Java的运算符构造出来对应的条件表达式来进行判断，而其中的数据不仅可以和相关的数据做条件判断，还可和当前修饰的类的其他数据进行判断，
      * 其中当前类用#root表示，比如举例如下，对象中的一个属性小于另外一个属性，比如：{@code #current + #root.ratioB + #root.ratioC == 100}
-     * 其中#current表示当前的属性，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
+     * 其中#current表示当前的属性的值，#root表示当前的属性所在的对象，ratioB为该对象的另外一个属性，如上只有在属性ratioA是大于ratioB的时候核查才会拦截
      *
      * @return 用于数据字段之间的条件表达式（即条件结果为true还是false），当前条件支持Java的所有运算符，以及java的所有运算结果为boolean的表达式
      * 算术运算符：{@code  "+"、"-"、"*"、"/"、"％"、"++"、"--"}
@@ -167,7 +203,7 @@ public @interface WhiteMatcher {
     /**
      * 系统自己编码判断
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，第一个入参为当前Field对应的类型或者子类，第二个入参为属性对应的对象
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考测试类{@link com.simonalong.mikilin.judge.JudgeCheck}
      */
     String judge() default "";
 
@@ -199,7 +235,7 @@ def "只有指定的值才能通过"() {
     expect:
     boolean actResult = Checks.check(entity)
     if (!actResult) {
-        println Checks.getErrMsg()
+        println Checks.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 
@@ -288,7 +324,7 @@ def "IP测试"() {
     expect:
     boolean actResult = Checks.check(entity)
     if (!result) {
-        println Checks.getErrMsg()
+        println Checks.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 

@@ -1,6 +1,8 @@
-package com.simonalong.mikilin.value;
+package com.simonalong.mikilin.value.str;
 
 import com.simonalong.mikilin.annotation.Check;
+import com.simonalong.mikilin.value.str.BEntity;
+import com.simonalong.mikilin.value.str.CEntity;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;

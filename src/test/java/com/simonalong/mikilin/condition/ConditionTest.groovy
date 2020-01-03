@@ -19,7 +19,7 @@ class ConditionTest extends Specification {
         def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -38,7 +38,7 @@ class ConditionTest extends Specification {
         def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:
@@ -55,7 +55,7 @@ class ConditionTest extends Specification {
         def act = Checks.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsg
+            println Checks.errMsgChain
         }
 
         where:

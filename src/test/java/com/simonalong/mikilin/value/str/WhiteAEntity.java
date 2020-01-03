@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.value;
+package com.simonalong.mikilin.value.str;
 
 import com.simonalong.mikilin.annotation.WhiteMatcher;
 import lombok.Data;

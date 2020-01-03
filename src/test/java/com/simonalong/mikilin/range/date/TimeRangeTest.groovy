@@ -20,7 +20,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test1", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -43,7 +43,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test2", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -66,7 +66,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test3", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -89,7 +89,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test4", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -112,7 +112,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test5", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -135,7 +135,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test6", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -157,7 +157,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test7", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -179,7 +179,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test8", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -201,7 +201,7 @@ class TimeRangeTest extends Specification {
         expect:
         boolean actResult = Checks.check("test9", range)
         if (!actResult) {
-            println Checks.getErrMsg()
+            println Checks.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

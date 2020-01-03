@@ -1,20 +1,21 @@
-package com.simonalong.mikilin.value;
+package com.simonalong.mikilin.value.str;
 
 import com.simonalong.mikilin.annotation.Check;
 import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.value.str.BEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * @author zhouzhenyong
- * @since 2018/12/26 下午10:58
+ * @since 2019/1/5 下午6:44
  */
 @Data
 @Accessors(chain = true)
-public class BEntity {
+public class WhiteBEntity {
 
-    @WhiteMatcher({"a","b"})
-    private String name;
     @Check
-    private AEntity aEntity;
+    private BEntity bEntity;
+    @WhiteMatcher({"a", "b"})
+    private String name;
 }
