@@ -142,7 +142,6 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * @param obj 待构造需要的数据
      */
     @Override
-    @SuppressWarnings("all")
     public RangeMatcher build(String obj) {
         if (null == obj || "".equals(obj)) {
             return null;
