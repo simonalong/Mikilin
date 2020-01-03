@@ -13,6 +13,7 @@ import java.util.stream.Stream;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
+@SuppressWarnings("rawtypes")
 public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements
     Builder<EnumTypeMatcher, Class<? extends Enum>[]> {
 
@@ -22,7 +23,7 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements
     @Override
     public boolean match(Object object, String name, Object value) {
         if(value instanceof String) {
-            String target = String.class.cast(value);
+            String target = (String) value;
             if (enumClass.length > 0) {
                 boolean result = Stream.of(enumClass).filter(Class::isEnum).anyMatch(e -> {
                     try {

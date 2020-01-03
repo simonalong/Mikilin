@@ -82,7 +82,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
      * @param current 当前属性的值
      * @return 返回对应的替换的数据映射
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Maps parseConditionExpress(String express, Object root, Field currentField, Number current) {
         Maps maps = Maps.of();
         String regex = "(#root)\\.(\\w+)";
@@ -109,7 +109,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
         if (!fullFieldName.contains(ROOT)) {
             return null;
         }
-        String filedName = fullFieldName.substring(ROOT.length() + 1, fullFieldName.length());
+        String filedName = fullFieldName.substring(ROOT.length() + 1);
         try {
             Field field = root.getClass().getDeclaredField(filedName);
             field.setAccessible(true);

@@ -134,7 +134,7 @@ public class FieldJudge {
             .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
-            .addMatcher(JudgeMatcher.build(field, validCheck.judge(), context))
+            .addMatcher(JudgeMatcher.build(validCheck.judge(), context))
             .setDisable(validCheck.disable());
     }
 
@@ -149,7 +149,7 @@ public class FieldJudge {
             .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
             .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
-            .addMatcher(JudgeMatcher.build(field, invalidCheck.judge(), context))
+            .addMatcher(JudgeMatcher.build(invalidCheck.judge(), context))
             .setDisable(invalidCheck.disable());
     }
 

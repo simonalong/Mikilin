@@ -6,7 +6,7 @@ import com.simonalong.mikilin.exception.JudgeException;
 import com.simonalong.mikilin.funcation.MultiPredicate;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.SingleFactory;
-import java.lang.reflect.Field;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
@@ -75,19 +75,17 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
      * <p>
      * 过滤器可以有多种类型，根据参数的不同有不同的类型
      * <p>
-     * @param field 属性
      * @param judge 回调判决，这里是类和对应的函数组成
      * @param context 上下文
      * @return 匹配器的判决器
      */
-    @SuppressWarnings("all")
-    public static JudgeMatcher build(Field field, String judge, MkContext context) {
+    public static JudgeMatcher build(String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
         }
 
         JudgeMatcher judgeMatcher = new JudgeMatcher();
-        Integer index = judge.indexOf("#");
+        int index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);
         // 是否包含函数标志
@@ -106,7 +104,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                 Class<?> returnType = m.getReturnType();
                 if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
                     || returnType.getSimpleName().equals(booleanStr)) {
-                    Integer paramsCnt = m.getParameterCount();
+                    int paramsCnt = m.getParameterCount();
                     // 一个参数，则该参数为属性的类型
                     if (1 == paramsCnt) {
                         judgeMatcher.valuePre = v -> {
@@ -119,7 +117,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                             return false;
                         };
                     } else if (2 == paramsCnt) {
-                        Class p2Cls = m.getParameterTypes()[1];
+                        Class<?> p2Cls = m.getParameterTypes()[1];
                         if (MkContext.class.isAssignableFrom(p2Cls)) {
                             // 两个参数，则第一个为核查的对象，第二个为参数为属性的值
                             judgeMatcher.valueContextPre = (v, c) -> {
@@ -144,7 +142,7 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
                             };
                         }
                     } else if (3 == paramsCnt) {
-                        Class p3Cls = m.getParameterTypes()[2];
+                        Class<?> p3Cls = m.getParameterTypes()[2];
                         // 三个参数，这个时候，第一个参数是核查的对象，第二个参数为属性的值，第三个参数为contexts
                         if(MkContext.class.isAssignableFrom(p3Cls)) {
                             judgeMatcher.objValueContextPre = (o, v, c) -> {

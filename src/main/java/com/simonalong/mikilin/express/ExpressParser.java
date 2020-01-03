@@ -21,16 +21,16 @@ public class ExpressParser {
         binding = new Binding();
     }
 
-    public ExpressParser(Maps maps){
+    public ExpressParser(Maps<?, ?> maps){
         binding = new Binding(maps.build());
     }
 
-    public void setBinding(Maps maps){
+    public void setBinding(Maps<?, ?> maps){
         binding = new Binding(maps.build());
     }
 
     @SuppressWarnings("unchecked")
-    public void addBinding(Maps maps){
+    public void addBinding(Maps<?, ?> maps){
         binding.getVariables().putAll(maps.build());
     }
 

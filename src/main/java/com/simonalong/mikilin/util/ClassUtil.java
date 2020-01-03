@@ -75,7 +75,7 @@ public class ClassUtil {
                 return true;
             }
             try {
-                return ((Class) cls.getField("TYPE").get(null)).isPrimitive();
+                return ((Class<?>) cls.getField("TYPE").get(null)).isPrimitive();
             } catch (IllegalAccessException | NoSuchFieldException ignored) {
             }
             return false;
@@ -92,9 +92,9 @@ public class ClassUtil {
      */
     public Class<?> peel(Type type) {
         if (type instanceof Class<?>) {
-            return Class.class.cast(type);
+            return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
-            ParameterizedType p = ParameterizedType.class.cast(type);
+            ParameterizedType p = (ParameterizedType) type;
             Type[] types = p.getActualTypeArguments();
             if (types.length == 1) {
                 return peel(types[0]);
@@ -114,13 +114,13 @@ public class ClassUtil {
      */
     public Class<?> peel(Object object) {
         if (object instanceof Collection) {
-            Collection collection = Collection.class.cast(object);
+            Collection<?> collection = (Collection<?>) object;
             if (!collection.isEmpty()) {
                 return peel(collection.stream().findFirst().get());
             }
             return null;
         } else if (object instanceof Map) {
-            Map map = Map.class.cast(object);
+            Map<?, ?> map = (Map<?, ?>) object;
             return peel(map.values());
         } else {
             return object.getClass();

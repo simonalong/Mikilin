@@ -29,7 +29,7 @@ public class SingleFactory {
 
         return (T) dataMap.computeIfAbsent(tClass.getCanonicalName(), k->{
             try {
-                Constructor constructor = tClass.getDeclaredConstructor();
+                Constructor<?> constructor = tClass.getDeclaredConstructor();
                 constructor.setAccessible(true);
                 return constructor.newInstance();
             } catch (Exception e) {

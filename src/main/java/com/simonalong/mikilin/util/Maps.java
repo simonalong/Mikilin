@@ -21,8 +21,8 @@ public class Maps<K, V> {
      * @param kvs key-value-key-value这种kv入参
      * @return 构造的Maps结构
      */
-    @SuppressWarnings("unchecked")
-    public static Maps of(Object... kvs) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static Maps<?, ?> of(Object... kvs) {
         if (kvs.length % 2 != 0) {
             log.error("Maps.of的参数需要是key-value-key-value...这种格式");
             return new Maps();
@@ -39,22 +39,22 @@ public class Maps<K, V> {
         return maps;
     }
 
-    public Maps put(Map<K, V> map) {
+    public Maps<K, V> put(Map<K, V> map) {
         dataMap.putAll(map);
         return this;
     }
 
-    public Maps put(K key, V value) {
+    public Maps<K, V> put(K key, V value) {
         dataMap.put(key, value);
         return this;
     }
 
-    public Maps add(Map<K, V> map) {
+    public Maps<K, V> add(Map<K, V> map) {
         dataMap.putAll(map);
         return this;
     }
 
-    public Maps add(K key, V value) {
+    public Maps<K, V> add(K key, V value) {
         dataMap.put(key, value);
         return this;
     }

@@ -106,7 +106,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     }
 
     private Boolean match(String name, Object value, RangeDataType dataType) {
-        Boolean result = predicate.test(value);
+        boolean result = predicate.test(value);
         if (result) {
             setBlackMsg("属性 {0} 的 {1} 位于禁用的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return true;
@@ -336,9 +336,9 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      */
     private String replaceSystem(String str) {
         AtomicReference<String> result = new AtomicReference<>(str);
-        timeMap.entrySet().stream().forEach(e->{
-            if(str.contains(e.getKey())){
-                result.set(str.replace(e.getKey(), ymdhmssFormat.format(e.getValue())));
+        timeMap.forEach((key, value) -> {
+            if (str.contains(key)) {
+                result.set(str.replace(key, ymdhmssFormat.format(value)));
             }
         });
         return result.get();
@@ -364,14 +364,8 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     }
 
     public enum RangeDataType {
-        DATE_TYPE("时间类型"),
-        NUM_TYPE("数字类型"),
-        COLLECTION_TYPE("集合类型");
-
-        private String name;
-
-        RangeDataType(String name) {
-            this.name = name;
-        }
+        DATE_TYPE,
+        NUM_TYPE,
+        COLLECTION_TYPE
     }
 }

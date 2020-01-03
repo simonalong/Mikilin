@@ -15,7 +15,6 @@ import java.util.Set;
  * @author zhouzhenyong
  * @since 2018/12/24 下午10:31
  */
-@SuppressWarnings("unchecked")
 final class CheckDelegate {
 
     private ThreadLocal<String> localGroup;
@@ -54,13 +53,13 @@ final class CheckDelegate {
             return true;
         }
 
-        Class cls = object.getClass();
+        Class<?> cls = object.getClass();
         if (ClassUtil.isCheckedType(cls)) {
             // 底层基本校验类型，则放过
             return true;
         } else if (Collection.class.isAssignableFrom(cls)) {
             // 集合类型，则剥离集合，获取泛型的类型再进行判断
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (!CollectionUtil.isEmpty(collection)) {
                 return collection.stream().allMatch(c -> available(c, fieldSet, objectFieldMap, whiteSet, blackSet));
             } else {
@@ -69,7 +68,7 @@ final class CheckDelegate {
             }
         } else if (Map.class.isAssignableFrom(cls)) {
             // Map 结构中的数据的判断，目前只判断value中的值
-            Map map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>) object;
             if (!CollectionUtil.isEmpty(map)) {
                 // 检查所有不合法属性
                 boolean allMatch = map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, fieldSet, objectFieldMap, whiteSet, blackSet));
@@ -112,7 +111,7 @@ final class CheckDelegate {
      */
     private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap,
         Map<String, MatcherManager> whiteGroupMather, Map<String, MatcherManager> blackGroupMather) {
-        Class cls = field.getType();
+        Class<?> cls = field.getType();
 
         if (ClassUtil.isCheckedType(cls)) {
             // 待核查类型，则直接校验
@@ -174,53 +173,24 @@ final class CheckDelegate {
      * @param field 属性
      * @param whiteGroupMather 属性的可用值列表
      * @param blackGroupMather 属性的不可用值列表
-     * @return 1.黑白名单都有空，则不核查该参数，放过 2.对象为空 1.只有（白名单不空且包含）则放过 2.其他都不放过 3.对象不空 1.如果（黑名单不空且包含）则不放过 2.如果（白名单不空且不包含）则不放过
-     * 3.其他都放过
+     * @return true：可用，false：不可用
      */
     private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatcherManager> whiteGroupMather,
         Map<String, MatcherManager> blackGroupMather) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
-        // 1.黑白名单都有空，则不核查该参数，放过
+        // 1.黑白名单都有空，则不核查该参数，可用
         if (whiteEmpty && blackEmpty) {
             return true;
         }
 
-        try {
-            field.setAccessible(true);
-            // 2.对象为空
-            if (isEmpty(field.get(object))) {
-
-                // 1.（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldContain(object, field, blackGroupMather, false)) {
-                    return false;
-                }
-
-                // 2.（白名单不空且不包含）则不放过
-                if (!whiteEmpty && !fieldContain(object, field, whiteGroupMather, true)) {
-                    return false;
-                }
-                return true;
-            }
-            // 3.对象不空
-            else {
-                // 1.如果（黑名单不空且包含）则不放过
-                if (!blackEmpty && fieldContain(object, field, blackGroupMather, false)) {
-                    return false;
-                }
-
-                // 2.如果（白名单不空且不包含）则不放过
-                if (!whiteEmpty && !fieldContain(object, field, whiteGroupMather, true)) {
-                    return false;
-                }
-
-                // 3.其他都放过
-                return true;
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        field.setAccessible(true);
+        // 2.黑名单不空且包含，则不可用
+        if (!blackEmpty && fieldContain(object, field, blackGroupMather, false)) {
+            return false;
         }
-        return true;
+        // 3.白名单为空或者白名单不空且包含，则可用
+        return whiteEmpty || fieldContain(object, field, whiteGroupMather, true);
     }
 
     /**
@@ -334,10 +304,10 @@ final class CheckDelegate {
             String str = (String) object;
             return "".equals(str) || "null".equals(str) || "undefined".equals(str);
         } else if (object instanceof Map) {
-            Map map = (Map) object;
+            Map<?,?> map = (Map<?,?>) object;
             return CollectionUtil.isEmpty(map);
         } else if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             return CollectionUtil.isEmpty(collection);
         } else {
             return object == null;
