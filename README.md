@@ -333,6 +333,11 @@ def "枚举类型测试"() {
 
 #### 只要匹配指定的内置类型通过
 目前内置了常见的几种类型：身份证号、手机号、固定电话、邮箱、IP地址
+> ID_CARD ：身份证号 <br/>
+> PHONE_NUM ：手机号<br/>
+> FIXED_PHONE ：固定电话<br/>
+> MAIL ：邮箱<br/>
+> IP_ADDRESS： IP地址<br/>
 ```java
 @Data
 @Accessors(chain = true)
