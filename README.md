@@ -373,6 +373,24 @@ public class RangeEntity4 {
      */
     @WhiteMatcher(range = "[20, 50]")
     private Integer num5;
+
+    /**
+     * 属性为大于等于100，同属性num2一样
+     */
+    @WhiteMatcher(range = "[100, )")
+    private Integer num6;
+    
+    /**
+     * 属性为大于等于100，同属性num2一样
+     */
+    @WhiteMatcher(range = "[100,)")
+    private Integer num7;
+    
+    /**
+     * 属性为小于等于5，同属性num4一样
+     */
+    @WhiteMatcher(range = "(, 50]")
+    private Integer num8;
 }
 ```
 ##### 表示时间类型
