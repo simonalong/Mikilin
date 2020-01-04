@@ -6,7 +6,7 @@ package com.simonalong.mikilin.exception;
  */
 public class MkException extends Exception {
 
-    private static final String LOG_PRE = "异常-";
+    private static final String LOG_PRE = "核查异常:";
 
     public MkException(String message) {
         super(LOG_PRE + message);

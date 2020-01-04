@@ -43,16 +43,24 @@ public class WhiteAEntity {
 
 在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
 ```java
+import lombok.SneakyThrows;
+
 @Test
+@SneakyThrows
 public void test1(){
     WhiteAEntity whiteAEntity = new WhiteAEntity();
     whiteAEntity.setName("d");
+
+    // 可以使用带有返回值的核查
     if (!Checks.check(whiteAEntity)) {
         // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
         System.out.println(Checks.getErrMsgChain());
         // 输出：属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
         System.out.println(Checks.getErrMsg());
     }
+
+    // 或者 可以采用抛异常的核查
+    Checks.checkWithException(whiteAEntity);
 }
 ```
 
@@ -84,6 +92,26 @@ public String getErrMsgChain() {}
 * 获取最后设置错误信息
 */
 public String getErrMsg() {}
+
+/**
+ * 核查对象失败抛异常
+ */
+public void checkWithException(Object object) throws MkException
+
+/**
+ * 核查对象指定属性失败抛异常
+ */
+public void checkWithException(Object object, String ...fieldSet) throws MkException
+
+/**
+ * 根据组核查对象失败抛异常
+ */
+public void checkWithException(String group, Object object) throws MkException
+
+/**
+ * 根据组核查对象指定属性失败抛异常
+ */
+public void checkWithException(String group, Object object, String ...fieldSet) throws MkException
 ```
 
 #### 注解

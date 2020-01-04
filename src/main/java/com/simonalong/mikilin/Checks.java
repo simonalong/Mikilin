@@ -5,6 +5,7 @@ import com.simonalong.mikilin.annotation.BlackMatcher;
 import com.simonalong.mikilin.annotation.BlackMatchers;
 import com.simonalong.mikilin.annotation.WhiteMatcher;
 import com.simonalong.mikilin.annotation.WhiteMatchers;
+import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
@@ -121,6 +122,58 @@ public final class Checks {
         } else {
             return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
                 getObjFieldMap(object), getWhiteMap(), getBlackMap());
+        }
+    }
+
+    /**
+     * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
+     *
+     * @param object 待核查对象
+     * @exception MkException 核查失败异常
+     */
+    public void checkWithException(Object object) throws MkException {
+        if(!check(object)){
+            throw new MkException(getErrMsg());
+        }
+    }
+
+    /**
+     * 针对对象的某些属性进行核查
+     *
+     * @param object 待核查对象
+     * @param fieldSet 待核查对象的多个属性名字
+     * @exception MkException 核查失败异常
+     */
+    public void checkWithException(Object object, String ...fieldSet) throws MkException {
+        if(!check(object, fieldSet)){
+            throw new MkException(getErrMsg());
+        }
+    }
+
+    /**
+     * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
+     *
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param object 待核查对象
+     * @exception MkException 核查失败异常
+     */
+    public void checkWithException(String group, Object object) throws MkException {
+        if(!check(group, object)){
+            throw new MkException(getErrMsg());
+        }
+    }
+
+    /**
+     * 针对对象的某些属性进行核查
+     *
+     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param object 待核查对象
+     * @param fieldSet 待核查对象的多个属性名字
+     * @exception MkException 核查失败异常
+     */
+    public void checkWithException(String group, Object object, String ...fieldSet) throws MkException {
+        if(!check(group, object, fieldSet)){
+            throw new MkException(getErrMsg());
         }
     }
 

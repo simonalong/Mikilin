@@ -1,6 +1,7 @@
 package com.simonalong.mikilin.value.str
 
 import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.exception.MkException
 import com.simonalong.mikilin.value.bool.BooleanEntity
 import org.junit.Assert
 import spock.lang.Specification
@@ -10,8 +11,6 @@ import spock.lang.Specification
  * @since 2019/3/10 下午10:11
  */
 class StringValueTest extends Specification {
-
-
 
     def "number类型测试"(){
         given:
@@ -30,6 +29,23 @@ class StringValueTest extends Specification {
         true  | true
         false | false
         null  | true
+    }
+
+    def "异常类型测试"(){
+        given:
+        BooleanEntity entity = new BooleanEntity()
+        entity.setFlag(flag)
+
+        when:
+        Checks.checkWithException(entity)
+
+        then:
+        def e = thrown(MkException)
+        print e
+
+        where:
+        flag  | result
+        false | false
     }
 
     def "复杂类型白名单测试"() {
