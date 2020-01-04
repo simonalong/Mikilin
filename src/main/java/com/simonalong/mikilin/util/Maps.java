@@ -22,7 +22,7 @@ public class Maps<K, V> {
      * @return 构造的Maps结构
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static Maps<?, ?> of(Object... kvs) {
+    public static Maps of(Object... kvs) {
         if (kvs.length % 2 != 0) {
             log.error("Maps.of的参数需要是key-value-key-value...这种格式");
             return new Maps();

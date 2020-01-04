@@ -60,7 +60,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     /**
      * 时间或者数字范围匹配
      */
-    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.+),(\\s)*(.+)(\\)|\\]){1}$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.*),(\\s)*(.*)(\\)|\\]){1}$");
     /**
      * 判决对象
      */
@@ -111,7 +111,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             setBlackMsg("属性 {0} 的 {1} 位于禁用的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
             return true;
         } else {
-            setWhiteMsg("属性 {0} 的 {1} 没有命中只允许的范围 {2} 中", name, format(value, dataType), replaceSystem(express));
+            setWhiteMsg("属性 {0} 的 {1} 没有命中只允许的范围 {2}", name, format(value, dataType), replaceSystem(express));
             return false;
         }
     }
@@ -212,8 +212,8 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
             String end = matcher.group(4);
             String endAli = matcher.group(5);
 
-            if (begin.equals(NULL_STR) && end.equals(NULL_STR)) {
-                log.error("range匹配器格式输入错误，start和end不可都为null, input={}", input);
+            if ((begin.equals(NULL_STR) || begin.equals("")) && (end.equals(NULL_STR) || end.equals(""))) {
+                log.error("range匹配器格式输入错误，start和end不可都为null或者空字符, input={}", input);
             } else if (begin.equals(PAST) || begin.equals(FUTURE)) {
                 log.error("range匹配器格式输入错误, start不可含有past或者future, input={}", input);
             } else if (end.equals(PAST) || end.equals(FUTURE)) {
@@ -250,7 +250,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
 
     private Number parseNum(String data) {
         try {
-            if (NULL_STR.equals(data)){
+            if (data.equals(NULL_STR) || data.equals("")){
                 return null;
             }
             return Numbers.parseDecimal(data);
