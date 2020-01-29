@@ -6,14 +6,14 @@ package com.simonalong.mikilin.exception;
  */
 public class MkException extends Exception {
 
-    private static final String LOG_PRE = "核查异常:";
+    private static final String PRE = "核查异常:";
 
     public MkException(String message) {
-        super(LOG_PRE + message);
+        super(PRE + message);
     }
 
     public MkException(String message, Throwable e) {
-        super(LOG_PRE + message, e);
+        super(PRE + message, e);
     }
 
     public MkException(Throwable e) {

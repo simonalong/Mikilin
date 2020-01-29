@@ -100,10 +100,10 @@ class RangeTest extends Specification {
         where:
         num1 | num2 | num3 | num4 | result
         101  | 100  | 49   | 50   | true
-//        100  | 100  | 49   | 50   | false
-//        101  | 90   | 49   | 50   | false
-//        101  | 100  | 50   | 50   | false
-//        101  | 100  | 50   | 51   | false
+        100  | 100  | 49   | 50   | false
+        101  | 90   | 49   | 50   | false
+        101  | 100  | 50   | 50   | false
+        101  | 100  | 50   | 51   | false
     }
 
     def "范围的无限字段测试2"() {
