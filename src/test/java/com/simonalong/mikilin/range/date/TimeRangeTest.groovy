@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.date
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -18,9 +18,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time).setLength(length);
 
         expect:
-        boolean actResult = Checks.check("test1", range)
+        boolean actResult = MkValidators.check("test1", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -41,9 +41,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test2", range)
+        boolean actResult = MkValidators.check("test2", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -64,9 +64,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test3", range)
+        boolean actResult = MkValidators.check("test3", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -87,9 +87,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test4", range)
+        boolean actResult = MkValidators.check("test4", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -110,9 +110,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test5", range)
+        boolean actResult = MkValidators.check("test5", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -133,9 +133,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test6", range)
+        boolean actResult = MkValidators.check("test6", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -155,9 +155,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test7", range)
+        boolean actResult = MkValidators.check("test7", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -177,9 +177,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test8", range)
+        boolean actResult = MkValidators.check("test8", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -199,9 +199,9 @@ class TimeRangeTest extends Specification {
         RangeTimeEntity1 range = new RangeTimeEntity1().setTime(time)
 
         expect:
-        boolean actResult = Checks.check("test9", range)
+        boolean actResult = MkValidators.check("test9", range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.regex
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -15,9 +15,9 @@ class FieldRegexTest extends Specification {
         RegexEntity entity = new RegexEntity().setRegexValid(valid).setRegexInValid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

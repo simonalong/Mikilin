@@ -16,8 +16,7 @@ import lombok.experimental.UtilityClass;
  * @author zhouzhenyong
  * @since 2018/12/25 下午5:17
  */
-@UtilityClass
-public class ClassUtil {
+public final class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性，包括继承的
@@ -25,7 +24,7 @@ public class ClassUtil {
      * @param cls 待获取的类
      * @return 类的所有属性
      */
-    public Set<Field> allFieldsOfClass(Class<?> cls) {
+    public static Set<Field> allFieldsOfClass(Class<?> cls) {
         Set<Field> fieldSet = new HashSet<>();
         while (cls != null) {
             fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
@@ -54,7 +53,7 @@ public class ClassUtil {
      * @param cls 待校验的类
      * @return true=是基类，false=非基类
      */
-    public boolean isCheckedType(Class<?> cls) {
+    public static boolean isCheckedType(Class<?> cls) {
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class));
         if (baseFlag) {
             return true;
@@ -90,7 +89,7 @@ public class ClassUtil {
      * @param type 待拆分的类
      * @return 拆分之后类的类型
      */
-    public Class<?> peel(Type type) {
+    public static Class<?> peel(Type type) {
         if (type instanceof Class<?>) {
             return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
@@ -112,7 +111,7 @@ public class ClassUtil {
      * @param object 待拆解的类
      * @return 拆解后类的类型
      */
-    public Class<?> peel(Object object) {
+    public static Class<?> peel(Object object) {
         if (object instanceof Collection) {
             Collection<?> collection = (Collection<?>) object;
             if (!collection.isEmpty()) {

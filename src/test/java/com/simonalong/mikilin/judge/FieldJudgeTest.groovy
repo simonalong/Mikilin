@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.judge
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -18,9 +18,9 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
-        boolean actResult = Checks.check(entity, "name", "age", "address")
+        boolean actResult = MkValidators.check(entity, "name", "age", "address")
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -45,9 +45,9 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setMRatio(mRatio).setNRatio(nRatio)
 
         expect:
-        boolean actResult = Checks.check(entity, "mRatio")
+        boolean actResult = MkValidators.check(entity, "mRatio")
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -62,9 +62,9 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setTwoPa(twoPa)
 
         expect:
-        boolean actResult = Checks.check(entity, "twoPa")
+        boolean actResult = MkValidators.check(entity, "twoPa")
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -80,9 +80,9 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
 
         expect:
-        boolean actResult = Checks.check(entity, "threePa")
+        boolean actResult = MkValidators.check(entity, "threePa")
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -99,9 +99,9 @@ class FieldJudgeTest extends Specification {
         JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
 
         expect:
-        boolean actResult = Checks.check(entity, "threePa")
+        boolean actResult = MkValidators.check(entity, "threePa")
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

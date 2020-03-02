@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.bool
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -16,9 +16,9 @@ class BooleanValueTest extends Specification {
         entity.setFlag(flag)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

@@ -16,7 +16,7 @@
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
 ## 快速入门
-本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`Checks.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`Checks.check(Object obj)`返回失败，并通过`Checks.getErrMsgChain`获取所有错误信息或者通过`Checks.getErrMsg`获取某一项错误信息。
+本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`MkValidators.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
 
 ### 引入
 ```xml
@@ -52,15 +52,15 @@ public void test1(){
     whiteAEntity.setName("d");
 
     // 可以使用带有返回值的核查
-    if (!Checks.check(whiteAEntity)) {
+    if (!MkValidators.check(whiteAEntity)) {
         // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
-        System.out.println(Checks.getErrMsgChain());
+        System.out.println(MkValidators.getErrMsgChain());
         // 输出：属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
-        System.out.println(Checks.getErrMsg());
+        System.out.println(MkValidators.getErrMsg());
     }
 
     // 或者 可以采用抛异常的核查
-    Checks.checkWithException(whiteAEntity);
+    MkValidators.checkWithException(whiteAEntity);
 }
 ```
 
@@ -261,9 +261,9 @@ def "只有指定的值才能通过"() {
     entity.setName(name as String)
 
     expect:
-    boolean actResult = Checks.check(entity)
+    boolean actResult = MkValidators.check(entity)
     if (!actResult) {
-        println Checks.getErrMsgChain()
+        println MkValidators.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 
@@ -314,10 +314,10 @@ def "枚举类型测试"() {
     JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag)
 
     expect:
-    def act = Checks.check(judgeEntity)
+    def act = MkValidators.check(judgeEntity)
     Assert.assertEquals(result, act)
     if (!act) {
-        println Checks.errMsg
+        println MkValidators.errMsg
     }
 
     where:
@@ -355,9 +355,9 @@ def "IP测试"() {
     IpEntity entity = new IpEntity().setIpValid(valid).setIpInvalid(invalid)
 
     expect:
-    boolean actResult = Checks.check(entity)
+    boolean actResult = MkValidators.check(entity)
     if (!result) {
-        println Checks.getErrMsgChain()
+        println MkValidators.getErrMsgChain()
     }
     Assert.assertEquals(result, actResult)
 
@@ -705,7 +705,7 @@ public @interface WhiteMatchers {
     WhiteMatcher[] value();
 }
 ```
-使用时候，通过属性中的group进行定义不同的规则，核查的时候，采用函数`Checks.check(String group, Object obj)`进行核查，如果采用`Checks.check(Object obj)`则采用默认的组，即下面的没有设置组的匹配规则
+使用时候，通过属性中的group进行定义不同的规则，核查的时候，采用函数`MkValidators.check(String group, Object obj)`进行核查，如果采用`MkValidators.check(Object obj)`则采用默认的组，即下面的没有设置组的匹配规则
 ```java
 @Data
 @Accessors(chain = true)
@@ -733,10 +733,10 @@ def "测试指定分组"() {
     GroupEntity entity = new GroupEntity().setAge(age).setName(name)
 
     expect:
-    def act = Checks.check("test1", entity);
+    def act = MkValidators.check("test1", entity);
     Assert.assertEquals(result, act)
     if (!act) {
-        println Checks.errMsg
+        println MkValidators.errMsg
     }
 
     where:
@@ -772,10 +772,10 @@ def "测试指定的属性age"() {
     TestEntity entity = new TestEntity().setName(name).setAge(age)
 
     expect:
-    def act = Checks.check(entity, "age");
+    def act = MkValidators.check(entity, "age");
     Assert.assertEquals(result, act)
     if (!act) {
-        println Checks.errMsg
+        println MkValidators.errMsg
     }
 
     where:

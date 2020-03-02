@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.common
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -15,10 +15,10 @@ class CheckTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age)
 
         expect:
-        def act = Checks.check(entity, "name", "age");
+        def act = MkValidators.check(entity, "name", "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -35,10 +35,10 @@ class CheckTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age)
 
         expect:
-        def act = Checks.check(entity, "age");
+        def act = MkValidators.check(entity, "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -54,10 +54,10 @@ class CheckTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
-        def act = Checks.check(entity, "address");
+        def act = MkValidators.check(entity, "address");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:

@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.num
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -16,9 +16,9 @@ class IntegerValueTest extends Specification {
         entity.setAge(age)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.number
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -17,9 +17,9 @@ class RangeTest extends Specification {
         range.setAge2(age2)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -40,9 +40,9 @@ class RangeTest extends Specification {
         range.setAge5(age5)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -64,9 +64,9 @@ class RangeTest extends Specification {
         range.setMoney(money)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -91,9 +91,9 @@ class RangeTest extends Specification {
         range.setNum4(num4)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -115,10 +115,10 @@ class RangeTest extends Specification {
         range.setNum4(num4)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
-            println Checks.getErrMsg()
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 

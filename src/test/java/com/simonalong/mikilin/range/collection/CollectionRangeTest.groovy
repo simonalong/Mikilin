@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.collection
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -17,9 +17,9 @@ class CollectionRangeTest extends Specification {
         CollectionSizeEntityA range = new CollectionSizeEntityA().setBList(bList)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -40,9 +40,9 @@ class CollectionRangeTest extends Specification {
         CollectionSizeEntityA range = new CollectionSizeEntityA().setBList(bList)
 
         expect:
-        boolean actResult = Checks.check(range)
+        boolean actResult = MkValidators.check(range)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

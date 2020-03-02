@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.model
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -15,9 +15,9 @@ class FieldModelTest extends Specification {
         IdCardEntity entity = new IdCardEntity().setIdCardValid(valid).setIdCardInValid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -34,9 +34,9 @@ class FieldModelTest extends Specification {
         PhoneEntity entity = new PhoneEntity().setPhoneValid(valid).setPhoneInValid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -53,10 +53,10 @@ class FieldModelTest extends Specification {
         FixPhoneEntity entity = new FixPhoneEntity().setFixedPhone(valid).setFixedPhoneInValid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
-            println Checks.getErrMsg()
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
         }
         Assert.assertEquals(result, actResult)
 
@@ -73,9 +73,9 @@ class FieldModelTest extends Specification {
         MailEntity entity = new MailEntity().setMailValid(valid).setMailInValid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -92,9 +92,9 @@ class FieldModelTest extends Specification {
         IpEntity entity = new IpEntity().setIpValid(valid).setIpInvalid(invalid)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

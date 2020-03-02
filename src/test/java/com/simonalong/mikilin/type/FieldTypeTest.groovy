@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.type
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -15,9 +15,9 @@ class FieldTypeTest extends Specification {
         TypeEntity entity = new TypeEntity().setData(intData)
 
         expect:
-        boolean actResult = Checks.check(entity, "data")
+        boolean actResult = MkValidators.check(entity, "data")
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -33,9 +33,9 @@ class FieldTypeTest extends Specification {
         TypeEntity entity = new TypeEntity().setName(name)
 
         expect:
-        boolean actResult = Checks.check(entity, "name")
+        boolean actResult = MkValidators.check(entity, "name")
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -50,9 +50,9 @@ class FieldTypeTest extends Specification {
         TypeEntity entity = new TypeEntity().setObj(obj)
 
         expect:
-        boolean actResult = Checks.check(entity, "obj")
+        boolean actResult = MkValidators.check(entity, "obj")
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -76,9 +76,9 @@ class FieldTypeTest extends Specification {
         TypeEntity entity = new TypeEntity().setNum(obj)
 
         expect:
-        boolean actResult = Checks.check(entity, "num")
+        boolean actResult = MkValidators.check(entity, "num")
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 

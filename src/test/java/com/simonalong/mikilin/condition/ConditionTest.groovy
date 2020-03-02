@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.condition
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -16,10 +16,10 @@ class ConditionTest extends Specification {
         ConditionEntity1 entity = new ConditionEntity1().setNum1(num1).setNum2(num2).setNum3(num3)
 
         expect:
-        def act = Checks.check(entity);
+        def act = MkValidators.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -35,10 +35,10 @@ class ConditionTest extends Specification {
         ConditionEntity2 entity = new ConditionEntity2().setAge(age).setJudge(judge)
 
         expect:
-        def act = Checks.check(entity);
+        def act = MkValidators.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -52,10 +52,10 @@ class ConditionTest extends Specification {
         ConditionEntity3 entity = new ConditionEntity3().setNum1(num1).setNum2(num2).setNum3(num3)
 
         expect:
-        def act = Checks.check(entity);
+        def act = MkValidators.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:

@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.group
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -16,10 +16,10 @@ class GroupTest extends Specification {
         GroupEntity entity = new GroupEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check(entity);
+        def act = MkValidators.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -37,10 +37,10 @@ class GroupTest extends Specification {
         GroupEntity entity = new GroupEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check("test1", entity);
+        def act = MkValidators.check("test1", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -57,10 +57,10 @@ class GroupTest extends Specification {
         GroupEntity entity = new GroupEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check("test1", entity, "age");
+        def act = MkValidators.check("test1", entity, "age");
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -77,10 +77,10 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check(entity);
+        def act = MkValidators.check(entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -101,10 +101,10 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check("test1", entity);
+        def act = MkValidators.check("test1", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -125,10 +125,10 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check("test2", entity);
+        def act = MkValidators.check("test2", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
@@ -152,10 +152,10 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = Checks.check("test0", entity);
+        def act = MkValidators.check("test0", entity);
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:

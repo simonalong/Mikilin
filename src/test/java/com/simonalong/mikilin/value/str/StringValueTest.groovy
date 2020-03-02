@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.str
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import com.simonalong.mikilin.exception.MkException
 import com.simonalong.mikilin.value.bool.BooleanEntity
 import org.junit.Assert
@@ -18,9 +18,9 @@ class StringValueTest extends Specification {
         entity.setFlag(flag)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -37,7 +37,7 @@ class StringValueTest extends Specification {
         entity.setFlag(flag)
 
         when:
-        Checks.checkWithException(entity)
+        MkValidators.checkWithException(entity)
 
         then:
         def e = thrown(MkException)
@@ -54,9 +54,9 @@ class StringValueTest extends Specification {
         entity.setName(name as String)
 
         expect:
-        boolean actResult = Checks.check(entity)
+        boolean actResult = MkValidators.check(entity)
         if (!actResult) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
 
@@ -75,9 +75,9 @@ class StringValueTest extends Specification {
         entity.setName(name as String)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         where:
@@ -95,9 +95,9 @@ class StringValueTest extends Specification {
         entity.setName(name).setAge(age)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         where:
@@ -120,9 +120,9 @@ class StringValueTest extends Specification {
         entity.setName(whiteBName).setBEntity(new BEntity().setName(whiteBBName)
                 .setAEntity(new AEntity().setName(whiteBAName).setAge(age)))
 
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         expect:
@@ -148,9 +148,9 @@ class StringValueTest extends Specification {
         entity.setName(bName).setAEntity(new AEntity().setName(baName).setAge(12))
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         where:
@@ -169,9 +169,9 @@ class StringValueTest extends Specification {
         entity.setName(bName)
 
         expect:
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         where:
@@ -188,9 +188,9 @@ class StringValueTest extends Specification {
                 .setBEntities(Arrays.asList(new BEntity().setName(cb1Name), new BEntity().setName(cb2Name)))))
                 .setBEntity(new BEntity().setName(cName).setAEntity(new AEntity().setName(cbaName).setAge(12)))
 
-        Assert.assertEquals(result, Checks.check(entity))
+        Assert.assertEquals(result, MkValidators.check(entity))
         if (!result) {
-            println Checks.getErrMsgChain()
+            println MkValidators.getErrMsgChain()
         }
 
         expect:

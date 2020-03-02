@@ -1,36 +1,25 @@
 package com.simonalong.mikilin;
 
-import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.BlackMatchers;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatchers;
+import com.simonalong.mikilin.annotation.*;
 import com.simonalong.mikilin.exception.MkCheckException;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.experimental.UtilityClass;
 
 /**
- * 当前类后面版本准备弃用，改名为{@link MkValidators}
- *
- * @see MkValidators
- * @author zhouzhenyong
- * @since 2018/12/25 下午4:16
+ * @author shizi
+ * @since 2020/3/3 上午12:16
  */
-@Deprecated
 @SuppressWarnings("all")
 @UtilityClass
-public final class Checks {
+public final class MkValidators {
 
     /**
      * 对象属性值白名单
@@ -75,18 +64,18 @@ public final class Checks {
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param object 待核查对象
+     * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @return true：成功，false：核查失败
      */
-    public boolean check(Object object, String... fieldSet){
+    public boolean check(Object object, String... fieldSet) {
         return check(MkConstant.DEFAULT_GROUP, object, fieldSet);
     }
 
     /**
      * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @return true：成功，false：核查失败
      */
@@ -101,16 +90,15 @@ public final class Checks {
         if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
-            return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object),
-                getWhiteMap(), getBlackMap());
+            return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
-     * @param object 待核查对象
+     * @param group    分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @return true：成功，false：核查失败
      */
@@ -125,8 +113,7 @@ public final class Checks {
         if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
-            return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))),
-                getObjFieldMap(object), getWhiteMap(), getBlackMap());
+            return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
@@ -134,11 +121,11 @@ public final class Checks {
      * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
      *
      * @param object 待核查对象
-     * @exception MkCheckException 核查失败异常
+     * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
     public void checkWithException(Object object) throws MkCheckException {
-        if(!check(object)){
+        if (!check(object)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -146,13 +133,13 @@ public final class Checks {
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param object 待核查对象
+     * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
-     * @exception MkCheckException 核查失败异常
+     * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(Object object, String ...fieldSet) throws MkCheckException {
-        if(!check(object, fieldSet)){
+    public void checkWithException(Object object, String... fieldSet) throws MkCheckException {
+        if (!check(object, fieldSet)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -160,13 +147,13 @@ public final class Checks {
     /**
      * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
-     * @exception MkCheckException 核查失败异常
+     * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
     public void checkWithException(String group, Object object) throws MkCheckException {
-        if(!check(group, object)){
+        if (!check(group, object)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -174,14 +161,14 @@ public final class Checks {
     /**
      * 针对对象的某些属性进行核查
      *
-     * @param group 分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
-     * @param object 待核查对象
+     * @param group    分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
-     * @exception MkCheckException 核查失败异常
+     * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(String group, Object object, String ...fieldSet) throws MkCheckException {
-        if(!check(group, object, fieldSet)){
+    public void checkWithException(String group, Object object, String... fieldSet) throws MkCheckException {
+        if (!check(group, object, fieldSet)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -189,32 +176,31 @@ public final class Checks {
     /**
      * 将要核查的属性转换为Field类型
      *
-     * @param object 目标对象
+     * @param object      目标对象
      * @param fieldStrSet 调用方想要调用的属性的字符串名字集合
      * @return 属性的Field类型集合
      */
-    private Set<Field> getFieldToCheck(Object object, Set<String> fieldStrSet){
-        return ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(f -> fieldStrSet.contains(f.getName()))
-            .collect(Collectors.toSet());
+    private Set<Field> getFieldToCheck(Object object, Set<String> fieldStrSet) {
+        return ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(f -> fieldStrSet.contains(f.getName())).collect(Collectors.toSet());
     }
 
     /**
      * 用于索引列表和黑白名单列表核查
      *
-     * @param group 分组
-     * @param object 待核查的对象
-     * @param fieldSet 待核查的属性
+     * @param group          分组
+     * @param object         待核查的对象
+     * @param fieldSet       待核查的属性
      * @param objectFieldMap 对象的属性映射表，key为类的canonicalName，value为当前类的属性的集合
-     * @param whiteSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
-     * @param blackSet 属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @param whiteSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
+     * @param blackSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
-        Map<String,MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
+    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatcherManager> whiteSet,
+        Map<String, MatcherManager> blackSet) {
         delegate.setGroup(group);
         try {
             return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
-        }finally {
+        } finally {
             // 防止threadLocal对应的group没有释放
             delegate.clearGroup();
         }
@@ -223,7 +209,8 @@ public final class Checks {
     /**
      * 返回错误信息链
      * <p>
-     *     返回的结果是这种{@code xxxx没有匹配上 --> xxx的属性不符合需求 --> ...}
+     * 返回的结果是这种{@code xxxx没有匹配上 --> xxx的属性不符合需求 --> ...}
+     *
      * @return 多个匹配错误的信息
      */
     public String getErrMsgChain() {
@@ -232,6 +219,7 @@ public final class Checks {
 
     /**
      * 获取其中一个错误信息（即最后的一个错误信息）
+     *
      * @return 错误信息
      */
     public String getErrMsg() {
@@ -274,7 +262,7 @@ public final class Checks {
         // 剥离外部的一些壳之后类的类型
         String objectClsName = cls.getCanonicalName();
         // 若已经解析，则不再解析
-        if (objectFieldCheckMap.containsKey(objectClsName)){
+        if (objectFieldCheckMap.containsKey(objectClsName)) {
             return;
         }
 
@@ -296,7 +284,7 @@ public final class Checks {
 
                 WhiteMatchers whiteMatchers = f.getAnnotation(WhiteMatchers.class);
                 if (null != whiteMatchers) {
-                    Stream.of(whiteMatchers.value()).forEach(w-> {
+                    Stream.of(whiteMatchers.value()).forEach(w -> {
                         addObjectFieldMap(objectClsName, f.getName());
                         addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
                     });
@@ -304,7 +292,7 @@ public final class Checks {
 
                 BlackMatchers blackMatchers = f.getAnnotation(BlackMatchers.class);
                 if (null != blackMatchers) {
-                    Stream.of(blackMatchers.value()).forEach(w-> {
+                    Stream.of(blackMatchers.value()).forEach(w -> {
                         addObjectFieldMap(objectClsName, f.getName());
                         addBlackValueMap(blackGroupMap, objectClsName, f, w);
                     });
@@ -336,9 +324,8 @@ public final class Checks {
         });
     }
 
-    private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
-        WhiteMatcher whiteMatcher) {
-        Arrays.asList(whiteMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
+    private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field, WhiteMatcher whiteMatcher) {
+        Arrays.asList(whiteMatcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addWhite(objectName, field, whiteMatcher, context);
             } else {
@@ -348,9 +335,8 @@ public final class Checks {
         }));
     }
 
-    private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field,
-        BlackMatcher blackMatcher) {
-        Arrays.asList(blackMatcher.group()).forEach(g-> groupMather.compute(g, (k, v) -> {
+    private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field, BlackMatcher blackMatcher) {
+        Arrays.asList(blackMatcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
             if (null == v) {
                 return new MatcherManager().addBlack(objectName, field, blackMatcher, context);
             } else {

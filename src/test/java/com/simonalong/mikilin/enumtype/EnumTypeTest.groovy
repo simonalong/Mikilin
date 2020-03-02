@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.enumtype
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -15,10 +15,10 @@ class EnumTypeTest extends Specification {
         JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag)
 
         expect:
-        def act = Checks.check(judgeEntity)
+        def act = MkValidators.check(judgeEntity)
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:

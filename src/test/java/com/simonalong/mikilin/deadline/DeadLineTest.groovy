@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.deadline
 
-import com.simonalong.mikilin.Checks
+import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -16,10 +16,10 @@ class DeadLineTest extends Specification {
         DeadAEntity aEntity = new DeadAEntity().setDeadBEntity(bEntity)
 
         expect:
-        def act = Checks.check(aEntity)
+        def act = MkValidators.check(aEntity)
         Assert.assertEquals(result, act)
         if (!act) {
-            println Checks.errMsgChain
+            println MkValidators.errMsgChain
         }
 
         where:
