@@ -17,8 +17,9 @@ public class ExpressTest {
     public void testScript(){
         Date begin = getDate(2019, 2, 3, 12, 00, 32);
         Date end = getDate(2019, 9, 3, 12, 00, 32);
+        Date current = getDate(2019, 6, 3, 12, 00, 32);
         ExpressParser express = new ExpressParser(Maps.of("begin", begin, "end", end));
-        express.addBinding(Maps.of("o", new Date()));
+        express.addBinding(Maps.of("o", current));
         Assert.assertTrue(express.parse("import static java.lang.Math.*",
             "begin <= o && o <= end"));
     }

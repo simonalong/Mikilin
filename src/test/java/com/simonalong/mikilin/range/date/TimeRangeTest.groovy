@@ -143,7 +143,7 @@ class TimeRangeTest extends Specification {
         time                                       | result
         getDate(2019, 7, 20, 00, 00, 00).getTime() | true
         getDate(2019, 7, 24, 2, 7, 00).getTime()   | true
-        getDate(2019, 9, 4, 12, 06, 00).getTime()  | false
+        getDate(2119, 9, 4, 12, 06, 00).getTime()  | false
     }
 
     /**
@@ -165,7 +165,7 @@ class TimeRangeTest extends Specification {
         time                                       | result
         getDate(2019, 7, 20, 00, 00, 00).getTime() | true
         getDate(2019, 7, 24, 2, 7, 00).getTime()   | true
-        getDate(2019, 9, 4, 12, 06, 00).getTime()  | false
+        getDate(2119, 9, 4, 12, 06, 00).getTime()  | false
     }
 
     /**
@@ -187,7 +187,7 @@ class TimeRangeTest extends Specification {
         time                                       | result
         getDate(2019, 7, 20, 00, 00, 00).getTime() | true
         getDate(2019, 7, 24, 2, 7, 00).getTime()   | true
-        getDate(2019, 9, 4, 12, 06, 00).getTime()  | false
+        getDate(2119, 9, 4, 12, 06, 00).getTime()  | false
     }
 
     /**

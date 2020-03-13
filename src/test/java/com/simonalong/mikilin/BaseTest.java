@@ -1,6 +1,5 @@
 package com.simonalong.mikilin;
 
-import com.simonalong.mikilin.judge.JudgeEntity;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -9,5 +8,5 @@ import org.junit.runners.JUnit4;
  * @since 2019/8/4 上午11:34
  */
 @RunWith(JUnit4.class)
-public class BaseTest {
+public abstract class BaseTest {
 }
