@@ -37,7 +37,7 @@ class StringValueTest extends Specification {
         entity.setFlag(flag)
 
         when:
-        MkValidators.checkWithException(entity)
+        MkValidators.validate(entity)
 
         then:
         def e = thrown(MkException)

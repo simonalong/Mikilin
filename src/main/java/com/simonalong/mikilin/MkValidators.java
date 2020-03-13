@@ -120,11 +120,14 @@ public final class MkValidators {
     /**
      * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
      *
+     * <p>
+     *     同{@link MkValidators#check(Object)}，只是该方式会抛出异常
+     *
      * @param object 待核查对象
      * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(Object object) throws MkCheckException {
+    public void validate(Object object) throws MkCheckException {
         if (!check(object)) {
             throw new MkCheckException(getErrMsg());
         }
@@ -133,12 +136,15 @@ public final class MkValidators {
     /**
      * 针对对象的某些属性进行核查
      *
+     * <p>
+     *     同{@link MkValidators#check(Object, String...)}，只是该方式会抛出异常
+     *
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(Object object, String... fieldSet) throws MkCheckException {
+    public void validate(Object object, String... fieldSet) throws MkCheckException {
         if (!check(object, fieldSet)) {
             throw new MkCheckException(getErrMsg());
         }
@@ -147,12 +153,15 @@ public final class MkValidators {
     /**
      * 自定义的复杂类型校验，待核查类型校验不校验，核查失败抛异常
      *
+     * <p>
+     *     同{@link MkValidators#check(String, Object)}，只是该方式会抛出异常
+     *
      * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(String group, Object object) throws MkCheckException {
+    public void validate(String group, Object object) throws MkCheckException {
         if (!check(group, object)) {
             throw new MkCheckException(getErrMsg());
         }
@@ -161,13 +170,16 @@ public final class MkValidators {
     /**
      * 针对对象的某些属性进行核查
      *
+     * <p>
+     *     同{@link MkValidators#check(String, Object, String...)}，只是该方式会抛出异常
+     *
      * @param group    分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @throws MkCheckException 核查失败异常
      * @since 1.4.4
      */
-    public void checkWithException(String group, Object object, String... fieldSet) throws MkCheckException {
+    public void validate(String group, Object object, String... fieldSet) throws MkCheckException {
         if (!check(group, object, fieldSet)) {
             throw new MkCheckException(getErrMsg());
         }
