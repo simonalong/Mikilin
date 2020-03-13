@@ -59,8 +59,8 @@ public void test1(){
         System.out.println(MkValidators.getErrMsg());
     }
 
-    // 或者 可以采用抛异常的核查
-    MkValidators.checkWithException(whiteAEntity);
+    // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式
+    MkValidators.validate(whiteAEntity);
 }
 ```
 
@@ -96,22 +96,22 @@ public String getErrMsg() {}
 /**
  * 核查对象失败抛异常
  */
-public void checkWithException(Object object) throws MkException
+public void validate(Object object) throws MkException
 
 /**
  * 核查对象指定属性失败抛异常
  */
-public void checkWithException(Object object, String ...fieldSet) throws MkException
+public void validate(Object object, String ...fieldSet) throws MkException
 
 /**
  * 根据组核查对象失败抛异常
  */
-public void checkWithException(String group, Object object) throws MkException
+public void validate(String group, Object object) throws MkException
 
 /**
  * 根据组核查对象指定属性失败抛异常
  */
-public void checkWithException(String group, Object object, String ...fieldSet) throws MkException
+public void validate(String group, Object object, String ...fieldSet) throws MkException
 ```
 
 #### 注解
