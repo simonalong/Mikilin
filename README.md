@@ -23,7 +23,8 @@
 <dependency>
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
-    <version>1.4.3</version>
+    <!--请替换为最新版本-->
+    <version>${latest.release.version}</version>
 </dependency>
 ```
 
