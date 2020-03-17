@@ -55,7 +55,7 @@ public final class MkValidators {
      * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
      * @param object 待核查对象
-     * @return true：成功，false：核查失败
+     * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(Object object) {
         return check(MkConstant.DEFAULT_GROUP, object);
@@ -66,7 +66,7 @@ public final class MkValidators {
      *
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
-     * @return true：成功，false：核查失败
+     * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(Object object, String... fieldSet) {
         return check(MkConstant.DEFAULT_GROUP, object, fieldSet);
@@ -77,7 +77,7 @@ public final class MkValidators {
      *
      * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
-     * @return true：成功，false：核查失败
+     * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object) {
         String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
@@ -100,7 +100,7 @@ public final class MkValidators {
      * @param group    分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
-     * @return true：成功，false：核查失败
+     * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object, String... fieldSet) {
         String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;

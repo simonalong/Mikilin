@@ -12,9 +12,11 @@ import com.simonalong.mikilin.match.matcher.RegexMatcher;
 import com.simonalong.mikilin.match.matcher.ModelMatcher;
 import com.simonalong.mikilin.match.matcher.TypeMatcher;
 import com.simonalong.mikilin.match.matcher.ValueMather;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -41,35 +43,43 @@ public class FieldJudge {
     private List<Matcher> matcherList = new ArrayList<>();
 
     /**
+     * 拦截后的自定义描述
+     */
+    private String errMsg;
+
+    /**
      * 属性核查禁用标示，对应{@link WhiteMatcher#disable()}或者{@link BlackMatcher#disable()}
      */
     private Boolean disable;
 
     /**
      * 判断是否符合匹配器中的白名单匹配
-     *
+     * <p>
      * 针对匹配器中的所有不空的匹配器进行匹配，如果所有的不为空的白名单中都没有匹配上则说明没有匹配上
      *
-     * @param object 待校验的属性的对象
-     * @param value 待校验的数据，就是属性的值
+     * @param object  待校验的属性的对象
+     * @param value   待校验的数据，就是属性的值
      * @param context 核查上下文
      * @return true：满足任何一个非空白名单，false：不满足任何非空白名单
      */
     public Boolean judgeWhite(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        long whiteMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
-            .filter(m -> {
-                if (m.match(object, name, value)) {
-                    return true;
-                } else {
-                    String whiteErrMsg = m.getWhiteMsg();
-                    if (null != whiteErrMsg) {
-                        errMsgList.add(whiteErrMsg);
-                        context.setLastErrMsg(whiteErrMsg);
+        long whiteMatchCount = matcherList.stream().filter(Matcher::isNotEmpty).filter(m -> {
+            if (m.match(object, name, value)) {
+                return true;
+            } else {
+                String whiteErrMsg = m.getWhiteMsg();
+                if (null != whiteErrMsg) {
+                    errMsgList.add(whiteErrMsg);
+                    if (!"".equals(errMsg)) {
+                        context.setLastErrMsg(errMsg);
+                    } else {
+                        context.setLastErrMsg(m.getBlackMsg());
                     }
-                    return false;
                 }
-            }).count();
+                return false;
+            }
+        }).count();
 
         if (0 == whiteMatchCount) {
             context.append(errMsgList);
@@ -82,25 +92,28 @@ public class FieldJudge {
 
     /**
      * 如果所有的不为空的黑名单中是否有任何匹配的
-     *
+     * <p>
      * 针对匹配器中的所有不空的匹配器进行匹配，如果有任何一个匹配上，则上报失败
      *
-     * @param object 待校验的属性的对象
-     * @param value 待校验的属性的值
+     * @param object  待校验的属性的对象
+     * @param value   待校验的属性的值
      * @param context 核查上下文
      * @return true：满足任何一个黑名单，false：所有黑名单都不满足
      */
     public Boolean judgeBlack(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        long blackMatchCount = matcherList.stream().filter(Matcher::isNotEmpty)
-            .filter(m -> {
-                if (m.match(object, name, value)) {
-                    errMsgList.add(m.getBlackMsg());
+        long blackMatchCount = matcherList.stream().filter(Matcher::isNotEmpty).filter(m -> {
+            if (m.match(object, name, value)) {
+                errMsgList.add(m.getBlackMsg());
+                if (!"".equals(errMsg)) {
+                    context.setLastErrMsg(errMsg);
+                } else {
                     context.setLastErrMsg(m.getBlackMsg());
-                    return true;
                 }
-                return false;
-            }).count();
+                return true;
+            }
+            return false;
+        }).count();
 
         if (0 == blackMatchCount) {
             return false;
@@ -125,8 +138,7 @@ public class FieldJudge {
 
     @SuppressWarnings("all")
     public static FieldJudge buildFromValid(Field field, WhiteMatcher validCheck, MkContext context) {
-        return new FieldJudge()
-            .setName(field.getName())
+        return new FieldJudge().setName(field.getName())
             .addMatcher(TypeMatcher.build(validCheck.type()))
             .addMatcher(ValueMather.build(field, validCheck.value()))
             .addMatcher(MatcherFactory.build(ModelMatcher.class, validCheck.model()))
@@ -135,13 +147,13 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
             .addMatcher(JudgeMatcher.build(validCheck.judge(), context))
+            .setErrMsg(validCheck.errMsg())
             .setDisable(validCheck.disable());
     }
 
     @SuppressWarnings("all")
     public static FieldJudge buildFromInvalid(Field field, BlackMatcher invalidCheck, MkContext context) {
-        return new FieldJudge()
-            .setName(field.getName())
+        return new FieldJudge().setName(field.getName())
             .addMatcher(TypeMatcher.build(invalidCheck.type()))
             .addMatcher(ValueMather.build(field, invalidCheck.value()))
             .addMatcher(MatcherFactory.build(ModelMatcher.class, invalidCheck.model()))
@@ -150,6 +162,7 @@ public class FieldJudge {
             .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
             .addMatcher(JudgeMatcher.build(invalidCheck.judge(), context))
+            .setErrMsg(invalidCheck.errMsg())
             .setDisable(invalidCheck.disable());
     }
 

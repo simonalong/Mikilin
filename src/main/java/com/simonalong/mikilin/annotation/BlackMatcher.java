@@ -110,6 +110,13 @@ public @interface BlackMatcher {
     String judge() default "";
 
     /**
+     * 核查失败后的返回语句
+     *
+     * @return 核查失败后返回的语句
+     */
+    String errMsg() default "";
+
+    /**
      * 是否不可用
      * @return true：禁用核查，false：启用核查
      */
