@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.number;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,15 +15,15 @@ public class RangeEntity4 {
     /**
      * 属性为大于等于100
      */
-    @WhiteMatcher(range = "(100, null)")
+    @Matcher(range = "(100, null)")
     private Integer num1;
 
-    @WhiteMatcher(range = "[100, null)")
+    @Matcher(range = "[100, null)")
     private Integer num2;
 
-    @WhiteMatcher(range = "(null, 50)")
+    @Matcher(range = "(null, 50)")
     private Integer num3;
 
-    @WhiteMatcher(range = "(null, 50]")
+    @Matcher(range = "(null, 50]")
     private Integer num4;
 }

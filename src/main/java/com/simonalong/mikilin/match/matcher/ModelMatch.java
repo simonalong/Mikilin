@@ -1,17 +1,16 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.match.FieldModel;
 
 /**
- * 指定的类型判断，对应{@link WhiteMatcher#model()}或者{@link BlackMatcher#model()}
+ * 指定的类型判断，对应{@link Matcher#model()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50
  */
-public class ModelMatcher extends AbstractBlackWhiteMatcher implements Builder<ModelMatcher, FieldModel> {
+public class ModelMatch extends AbstractBlackWhiteMatch implements Builder<ModelMatch, FieldModel> {
 
     private FieldModel fieldModel;
 
@@ -34,7 +33,7 @@ public class ModelMatcher extends AbstractBlackWhiteMatcher implements Builder<M
     }
 
     @Override
-    public ModelMatcher build(FieldModel obj) {
+    public ModelMatch build(FieldModel obj) {
         if (obj.equals(FieldModel.DEFAULT)) {
             return null;
         }

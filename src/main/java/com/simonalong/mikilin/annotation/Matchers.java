@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WhiteMatchers {
+public @interface Matchers {
 
-    WhiteMatcher[] value();
+    Matcher[] value();
 }

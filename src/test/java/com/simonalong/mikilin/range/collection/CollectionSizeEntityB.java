@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.range.collection;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class CollectionSizeEntityB {
 
-    @WhiteMatcher(range = "(10, 30)")
+    @Matcher(range = "(10, 30)")
     private Integer bSize;
 }

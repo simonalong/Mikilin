@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.str;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class BlackAEntity {
-    @BlackMatcher({"a","b","c","null"})
+    @Matcher(value = {"a","b","c","null"}, acceptOrDeny = false)
     private String name;
     private Integer age;
 }

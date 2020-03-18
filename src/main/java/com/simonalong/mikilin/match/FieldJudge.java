@@ -1,17 +1,7 @@
 package com.simonalong.mikilin.match;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
-import com.simonalong.mikilin.match.matcher.ConditionMatcher;
-import com.simonalong.mikilin.match.matcher.EnumTypeMatcher;
-import com.simonalong.mikilin.match.matcher.JudgeMatcher;
-import com.simonalong.mikilin.match.matcher.Matcher;
-import com.simonalong.mikilin.match.matcher.MatcherFactory;
-import com.simonalong.mikilin.match.matcher.RangeMatcher;
-import com.simonalong.mikilin.match.matcher.RegexMatcher;
-import com.simonalong.mikilin.match.matcher.ModelMatcher;
-import com.simonalong.mikilin.match.matcher.TypeMatcher;
-import com.simonalong.mikilin.match.matcher.ValueMather;
+import com.simonalong.mikilin.annotation.Matcher;
+import com.simonalong.mikilin.match.matcher.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,7 +30,7 @@ public class FieldJudge {
     /**
      * 匹配器列表
      */
-    private List<Matcher> matcherList = new ArrayList<>();
+    private List<Match> matchList = new ArrayList<>();
 
     /**
      * 拦截后的自定义描述
@@ -48,7 +38,7 @@ public class FieldJudge {
     private String errMsg;
 
     /**
-     * 属性核查禁用标示，对应{@link WhiteMatcher#disable()}或者{@link BlackMatcher#disable()}
+     * 属性核查禁用标示，对应{@link Matcher#disable()}
      */
     private Boolean disable;
 
@@ -64,7 +54,7 @@ public class FieldJudge {
      */
     public Boolean judgeWhite(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        long whiteMatchCount = matcherList.stream().filter(Matcher::isNotEmpty).filter(m -> {
+        long whiteMatchCount = matchList.stream().filter(Match::isNotEmpty).filter(m -> {
             if (m.match(object, name, value)) {
                 return true;
             } else {
@@ -102,7 +92,7 @@ public class FieldJudge {
      */
     public Boolean judgeBlack(Object object, Object value, MkContext context) {
         List<String> errMsgList = new ArrayList<>();
-        long blackMatchCount = matcherList.stream().filter(Matcher::isNotEmpty).filter(m -> {
+        long blackMatchCount = matchList.stream().filter(Match::isNotEmpty).filter(m -> {
             if (m.match(object, name, value)) {
                 errMsgList.add(m.getBlackMsg());
                 if (!"".equals(errMsg)) {
@@ -133,42 +123,27 @@ public class FieldJudge {
             return true;
         }
 
-        return matcherList.stream().allMatch(Matcher::isEmpty);
+        return matchList.stream().allMatch(Match::isEmpty);
     }
 
     @SuppressWarnings("all")
-    public static FieldJudge buildFromValid(Field field, WhiteMatcher validCheck, MkContext context) {
+    public static FieldJudge buildFromValid(Field field, Matcher validCheck, MkContext context) {
         return new FieldJudge().setName(field.getName())
-            .addMatcher(TypeMatcher.build(validCheck.type()))
+            .addMatcher(TypeMatch.build(validCheck.type()))
             .addMatcher(ValueMather.build(field, validCheck.value()))
-            .addMatcher(MatcherFactory.build(ModelMatcher.class, validCheck.model()))
-            .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, validCheck.enumType()))
-            .addMatcher(MatcherFactory.build(RangeMatcher.class, validCheck.range()))
-            .addMatcher(ConditionMatcher.build(field, validCheck.condition()))
-            .addMatcher(MatcherFactory.build(RegexMatcher.class, validCheck.regex()))
-            .addMatcher(JudgeMatcher.build(validCheck.judge(), context))
+            .addMatcher(MatcherFactory.build(ModelMatch.class, validCheck.model()))
+            .addMatcher(MatcherFactory.build(EnumTypeMatch.class, validCheck.enumType()))
+            .addMatcher(MatcherFactory.build(RangeMatch.class, validCheck.range()))
+            .addMatcher(ConditionMatch.build(field, validCheck.condition()))
+            .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
+            .addMatcher(JudgeMatch.build(validCheck.judge(), context))
             .setErrMsg(validCheck.errMsg())
             .setDisable(validCheck.disable());
     }
 
-    @SuppressWarnings("all")
-    public static FieldJudge buildFromInvalid(Field field, BlackMatcher invalidCheck, MkContext context) {
-        return new FieldJudge().setName(field.getName())
-            .addMatcher(TypeMatcher.build(invalidCheck.type()))
-            .addMatcher(ValueMather.build(field, invalidCheck.value()))
-            .addMatcher(MatcherFactory.build(ModelMatcher.class, invalidCheck.model()))
-            .addMatcher(MatcherFactory.build(EnumTypeMatcher.class, invalidCheck.enumType()))
-            .addMatcher(MatcherFactory.build(RangeMatcher.class, invalidCheck.range()))
-            .addMatcher(ConditionMatcher.build(field, invalidCheck.condition()))
-            .addMatcher(MatcherFactory.build(RegexMatcher.class, invalidCheck.regex()))
-            .addMatcher(JudgeMatcher.build(invalidCheck.judge(), context))
-            .setErrMsg(invalidCheck.errMsg())
-            .setDisable(invalidCheck.disable());
-    }
-
-    private FieldJudge addMatcher(Matcher matcher) {
-        if (null != matcher) {
-            matcherList.add(matcher);
+    private FieldJudge addMatcher(Match match) {
+        if (null != match) {
+            matchList.add(match);
         }
         return this;
     }

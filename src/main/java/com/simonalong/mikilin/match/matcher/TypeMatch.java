@@ -1,26 +1,25 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * 属性实际运行时候的类型匹配，对应{@link WhiteMatcher#type()}或者{@link BlackMatcher#type()}
+ * 属性实际运行时候的类型匹配，对应{@link Matcher#type()}
  *
  * @author zhouzhenyong
  * @since 2019/8/15 下午10:34
  */
-public class TypeMatcher extends AbstractBlackWhiteMatcher {
+public class TypeMatch extends AbstractBlackWhiteMatch {
 
     private List<Class<?>> clsList = new ArrayList<>();
 
-    public static TypeMatcher build(Class<?>[] tClasses) {
+    public static TypeMatch build(Class<?>[] tClasses) {
         if (null == tClasses || Arrays.asList(tClasses).isEmpty()) {
             return null;
         }
-        TypeMatcher matcher = new TypeMatcher();
+        TypeMatch matcher = new TypeMatch();
         matcher.clsList.addAll(Arrays.asList(tClasses));
         return matcher;
     }

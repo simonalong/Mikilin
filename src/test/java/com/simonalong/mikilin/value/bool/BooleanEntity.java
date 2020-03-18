@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.bool;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class BooleanEntity {
 
-    @WhiteMatcher({"true", "null"})
+    @Matcher({"true", "null"})
     private Boolean flag;
 }

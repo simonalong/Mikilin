@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.type;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,15 +12,15 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class TypeEntity {
 
-    @WhiteMatcher(type = Integer.class)
+    @Matcher(type = Integer.class)
     private Integer data;
 
-    @WhiteMatcher(type = CharSequence.class)
+    @Matcher(type = CharSequence.class)
     private String name;
 
-    @WhiteMatcher(type = {Integer.class, Float.class})
+    @Matcher(type = {Integer.class, Float.class})
     private Object obj;
 
-    @WhiteMatcher(type = Number.class)
+    @Matcher(type = Number.class)
     private Object num;
 }

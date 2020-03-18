@@ -1,21 +1,20 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.Builder;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 枚举类型多个判断，对应{@link WhiteMatcher#enumType()}或者{@link BlackMatcher#enumType()}
+ * 枚举类型多个判断，对应{@link Matcher#enumType()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
 @SuppressWarnings("rawtypes")
-public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements
-    Builder<EnumTypeMatcher, Class<? extends Enum>[]> {
+public class EnumTypeMatch extends AbstractBlackWhiteMatch implements
+    Builder<EnumTypeMatch, Class<? extends Enum>[]> {
 
     private Class<? extends Enum>[] enumClass;
 
@@ -51,7 +50,7 @@ public class EnumTypeMatcher extends AbstractBlackWhiteMatcher implements
     }
 
     @Override
-    public EnumTypeMatcher build(Class<? extends Enum>[] obj) {
+    public EnumTypeMatch build(Class<? extends Enum>[] obj) {
         if (Arrays.asList(obj).isEmpty()) {
             return null;
         }

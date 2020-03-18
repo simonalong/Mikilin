@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.util.Objects;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -10,13 +9,13 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 
 /**
- * 指定的值判断，对应{@link WhiteMatcher#value()}或者{@link BlackMatcher#value()}
+ * 指定的值判断，对应{@link Matcher#value()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:49
  */
 @Setter
-public class ValueMather extends AbstractBlackWhiteMatcher {
+public class ValueMather extends AbstractBlackWhiteMatch {
 
     private Set<Object> values;
 

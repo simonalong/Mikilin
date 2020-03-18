@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.errmsg;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,6 +13,6 @@ import lombok.experimental.Accessors;
 public class ErrMsgEntity {
 
     private String name;
-    @WhiteMatcher(range = "[0, 100]", errMsg = "年龄只能为0~100的数字")
+    @Matcher(range = "[0, 100]", errMsg = "年龄只能为0~100的数字")
     private Integer age;
 }

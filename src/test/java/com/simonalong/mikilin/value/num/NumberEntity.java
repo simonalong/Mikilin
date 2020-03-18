@@ -1,6 +1,6 @@
 package com.simonalong.mikilin.value.num;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class NumberEntity {
 
-    @WhiteMatcher({"1", "2", "null"})
+    @Matcher({"1", "2", "null"})
     private Integer age;
 }

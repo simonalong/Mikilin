@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.JudgeException;
 import com.simonalong.mikilin.funcation.MultiPredicate;
 import com.simonalong.mikilin.match.MkContext;
@@ -15,13 +14,13 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统自行判断，对应{@link WhiteMatcher#judge()}或者{@link BlackMatcher#judge()}
+ * 系统自行判断，对应{@link Matcher#judge()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:52
  */
 @Slf4j
-public class JudgeMatcher extends AbstractBlackWhiteMatcher {
+public class JudgeMatch extends AbstractBlackWhiteMatch {
 
     private Predicate<Object> valuePre = null;
     private BiPredicate<Object, Object> objValuePre = null;
@@ -79,12 +78,12 @@ public class JudgeMatcher extends AbstractBlackWhiteMatcher {
      * @param context 上下文
      * @return 匹配器的判决器
      */
-    public static JudgeMatcher build(String judge, MkContext context) {
+    public static JudgeMatch build(String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
         }
 
-        JudgeMatcher judgeMatcher = new JudgeMatcher();
+        JudgeMatch judgeMatcher = new JudgeMatch();
         int index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);

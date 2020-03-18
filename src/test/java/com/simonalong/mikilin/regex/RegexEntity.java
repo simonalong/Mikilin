@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.regex;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,9 +12,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RegexEntity {
 
-    @WhiteMatcher(regex = "^\\d+$")
+    @Matcher(regex = "^\\d+$")
     private String regexValid;
 
-    @BlackMatcher(regex = "^\\d+$")
+    @Matcher(regex = "^\\d+$", acceptOrDeny = false)
     private String regexInValid;
 }

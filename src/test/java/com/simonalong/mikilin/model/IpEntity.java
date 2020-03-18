@@ -1,8 +1,7 @@
 package com.simonalong.mikilin.model;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.FieldModel;
-import com.simonalong.mikilin.annotation.BlackMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +13,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IpEntity {
 
-    @WhiteMatcher(model = FieldModel.IP_ADDRESS)
+    @Matcher(model = FieldModel.IP_ADDRESS)
     private String ipValid;
-    @BlackMatcher(model = FieldModel.IP_ADDRESS)
+    @Matcher(model = FieldModel.IP_ADDRESS, acceptOrDeny = false)
     private String ipInvalid;
 }

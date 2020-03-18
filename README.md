@@ -16,7 +16,7 @@
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
 ## 快速入门
-本工具用法极其简单，可以说，只要会用一个注解`WhiteMatcher`和一个方法`MkValidators.check(Object obj)`即可。`WhiteMatcher`表示白名单匹配器，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
+本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据acceptOrDeny区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
 
 ### 引入
 ```xml
@@ -36,7 +36,7 @@
 public class WhiteAEntity {
     
     // 修饰属性name，只允许对应的值为a，b,c和null
-    @WhiteMatcher({"a","b","c","null"})
+    @Matcher({"a","b","c","null"})
     private String name;
     private String address;
 }
@@ -118,21 +118,13 @@ public void validate(String group, Object object, String ...fieldSet) throws MkE
 #### 注解
 ```java
 /**
-* 白名单匹配器
+* 匹配器
 */
-@WhiteMatcher
+@Matcher
 /**
-* 白名单多个匹配器，不同的分组
+* 多个匹配器，不同的分组
 */
-@WhiteMatchers
-/**
-* 黑名单匹配器
-*/
-@BlackMatcher
-/**
-* 黑名单多个匹配器，不同的分组
-*/
-@BlackMatchers
+@Matchers
 /**
 * 复杂对象解析器，修饰属性，只有添加该注解，则复杂的属性，才会进行解析
 */
@@ -143,10 +135,10 @@ public void validate(String group, Object object, String ...fieldSet) throws MkE
 匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都作为属性，每个属性定位是能够匹配该领域的所有类型
 
 ```java
-@Repeatable(WhiteMatchers.class)
+@Repeatable(Matchers.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WhiteMatcher {
+public @interface Matcher {
 
     /**
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
@@ -249,7 +241,7 @@ public @interface WhiteMatcher {
 @Data
 @Accessors(chain = true)
 public class WhiteAEntity {
-    @WhiteMatcher({"a","b","c","null"})
+    @Matcher({"a","b","c","null"})
     private String name;
     private String address;
 }
@@ -285,13 +277,13 @@ def "只有指定的值才能通过"() {
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @WhiteMatcher(enumType = AEnum.class)
+    @Matcher(enumType = AEnum.class)
     private String name;
 
-    @WhiteMatcher(enumType = {AEnum.class, BEnum.class})
+    @Matcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
-    @BlackMatcher(enumType = {CEnum.class})
+    @Matcher(enumType = {CEnum.class}, acceptOrDeny = false)
     private String invalidTag;
 }
 ```
@@ -344,9 +336,9 @@ def "枚举类型测试"() {
 @Accessors(chain = true)
 public class IpEntity {
 
-    @WhiteMatcher(model = FieldModel.IP_ADDRESS)
+    @Matcher(model = FieldModel.IP_ADDRESS)
     private String ipValid;
-    @BlackMatcher(model = FieldModel.IP_ADDRESS)
+    @Matcher(model = FieldModel.IP_ADDRESS, acceptOrDeny =false)
     private String ipInvalid;
 }
 ```
@@ -381,49 +373,49 @@ public class RangeEntity4 {
     /**
      * 属性为大于100
      */
-    @WhiteMatcher(range = "(100, null)")
+    @Matcher(range = "(100, null)")
     private Integer num1;
 
     /**
      * 属性为大于等于100
      */
-    @WhiteMatcher(range = "[100, null)")
+    @Matcher(range = "[100, null)")
     private Integer num2;
 
     /**
      * 属性为大于20且小于50
      */
-    @WhiteMatcher(range = "(20, 50)")
+    @Matcher(range = "(20, 50)")
     private Integer num3;
 
     /**
      * 属性为小于等于50
      */
-    @WhiteMatcher(range = "(null, 50]")
+    @Matcher(range = "(null, 50]")
     private Integer num4;
     
     /**
      * 属性为大于等于20且小于等于50
      */
-    @WhiteMatcher(range = "[20, 50]")
+    @Matcher(range = "[20, 50]")
     private Integer num5;
 
     /**
      * 属性为大于等于100，同属性num2一样
      */
-    @WhiteMatcher(range = "[100, )")
+    @Matcher(range = "[100, )")
     private Integer num6;
     
     /**
      * 属性为大于等于100，同属性num2一样
      */
-    @WhiteMatcher(range = "[100,)")
+    @Matcher(range = "[100,)")
     private Integer num7;
     
     /**
      * 属性为小于等于5，同属性num4一样
      */
-    @WhiteMatcher(range = "(, 50]")
+    @Matcher(range = "(, 50]")
     private Integer num8;
 }
 ```
@@ -437,61 +429,61 @@ public class RangeTimeEntity {
     /**
      * 属性为：2019-07-13 12:00:23.321 到 2019-07-23 12:00:23.321的时间
      */
-    @WhiteMatcher(range = "['2019-07-13 12:00:23.321', '2019-07-23 12:00:23.321']")
+    @Matcher(range = "['2019-07-13 12:00:23.321', '2019-07-23 12:00:23.321']")
     private Date date1;
 
     /**
      * 属性为：2019-07-13 12:00:23.000 到 2019-07-23 12:00:00.000 的时间
      */
-    @WhiteMatcher(range = "['2019-07-13 12:00:23', '2019-07-23 12:00']")
+    @Matcher(range = "['2019-07-13 12:00:23', '2019-07-23 12:00']")
     private Date date2;
     
     /**
      * 属性为：2019-07-13 00:00:00.000 到 2019-07-01 00:00:00.000 的时间
      */
-    @WhiteMatcher(range = "['2019-07-13', '2019-07']")
+    @Matcher(range = "['2019-07-13', '2019-07']")
     private Long dateLong3;
         
     /**
      * 属性为：现在时间 到 2019-07-23 12:00:23.321 的时间
      */
-    @WhiteMatcher(range = "(now, '2019-07-23 12:00:23.321']")
+    @Matcher(range = "(now, '2019-07-23 12:00:23.321']")
     private Date date4;
     
     /**
      * 属性为：2019-07-13 00:00:00.000 到现在的时间
      */
-    @WhiteMatcher(range = "['2019-07-13', now)")
+    @Matcher(range = "['2019-07-13', now)")
     private Date date5;
     
     /**
      * 属性为：过去的时间，同下面的past
      */
-    @WhiteMatcher(range = "(null, now)")
+    @Matcher(range = "(null, now)")
     private Date date6;
     
     /**
      * 属性为：过去的时间，同下面的past
      */
-    @WhiteMatcher(range = "('null', 'now')")
+    @Matcher(range = "('null', 'now')")
     private Date date7;
     
     /**
      * 属性为：过去的时间，同上
      */
-    @WhiteMatcher(range = "past")
+    @Matcher(range = "past")
     private Date date8;
     
     /**
      * 属性为：未来的时间，同下面的future
      */
-    @WhiteMatcher(range = "(now, null)")
+    @Matcher(range = "(now, null)")
     private Date date9;
     
     /**
      * 属性为：未来的时间，同下面的future
      */
-    @WhiteMatcher(range = "future")
+    @Matcher(range = "future")
     private Date date10;
 }
 ```
@@ -507,7 +499,7 @@ public class CollectionSizeEntityA {
     /**
     * 对应集合的个数不为空，且个数小于等于2 
     */
-    @WhiteMatcher(range = "(0, 2]")
+    @Matcher(range = "(0, 2]")
     private List<CollectionSizeEntityB> bList;
 }
 ```
@@ -522,31 +514,31 @@ public class ConditionEntity {
     /**
     * 当前属性和属性num3的值大于100 
     */
-    @WhiteMatcher(condition = "#current + #root.num2 > 100")
+    @Matcher(condition = "#current + #root.num2 > 100")
     private Integer num1;
 
     /**
     * 当前属性的值小于 20 
     */
-    @WhiteMatcher(condition = "#current < 20")
+    @Matcher(condition = "#current < 20")
     private Integer num2;
 
     /**
     * 当前属性的值大于31并自增 
     */
-    @WhiteMatcher(condition = "(++#current) >31")
+    @Matcher(condition = "(++#current) >31")
     private Integer num3;
     
     /**
     * 当前属性的值大于31并自增 
     */
-    @WhiteMatcher(condition = "(++#current) >31")
+    @Matcher(condition = "(++#current) >31")
     private Integer num4;
     
     /**
     * 其中某个属性为true 
     */
-    @WhiteMatcher(condition = "#root.judge")
+    @Matcher(condition = "#root.judge")
     private Integer age;
 
     private Boolean judge;
@@ -554,7 +546,7 @@ public class ConditionEntity {
     /**
     * 当前值和另外值的最小值大于第三个值 
     */
-    @WhiteMatcher(condition = "min(#current, #root.num6) > #root.num7")
+    @Matcher(condition = "min(#current, #root.num6) > #root.num7")
     private Integer num5;
     private Integer num6;
     private Integer num7;
@@ -567,10 +559,10 @@ public class ConditionEntity {
 @Accessors(chain = true)
 public class RegexEntity {
 
-    @WhiteMatcher(regex = "^\\d+$")
+    @Matcher(regex = "^\\d+$")
     private String regexValid;
 
-    @BlackMatcher(regex = "^\\d+$")
+    @Matcher(regex = "^\\d+$", acceptOrDeny = false)
     private String regexInValid;
 }
 ```
@@ -585,13 +577,13 @@ public class JudgeEntity {
     /**
     * 外部定义的匹配器，只传入属性的参数
     */
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
     private Integer age;
 
     /**
     *  外部定义的匹配器，传入属性所在对象本身，也可传入属性的参数类型
     */
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;
@@ -599,13 +591,13 @@ public class JudgeEntity {
     /**
     * 这里自定义的第一个参数是属性本身，第二个参数是框架的上下文（用户填充匹配成功或者失败的信息） 
     */
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#twoParam")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#twoParam")
     private String twoPa;
 
     /**
     * 这里自定义的第一个参数是属性所在对象，第二个是属性本身，第三个参数是框架的上下文（用户填充匹配成功或者失败的信息） 
     */
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#threeParam")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#threeParam")
     private String threePa;
 }
 ```
@@ -697,13 +689,13 @@ public class JudgeCls {
 ```
 
 #### 不同场景校验的规则不同
-上面看到，每个属性只有一种核查规则，但是如果我们要在不同的场景中使用不同的规则，那么这个时候应该怎么办呢，分组就来了，新增一个注解`WhiteMatchers`
+上面看到，每个属性只有一种核查规则，但是如果我们要在不同的场景中使用不同的规则，那么这个时候应该怎么办呢，分组就来了，新增一个注解`Matchers`
 ```java
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WhiteMatchers {
+public @interface Matchers {
 
-    WhiteMatcher[] value();
+    Matcher[] value();
 }
 ```
 使用时候，通过属性中的group进行定义不同的规则，核查的时候，采用函数`MkValidators.check(String group, Object obj)`进行核查，如果采用`MkValidators.check(Object obj)`则采用默认的组，即下面的没有设置组的匹配规则
@@ -712,17 +704,17 @@ public @interface WhiteMatchers {
 @Accessors(chain = true)
 public class GroupEntity {
 
-    @BlackMatchers({
-        @BlackMatcher(range = "[50, 100]"),
-        @BlackMatcher(group = "test1", range = "[12, 23]"),
-        @BlackMatcher(group = "test2", range = "[1, 10]")
+    @Matchers({
+        @Matcher(range = "[50, 100]", acceptOrDeny = false),
+        @Matcher(group = "test1", range = "[12, 23]", acceptOrDeny = false),
+        @Matcher(group = "test2", range = "[1, 10]", acceptOrDeny = false)
     })
     private Integer age;
 
-    @WhiteMatchers({
-        @WhiteMatcher(value = {"beijing", "shanghai", "guangzhou"}),
-        @WhiteMatcher(group = "test1", value = {"beijing", "shanghai"}),
-        @WhiteMatcher(group = "test2", value = {"shanghai", "hangzhou"})
+    @Matchers({
+        @Matcher(value = {"beijing", "shanghai", "guangzhou"}),
+        @Matcher(group = "test1", value = {"beijing", "shanghai"}),
+        @Matcher(group = "test2", value = {"shanghai", "hangzhou"})
     })
     private String name;
 }
@@ -758,11 +750,11 @@ def "测试指定分组"() {
 @Accessors(chain = true)
 public class TestEntity {
 
-    @BlackMatcher({"nihao", "ok"})
+    @Matcher(value = {"nihao", "ok"}, acceptOrDeny = false)
     private String name;
-    @WhiteMatcher(range = "[12, 32]")
+    @Matcher(range = "[12, 32]")
     private Integer age;
-    @WhiteMatcher({"beijing", "shanghai"})
+    @Matcher({"beijing", "shanghai"})
     private String address;
 }
 ```

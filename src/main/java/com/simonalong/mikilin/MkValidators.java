@@ -24,11 +24,11 @@ public final class MkValidators {
     /**
      * 对象属性值白名单
      */
-    private Map<String, MatcherManager> whiteGroupMap;
+    private Map<String, MatchManager> whiteGroupMap;
     /**
      * 对象属性值黑名单
      */
-    private Map<String, MatcherManager> blackGroupMap;
+    private Map<String, MatchManager> blackGroupMap;
     /**
      * 对象属性核查映射
      */
@@ -207,8 +207,8 @@ public final class MkValidators {
      * @param blackSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatcherManager> whiteSet,
-        Map<String, MatcherManager> blackSet) {
+    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         delegate.setGroup(group);
         try {
             return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
@@ -254,11 +254,11 @@ public final class MkValidators {
         return objectFieldCheckMap;
     }
 
-    private Map<String, MatcherManager> getWhiteMap() {
+    private Map<String, MatchManager> getWhiteMap() {
         return whiteGroupMap;
     }
 
-    private Map<String, MatcherManager> getBlackMap() {
+    private Map<String, MatchManager> getBlackMap() {
         return blackGroupMap;
     }
 
@@ -282,31 +282,25 @@ public final class MkValidators {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 待核查类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                WhiteMatcher whiteMatcher = f.getAnnotation(WhiteMatcher.class);
-                if (null != whiteMatcher && !whiteMatcher.disable()) {
+                Matcher matcher = f.getAnnotation(Matcher.class);
+                if (null != matcher && !matcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    addWhiteValueMap(whiteGroupMap, objectClsName, f, whiteMatcher);
+                    if (matcher.acceptOrDeny()) {
+                        addWhiteValueMap(whiteGroupMap, objectClsName, f, matcher);
+                    } else {
+                        addWhiteValueMap(blackGroupMap, objectClsName, f, matcher);
+                    }
                 }
 
-                BlackMatcher blackMatcher = f.getAnnotation(BlackMatcher.class);
-                if (null != blackMatcher && !blackMatcher.disable()) {
-                    addObjectFieldMap(objectClsName, f.getName());
-                    addBlackValueMap(blackGroupMap, objectClsName, f, blackMatcher);
-                }
-
-                WhiteMatchers whiteMatchers = f.getAnnotation(WhiteMatchers.class);
-                if (null != whiteMatchers) {
-                    Stream.of(whiteMatchers.value()).forEach(w -> {
+                Matchers matchers = f.getAnnotation(Matchers.class);
+                if (null != matchers) {
+                    Stream.of(matchers.value()).forEach(w -> {
                         addObjectFieldMap(objectClsName, f.getName());
-                        addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
-                    });
-                }
-
-                BlackMatchers blackMatchers = f.getAnnotation(BlackMatchers.class);
-                if (null != blackMatchers) {
-                    Stream.of(blackMatchers.value()).forEach(w -> {
-                        addObjectFieldMap(objectClsName, f.getName());
-                        addBlackValueMap(blackGroupMap, objectClsName, f, w);
+                        if (w.acceptOrDeny()) {
+                            addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
+                        } else {
+                            addWhiteValueMap(blackGroupMap, objectClsName, f, w);
+                        }
                     });
                 }
             });
@@ -336,23 +330,12 @@ public final class MkValidators {
         });
     }
 
-    private void addWhiteValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field, WhiteMatcher whiteMatcher) {
-        Arrays.asList(whiteMatcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
+    private void addWhiteValueMap(Map<String, MatchManager> groupMather, String objectName, Field field, Matcher matcher) {
+        Arrays.asList(matcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatcherManager().addWhite(objectName, field, whiteMatcher, context);
+                return new MatchManager().addWhite(objectName, field, matcher, context);
             } else {
-                v.addWhite(objectName, field, whiteMatcher, context);
-                return v;
-            }
-        }));
-    }
-
-    private void addBlackValueMap(Map<String, MatcherManager> groupMather, String objectName, Field field, BlackMatcher blackMatcher) {
-        Arrays.asList(blackMatcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
-            if (null == v) {
-                return new MatcherManager().addBlack(objectName, field, blackMatcher, context);
-            } else {
-                v.addBlack(objectName, field, blackMatcher, context);
+                v.addWhite(objectName, field, matcher, context);
                 return v;
             }
         }));

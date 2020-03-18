@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.util.Maps;
 import java.lang.reflect.Field;
@@ -9,16 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 正则表达式判断，对应{@link WhiteMatcher#condition()}或者{@link BlackMatcher#condition()}
+ * 正则表达式判断，对应{@link Matcher#condition()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
-public class ConditionMatcher extends AbstractBlackWhiteMatcher {
+public class ConditionMatch extends AbstractBlackWhiteMatch {
 
     private static final String ROOT = "#root";
     private static final String CURRENT = "#current";
@@ -57,12 +55,12 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
         return null == predicate;
     }
 
-    public static ConditionMatcher build(Field field, String obj) {
+    public static ConditionMatch build(Field field, String obj) {
         if (null == obj || "".equals(obj)) {
             return null;
         }
 
-        ConditionMatcher matcher = new ConditionMatcher();
+        ConditionMatch matcher = new ConditionMatch();
         matcher.express = obj;
         matcher.currentField = field;
         matcher.parser = new ExpressParser();
@@ -86,7 +84,7 @@ public class ConditionMatcher extends AbstractBlackWhiteMatcher {
     private Maps parseConditionExpress(String express, Object root, Field currentField, Number current) {
         Maps maps = Maps.of();
         String regex = "(#root)\\.(\\w+)";
-        Matcher m = Pattern.compile(regex).matcher(express);
+        java.util.regex.Matcher m = Pattern.compile(regex).matcher(express);
         while (m.find()) {
             String fieldFullName = m.group();
             Object fieldValue = getFieldValue(fieldFullName, root);

@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.range.collection;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,6 +17,6 @@ public class CollectionSizeEntityA {
     private String name;
 
     @Check
-    @WhiteMatcher(range = "(0, 2]")
+    @Matcher(range = "(0, 2]")
     private List<CollectionSizeEntityB> bList;
 }

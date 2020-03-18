@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.judge;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,23 +12,23 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ageValid")
     private Integer age;
 
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#nameValid")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#nameValid")
     private String name;
 
-    @BlackMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid", acceptOrDeny = false)
     private String address;
 
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")
     private Float mRatio;
 
     private Float nRatio;
 
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#twoParam")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#twoParam")
     private String twoPa;
 
-    @WhiteMatcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#threeParam")
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#threeParam")
     private String threePa;
 }

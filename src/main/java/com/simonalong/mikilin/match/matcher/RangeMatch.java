@@ -1,8 +1,7 @@
 package com.simonalong.mikilin.match.matcher;
 
 import com.alibaba.fastjson.JSON;
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.util.Maps;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -22,14 +20,14 @@ import org.codehaus.groovy.syntax.Numbers;
 import org.springframework.util.StringUtils;
 
 /**
- * 正则表达式判断，对应{@link WhiteMatcher#range()}或者{@link BlackMatcher#range()}
+ * 正则表达式判断，对应{@link Matcher#range()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:51
  */
 @Slf4j
 @SuppressWarnings("all")
-public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<RangeMatcher, String> {
+public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<RangeMatch, String> {
 
     private static final String LEFT_BRACKET_EQUAL = "[";
     private static final String LEFT_BRACKET = "(";
@@ -142,7 +140,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      * @param obj 待构造需要的数据
      */
     @Override
-    public RangeMatcher build(String obj) {
+    public RangeMatch build(String obj) {
         if (null == obj || "".equals(obj)) {
             return null;
         }
@@ -205,7 +203,7 @@ public class RangeMatcher extends AbstractBlackWhiteMatcher implements Builder<R
      */
     private RangeEntity parseRange(String input) {
         input = input.trim();
-        Matcher matcher = rangePattern.matcher(input);
+        java.util.regex.Matcher matcher = rangePattern.matcher(input);
         if (matcher.find()) {
             String beginAli = matcher.group(1);
             String begin = matcher.group(2);

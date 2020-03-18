@@ -47,7 +47,7 @@ final class CheckDelegate {
      * @return false：如果对象中有某个属性不可用 true：所有属性都可用
      */
     boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
+        Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             // 对于对象中的其他属性不核查
             return true;
@@ -110,7 +110,7 @@ final class CheckDelegate {
      * @return true 可用， false 不可用
      */
     private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatcherManager> whiteGroupMather, Map<String, MatcherManager> blackGroupMather) {
+        Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
         Class<?> cls = field.getType();
 
         if (ClassUtil.isCheckedType(cls)) {
@@ -149,8 +149,8 @@ final class CheckDelegate {
      * @param blackGroupMather 属性值的不用值列表
      * @return true：都不包含该属性，false：有包含该属性
      */
-    private boolean matcherContainField(Object object, Field field, Map<String, MatcherManager> whiteGroupMather,
-        Map<String, MatcherManager> blackGroupMather){
+    private boolean matcherContainField(Object object, Field field, Map<String, MatchManager> whiteGroupMather,
+        Map<String, MatchManager> blackGroupMather){
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
         // 黑白名单有任何一个不空，则可以进行匹配
@@ -158,7 +158,7 @@ final class CheckDelegate {
     }
 
     private boolean available(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatcherManager> whiteSet, Map<String, MatcherManager> blackSet) {
+        Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             return true;
         }
@@ -175,8 +175,8 @@ final class CheckDelegate {
      * @param blackGroupMather 属性的不可用值列表
      * @return true：可用，false：不可用
      */
-    private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatcherManager> whiteGroupMather,
-        Map<String, MatcherManager> blackGroupMather) {
+    private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatchManager> whiteGroupMather,
+        Map<String, MatchManager> blackGroupMather) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
         // 1.黑白名单都有空，则不核查该参数，可用
@@ -215,7 +215,7 @@ final class CheckDelegate {
      * @param groupMather 可用或者不可用的分组匹配器
      * @return true:所有为空，false属性都有
      */
-    private boolean fieldCheckIsEmpty(Object object, Field field, Map<String, MatcherManager> groupMather) {
+    private boolean fieldCheckIsEmpty(Object object, Field field, Map<String, MatchManager> groupMather) {
         if (checkDisable(object, field, groupMather)) {
             return true;
         }
@@ -236,7 +236,7 @@ final class CheckDelegate {
      * @param groupMather 组匹配器
      * @return true 不可用，false 可用
      */
-    private boolean checkDisable(Object object, Field field, Map<String, MatcherManager> groupMather) {
+    private boolean checkDisable(Object object, Field field, Map<String, MatchManager> groupMather) {
         String group = localGroup.get();
         if (groupMather.containsKey(group)) {
             Map<String, FieldJudge> fieldValueSetMap = groupMather.get(group)
@@ -260,7 +260,7 @@ final class CheckDelegate {
      * @param whiteOrBlack true=white, false=black
      * @return true 包含，false 不包含
      */
-    private boolean fieldContain(Object object, Field field, Map<String, MatcherManager> groupMather,
+    private boolean fieldContain(Object object, Field field, Map<String, MatchManager> groupMather,
         Boolean whiteOrBlack) {
         if (checkDisable(object, field, groupMather)) {
             return false;

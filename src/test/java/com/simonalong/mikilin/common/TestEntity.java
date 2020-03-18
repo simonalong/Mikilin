@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.common;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,10 +12,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class TestEntity {
 
-    @BlackMatcher({"nihao", "ok"})
+    @Matcher(value = {"nihao", "ok"}, acceptOrDeny = false)
     private String name;
-    @WhiteMatcher(range = "[12, 32]")
+    @Matcher(range = "[12, 32]")
     private Integer age;
-    @WhiteMatcher({"beijing", "shanghai"})
+    @Matcher({"beijing", "shanghai"})
     private String address;
 }

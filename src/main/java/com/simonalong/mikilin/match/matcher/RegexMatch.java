@@ -1,17 +1,16 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.Builder;
 import java.util.regex.Pattern;
 
 /**
- * 正则表达式判断，对应{@link WhiteMatcher#regex()}或者{@link BlackMatcher#regex()}
+ * 正则表达式判断，对应{@link Matcher#regex()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:50
  */
-public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<RegexMatcher, String> {
+public class RegexMatch extends AbstractBlackWhiteMatch implements Builder<RegexMatch, String> {
 
     private Pattern pattern;
 
@@ -36,7 +35,7 @@ public class RegexMatcher extends AbstractBlackWhiteMatcher implements Builder<R
     }
 
     @Override
-    public RegexMatcher build(String obj) {
+    public RegexMatch build(String obj) {
         if (null == obj || "".equals(obj)){
             return null;
         }

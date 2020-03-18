@@ -1,8 +1,7 @@
 package com.simonalong.mikilin.model;
 
 import com.simonalong.mikilin.match.FieldModel;
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +13,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MailEntity {
 
-    @WhiteMatcher(model = FieldModel.MAIL)
+    @Matcher(model = FieldModel.MAIL)
     private String mailValid;
-    @BlackMatcher(model = FieldModel.MAIL)
+    @Matcher(model = FieldModel.MAIL, acceptOrDeny = false)
     private String mailInValid;
 }

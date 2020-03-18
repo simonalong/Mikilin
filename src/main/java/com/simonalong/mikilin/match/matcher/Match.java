@@ -4,7 +4,7 @@ package com.simonalong.mikilin.match.matcher;
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:45
  */
-public interface Matcher {
+public interface Match {
 
     /**
      * 判断是否匹配

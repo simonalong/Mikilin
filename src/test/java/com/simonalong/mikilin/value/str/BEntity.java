@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.value.str;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class BEntity {
 
-    @WhiteMatcher({"a","b"})
+    @Matcher({"a","b"})
     private String name;
     @Check
     private AEntity aEntity;

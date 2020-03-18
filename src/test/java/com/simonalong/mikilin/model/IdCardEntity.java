@@ -1,8 +1,7 @@
 package com.simonalong.mikilin.model;
 
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.FieldModel;
-import com.simonalong.mikilin.annotation.BlackMatcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +13,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class IdCardEntity {
 
-    @WhiteMatcher(model = FieldModel.ID_CARD)
+    @Matcher(model = FieldModel.ID_CARD)
     private String idCardValid;
-    @BlackMatcher(model = FieldModel.ID_CARD)
+    @Matcher(model = FieldModel.ID_CARD, acceptOrDeny = false)
     private String idCardInValid;
 }

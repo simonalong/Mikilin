@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.errmsg;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,6 +13,6 @@ import lombok.experimental.Accessors;
 public class ErrMsgEntity2 {
 
     private String name;
-    @BlackMatcher(range = "(200, )", errMsg = "年龄为200以上是不合法的")
+    @Matcher(range = "(200, )", errMsg = "年龄为200以上是不合法的", acceptOrDeny = false)
     private Integer age;
 }

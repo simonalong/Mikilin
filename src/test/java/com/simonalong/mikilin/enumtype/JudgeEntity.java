@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.enumtype;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,12 +14,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class JudgeEntity {
 
-    @WhiteMatcher(enumType = AEnum.class)
+    @Matcher(enumType = AEnum.class)
     private String name;
 
-    @WhiteMatcher(enumType = {AEnum.class, BEnum.class})
+    @Matcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
-    @BlackMatcher(enumType = {CEnum.class})
+    @Matcher(enumType = {CEnum.class}, acceptOrDeny = false)
     private String invalidTag;
 }

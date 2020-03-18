@@ -1,7 +1,6 @@
 package com.simonalong.mikilin;
 
-import com.simonalong.mikilin.annotation.BlackMatcher;
-import com.simonalong.mikilin.annotation.WhiteMatcher;
+import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.FieldJudge;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.Maps;
@@ -15,37 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhouzhenyong
  * @since 2019/6/15 上午9:24
  */
-final class MatcherManager {
+final class MatchManager {
 
     /**
      * 存储对象和属性以及属性对应的匹配器的映射，key为类的全路径，二级key为类的属性名字，二级value为属性的判断核查器
      */
     private Map<String, Map<String, FieldJudge>> targetFieldMap;
 
-    MatcherManager() {
+    MatchManager() {
         targetFieldMap = new ConcurrentHashMap<>(16);
     }
 
     @SuppressWarnings("unchecked")
-    MatcherManager addWhite(String objectName, Field field, WhiteMatcher validValue, MkContext context) {
+    MatchManager addWhite(String objectName, Field field, Matcher validValue, MkContext context) {
         targetFieldMap.compute(objectName, (k, v) -> {
             if (null == v) {
                 return Maps.of(field.getName(), FieldJudge.buildFromValid(field, validValue, context)).build();
             } else {
                 v.put(field.getName(), FieldJudge.buildFromValid(field, validValue, context));
-                return v;
-            }
-        });
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    MatcherManager addBlack(String objectName, Field field, BlackMatcher validValue, MkContext context) {
-        targetFieldMap.compute(objectName, (k, v) -> {
-            if (null == v) {
-                return Maps.of(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context)).build();
-            } else {
-                v.put(field.getName(), FieldJudge.buildFromInvalid(field, validValue, context));
                 return v;
             }
         });

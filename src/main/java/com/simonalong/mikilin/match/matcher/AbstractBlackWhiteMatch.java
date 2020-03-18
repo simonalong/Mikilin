@@ -6,7 +6,7 @@ import java.text.MessageFormat;
  * @author zhouzhenyong
  * @since 2019/4/13 下午11:04
  */
-public abstract class AbstractBlackWhiteMatcher implements Matcher{
+public abstract class AbstractBlackWhiteMatch implements Match {
 
     private String blackMsg;
     private String whiteMsg;
