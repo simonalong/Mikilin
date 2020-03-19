@@ -24,8 +24,6 @@ class FieldTypeTest extends Specification {
         where:
         intData | result
         12      | true
-        12      | true
-        12      | true
     }
 
     def "测试明写继承关系类型"() {
