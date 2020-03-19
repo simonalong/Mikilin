@@ -12,6 +12,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class TypeEntity {
 
+    /**
+     * 没有必要设置type
+     */
     @Matcher(type = Integer.class)
     private Integer data;
 

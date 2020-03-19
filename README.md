@@ -24,21 +24,22 @@
     * 1.[核查函数](#核查函数)
     * 2.[注解](#注解)
     * 3.[匹配器](#匹配器)
-        * 1.[value: 匹配指定的值](#匹配指定的值)
-        * 2.[enumType: 匹配枚举值](#匹配枚举值)
-        * 3.[model: 匹配内置类型](#匹配内置类型)
-        * 4.[range: 匹配范围](#匹配范围)
+        * 1.[value: 指定的值匹配](#指定的值匹配)
+        * 2.[type: 属性类型匹配](#属性类型匹配)
+        * 3.[enumType: 枚举值匹配](#枚举值匹配)
+        * 4.[model: 内置类型匹配](#内置类型匹配)
+        * 5.[range: 范围匹配](#范围匹配)
             * 1.[数值范围](#数值范围)
             * 2.[时间范围](#时间范围)
             * 3.[集合大小范围](#集合大小范围)
-        * 5.[condition: 表达式匹配](#表达式匹配)
-        * 6.[regex: 正则表达式匹配](#正则表达式匹配)
-        * 7.[judge: 自定义扩展匹配](#自定义扩展匹配)
+        * 6.[condition: 表达式匹配](#表达式匹配)
+        * 7.[regex: 正则表达式匹配](#正则表达式匹配)
+        * 8.[judge: 自定义扩展匹配](#自定义扩展匹配)
             * 1.[自定义函数路径匹配](#自定义函数路径匹配)
             * 2.[spring的Bean自定义匹配器](#spring的Bean自定义匹配器)
-        * 8.[group: 分组匹配](#分组匹配)
-        * 9.[errMsg: 自定义拦截文案](#自定义拦截文案)
-        * 10.[accept: 拦截还是拒绝](#拦截还是拒绝)
+        * 9.[group: 分组匹配](#分组匹配)
+        * 10.[errMsg: 自定义拦截文案](#自定义拦截文案)
+        * 11.[accept: 拦截还是拒绝](#拦截还是拒绝)
     * 4.[核查某个属性](#核查某个属性)
 
 # 一、快速入门 <a name="快速入门"></a>
@@ -280,7 +281,7 @@ public @interface Matcher {
 }
 ```
 
-### 匹配指定的值 <a name="匹配指定的值"></a>
+### 指定的值匹配 <a name="指定的值匹配"></a>
 ```java
 @Data
 @Accessors(chain = true)
@@ -314,7 +315,58 @@ def "只有指定的值才能通过"() {
 }
 ```
 
-### 匹配枚举值 <a name="匹配枚举值"></a>
+### 属性类型匹配 <a name="属性类型匹配"></a>
+该属性表示修饰的属性的类型只可为指定的类型
+```java
+@Data
+@Accessors(chain = true)
+public class TypeEntity {
+
+    /**
+     * 没有必要设置type
+     */
+    @Matcher(type = Integer.class)
+    private Integer data;
+
+    @Matcher(type = CharSequence.class)
+    private String name;
+
+    @Matcher(type = {Integer.class, Float.class})
+    private Object obj;
+
+    @Matcher(type = Number.class)
+    private Object num;
+}
+```
+```groovy
+def "测试不明写类继承关系1"() {
+    given:
+    TypeEntity entity = new TypeEntity().setObj(obj)
+
+    expect:
+    boolean actResult = MkValidators.check(entity, "obj")
+    if (!result) {
+        println MkValidators.getErrMsgChain()
+    }
+    Assert.assertEquals(result, actResult)
+
+    where:
+    obj    | result
+    'c'    | false
+    "abad" | false
+    1232   | true
+    1232l  | false
+    1232f  | true
+    12.0f  | true
+    -12    | true
+}
+```
+
+注意：<br/>
+1. 如果设置的类型不是属性的类型或者父类则会报错
+2. 如果为具体的类型，则再设置与其相同的类型，则没有必要，就像上面的data属性
+
+### 枚举值匹配 <a name="枚举值匹配"></a>
 ```java
 @Data
 @AllArgsConstructor
@@ -368,7 +420,7 @@ def "枚举类型测试"() {
 }
 ```
 
-### 匹配内置类型 <a name="匹配内置类型"></a>
+### 内置类型匹配 <a name="内置类型匹配"></a>
 目前内置了常见的几种类型：身份证号、手机号、固定电话、邮箱、IP地址
 > ID_CARD ：身份证号 <br/>
 > PHONE_NUM ：手机号<br/>
@@ -407,7 +459,7 @@ def "IP测试"() {
 }
 ```
 
-### 匹配范围 <a name="匹配范围"></a>
+### 范围匹配 <a name="范围匹配"></a>
 目前该属性不只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
 #### 数值范围 <a name="数值范围"></a>
 ```java
