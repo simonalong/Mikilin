@@ -14,7 +14,7 @@
 
 # 目录：
 
-* 一、[快速入门](#快速入门)
+* [一、快速入门](#快速入门)
     * 1.[maven引入](#maven引入)
     * 2.[使用](#使用)
 * ​二、[详细介绍](#详细介绍)
@@ -42,10 +42,10 @@
 ## 使用文档
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
-<h1 id="框架原理图">一、框架原理图</h1>
+# 一、快速入门 <a name="快速入门"></a>
 本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据accept区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
 
-<h2 id="maven引入">1. maven引入</h2>
+## maven引入 <a name="maven引入"></a>
 ```xml
 <dependency>
     <groupId>com.github.simonalong</groupId>
@@ -55,9 +55,7 @@
 </dependency>
 ```
 
-## 2.aaa <a name="id_name"></a>
-
-<h2 id="maven引入">2.使用</h2>
+## 使用 <a name="使用"></a>
 该框架使用极其简单，如下：给需要拦截的属性添加注解即可
 ```java
 @Data
@@ -94,12 +92,11 @@ public void test1(){
 }
 ```
 
-<h2 id="使用">2.使用</h2>
 从上面用例可以看到该框架使用非常简单。但是框架的功能性却很强大，那么强大在哪，在于注解属性的多样性，后面一一介绍。对于属性这里的核查函数其实就是只有一个，不同的重载
 
-<h1 id="使用">二、详细介绍</h1>
+# 详细介绍 <a name="详细介绍"></a>
 
-<h2 id="核查函数">1.核查函数</h2>
+## 核查函数 <a name="核查函数"></a>
 
 ```java
 /**
@@ -148,7 +145,7 @@ public void validate(String group, Object object) throws MkException
 public void validate(String group, Object object, String ...fieldSet) throws MkException
 ```
 
-<h2 id="注解">2.注解</h2>
+## 注解 <a name="注解"></a>
 ```java
 /**
 * 匹配器
@@ -164,7 +161,7 @@ public void validate(String group, Object object, String ...fieldSet) throws MkE
 @Check
 ```
 
-<h2 id="匹配器">3.匹配器</h2>
+## 匹配器 <a name="匹配器"></a>
 匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都作为属性，每个属性定位是能够匹配该领域的所有类型
 
 ```java
@@ -284,7 +281,7 @@ public @interface Matcher {
 }
 ```
 
-<h3 id="匹配指定的值">3.1 匹配指定的值</h3>
+#### 匹配指定的值 <a name="匹配指定的值"></a>
 ```java
 @Data
 @Accessors(chain = true)
