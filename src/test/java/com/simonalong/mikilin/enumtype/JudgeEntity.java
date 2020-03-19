@@ -20,6 +20,6 @@ public class JudgeEntity {
     @Matcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
-    @Matcher(enumType = {CEnum.class}, acceptOrDeny = false)
+    @Matcher(enumType = {CEnum.class}, accept = false)
     private String invalidTag;
 }

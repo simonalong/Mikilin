@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 public class AEntity {
     @Matcher({"a", "b", "c", "null"})
     private String name;
-    @Matcher(value = {"null"}, acceptOrDeny = false)
+    @Matcher(value = {"null"}, accept = false)
     private Integer age;
     private String address;
 }

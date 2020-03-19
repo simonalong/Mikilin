@@ -12,13 +12,40 @@
 - 高性能：所有的核查均是内存直接调用，第一次构建匹配树后，后面就无须重建
 - 可扩展：针对一些不好核查的属性，可以设置自定义匹配，可以通过自定义匹配器类，也可以使用spring的Bean作为系统匹配器类
 
+# 目录：
+
+* 一、[快速入门](#快速入门)
+    * 1.[maven引入](#maven引入)
+    * 2.[使用](#使用)
+* ​二、[详细介绍](#详细介绍)
+    * 1.[核查函数](#核查函数)
+    * 2.[注解](#注解)
+    * 3.[匹配器](#匹配器)
+        * 1.[value: 匹配指定的值](#匹配指定的值)
+        * 2.[enumType: 匹配枚举值](#匹配枚举值)
+        * 3.[model: 匹配内置类型](#匹配内置类型)
+        * 4.[range: 匹配范围](#匹配范围)
+            * 1.[数值范围](#数值范围)
+            * 2.[时间范围](#时间范围)
+            * 3.[集合大小范围](#集合大小范围)
+        * 5.[condition: 表达式匹配](#表达式匹配)
+        * 6.[regex: 正则表达式匹配](#正则表达式匹配)
+        * 7.[judge: 自定义扩展匹配](#自定义扩展匹配)
+            * 1.[自定义函数路径匹配](#自定义函数路径匹配)
+            * 2.[spring的Bean自定义匹配器](#spring的Bean自定义匹配器)
+        * 8.[group: 分组匹配](#分组匹配)
+        * 9.[errMsg: 自定义拦截文案](#自定义拦截文案)
+        * 10.[accept: 拦截还是拒绝](#拦截还是拒绝)
+    * 4.[核查某个属性](#核查某个属性)
+    
+[to_be_link](#id_name)
 ## 使用文档
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
-## 快速入门
-本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据acceptOrDeny区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
+<h1 id="框架原理图">一、框架原理图</h1>
+本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据accept区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
 
-### 引入
+<h2 id="maven引入">1. maven引入</h2>
 ```xml
 <dependency>
     <groupId>com.github.simonalong</groupId>
@@ -28,7 +55,9 @@
 </dependency>
 ```
 
-### 使用
+## 2.aaa <a name="id_name"></a>
+
+<h2 id="maven引入">2.使用</h2>
 该框架使用极其简单，如下：给需要拦截的属性添加注解即可
 ```java
 @Data
@@ -36,7 +65,7 @@
 public class WhiteAEntity {
     
     // 修饰属性name，只允许对应的值为a，b,c和null
-    @Matcher({"a","b","c","null"})
+    @Matcher(value = {"a","b","c","null"}, errMsg = "输入的值不符合需求")
     private String name;
     private String address;
 }
@@ -56,7 +85,7 @@ public void test1(){
     if (!MkValidators.check(whiteAEntity)) {
         // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
         System.out.println(MkValidators.getErrMsgChain());
-        // 输出：属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
+        // 输出：输入的值不符合需求
         System.out.println(MkValidators.getErrMsg());
     }
 
@@ -65,9 +94,13 @@ public void test1(){
 }
 ```
 
-## 详细介绍
+<h2 id="使用">2.使用</h2>
 从上面用例可以看到该框架使用非常简单。但是框架的功能性却很强大，那么强大在哪，在于注解属性的多样性，后面一一介绍。对于属性这里的核查函数其实就是只有一个，不同的重载
-#### 核查函数
+
+<h1 id="使用">二、详细介绍</h1>
+
+<h2 id="核查函数">1.核查函数</h2>
+
 ```java
 /**
 * 核查对象
@@ -115,7 +148,7 @@ public void validate(String group, Object object) throws MkException
 public void validate(String group, Object object, String ...fieldSet) throws MkException
 ```
 
-#### 注解
+<h2 id="注解">2.注解</h2>
 ```java
 /**
 * 匹配器
@@ -131,7 +164,7 @@ public void validate(String group, Object object, String ...fieldSet) throws MkE
 @Check
 ```
 
-### 匹配器
+<h2 id="匹配器">3.匹配器</h2>
 匹配器就是该框架最强大和功能最丰富的的地方，这里根据不同的场景将各种不同的配置都作为属性，每个属性定位是能够匹配该领域的所有类型
 
 ```java
@@ -227,7 +260,22 @@ public @interface Matcher {
      * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考测试类{@link com.simonalong.mikilin.judge.JudgeCheck}
      */
     String judge() default "";
+    
+    /**
+     * 核查失败后的返回语句
+     *
+     * @return 核查失败后返回的语句
+     */
+    String errMsg() default "";
 
+    /**
+     * 过滤器模式
+     * <p>
+     *     其他的属性都是匹配，而该属性表示匹配之后对应的数据的处理，是接受放进来，还是只拒绝这样的数据
+     * @return true：accept（放进来），false：deny（拒绝）
+     */
+    boolean accept() default true;
+    
     /**
      * 是否启用核查
      * @return true：禁用核查，false：启用核查
@@ -236,7 +284,7 @@ public @interface Matcher {
 }
 ```
 
-#### 只要指定的值
+<h3 id="匹配指定的值">3.1 匹配指定的值</h3>
 ```java
 @Data
 @Accessors(chain = true)
@@ -270,7 +318,7 @@ def "只有指定的值才能通过"() {
 }
 ```
 
-#### 只要固定的一些枚举
+<h3 id="匹配枚举值">3.2 匹配枚举值</h3>
 ```java
 @Data
 @AllArgsConstructor
@@ -283,7 +331,7 @@ public class JudgeEntity {
     @Matcher(enumType = {AEnum.class, BEnum.class})
     private String tag;
 
-    @Matcher(enumType = {CEnum.class}, acceptOrDeny = false)
+    @Matcher(enumType = {CEnum.class}, accept = false)
     private String invalidTag;
 }
 ```
@@ -324,7 +372,7 @@ def "枚举类型测试"() {
 }
 ```
 
-#### 只要匹配指定的内置类型通过
+<h3 id="匹配内置类型">3.3 匹配内置类型</h3>
 目前内置了常见的几种类型：身份证号、手机号、固定电话、邮箱、IP地址
 > ID_CARD ：身份证号 <br/>
 > PHONE_NUM ：手机号<br/>
@@ -338,7 +386,7 @@ public class IpEntity {
 
     @Matcher(model = FieldModel.IP_ADDRESS)
     private String ipValid;
-    @Matcher(model = FieldModel.IP_ADDRESS, acceptOrDeny =false)
+    @Matcher(model = FieldModel.IP_ADDRESS, accept =false)
     private String ipInvalid;
 }
 ```
@@ -363,8 +411,9 @@ def "IP测试"() {
 }
 ```
 
-#### 只要匹配对应范围的数据
+<h3 id="匹配范围">3.4 匹配范围</h3>
 目前该属性不只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
+<h4 id="数值范围">3.4.1 数值范围</h4>
 ```java
 @Data
 @Accessors(chain = true)
@@ -419,7 +468,8 @@ public class RangeEntity4 {
     private Integer num8;
 }
 ```
-##### 表示时间类型
+
+<h4 id="时间范围">3.4.2 时间范围</h4>
 修饰的类型可以为Date类型，也可以为Long类型
 ```java
 @Data
@@ -487,7 +537,8 @@ public class RangeTimeEntity {
     private Date date10;
 }
 ```
-##### 集合的范围
+
+<h4 id="集合大小范围">3.4.3 集合大小范围</h4>
 集合这里只核查集合的数据大小
 ```java
 @Data
@@ -504,7 +555,7 @@ public class CollectionSizeEntityA {
 }
 ```
 
-#### 只要求属性匹配某个Boolean表达式
+<h3 id="表达式匹配">3.5 表达式匹配</h3>
 这里的表达式只要是任何返回Boolean的表达式即可，框架提供两个占位符，#current和#root，其中#current表示当前属性的值，#root表示的是当前属性所在的对象的值，可以通过#root.xxx访问其他的属性。该表达式支持java中的任何符号操作，此外还支持java.lang.math中的所有静态函数，比如：min、max和abs等等
 ```java
 @Data
@@ -553,7 +604,7 @@ public class ConditionEntity {
 }
 ```
 
-#### 只要符合自定义的正则表达式匹配
+<h3 id="正则表达式匹配">3.6 正则表达式匹配</h3>
 ```java
 @Data
 @Accessors(chain = true)
@@ -562,13 +613,15 @@ public class RegexEntity {
     @Matcher(regex = "^\\d+$")
     private String regexValid;
 
-    @Matcher(regex = "^\\d+$", acceptOrDeny = false)
+    @Matcher(regex = "^\\d+$", accept = false)
     private String regexInValid;
 }
 ```
 
 #### 用户自定义匹配
+<h3 id="自定义扩展匹配">3.7 自定义扩展匹配</h3>
 上面都是系统内置的一些匹配，如果用户想自定义匹配，可以自行扩展，需要通过该函数指定一个全限定名的类和函数指定即可，目前支持的参数类型有如下几种，比如
+<h4 id="自定义函数路径匹配">3.7.1 自定义函数路径匹配</h4>
 ```java
 @Data
 @Accessors(chain = true)
@@ -657,7 +710,7 @@ public class JudgeCheck {
 }
 ```
 
-##### spring的Bean自定义匹配器
+<h4 id="spring的Bean自定义匹配器">3.7.2 spring的Bean自定义匹配器</h4>
 上面看到了，我们指定一个全限定路径即可设置过滤器，其实是反射了一个代理类，在真实的业务场景中，我们的bean是用spring进行管理的，因此这里增加了一个通过spring管理的匹配器，如下
 使用时候需要在指定为扫描一下如下路径即可
 
@@ -688,7 +741,7 @@ public class JudgeCls {
 }
 ```
 
-#### 不同场景校验的规则不同
+<h3 id="分组匹配">3.8 分组匹配</h3>
 上面看到，每个属性只有一种核查规则，但是如果我们要在不同的场景中使用不同的规则，那么这个时候应该怎么办呢，分组就来了，新增一个注解`Matchers`
 ```java
 @Target(ElementType.FIELD)
@@ -705,9 +758,9 @@ public @interface Matchers {
 public class GroupEntity {
 
     @Matchers({
-        @Matcher(range = "[50, 100]", acceptOrDeny = false),
-        @Matcher(group = "test1", range = "[12, 23]", acceptOrDeny = false),
-        @Matcher(group = "test2", range = "[1, 10]", acceptOrDeny = false)
+        @Matcher(range = "[50, 100]", accept = false),
+        @Matcher(group = "test1", range = "[12, 23]", accept = false),
+        @Matcher(group = "test2", range = "[1, 10]", accept = false)
     })
     private Integer age;
 
@@ -742,7 +795,115 @@ def "测试指定分组"() {
 }
 ```
 
-#### 核查类型的某个属性
+<h3 id="自定义拦截文案">3.9 自定义拦截文案</h3>
+errMsg是用于在当前的数据被拦截之后的输出，比如刚开始的介绍案例，如果
+```java
+@Data
+@Accessors(chain = true)
+public class WhiteAEntity {
+    
+    // 修饰属性name，只允许对应的值为a，b,c和null
+    @Matcher(value = {"a","b","c","null"}, errMsg = "输入的值不符合需求")
+    private String name;
+    private String address;
+}
+```
+
+在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
+```java
+import lombok.SneakyThrows;
+
+@Test
+@SneakyThrows
+public void test1(){
+    WhiteAEntity whiteAEntity = new WhiteAEntity();
+    whiteAEntity.setName("d");
+
+    // 可以使用带有返回值的核查
+    if (!MkValidators.check(whiteAEntity)) {
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        System.out.println(MkValidators.getErrMsgChain());
+        // 输出：输入的值不符合需求
+        System.out.println(MkValidators.getErrMsg());
+    }
+
+    // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式
+    MkValidators.validate(whiteAEntity);
+}
+```
+如果我没不写errMsg，如下这种，那么返回值为系统默认的错误信息，比如
+```java
+@Data
+@Accessors(chain = true)
+public class WhiteAEntity {
+    
+    // 修饰属性name，只允许对应的值为a，b,c和null
+    @Matcher(value = {"a","b","c","null"})
+    private String name;
+    private String address;
+}
+```
+执行结果
+```java
+import lombok.SneakyThrows;
+
+@Test
+@SneakyThrows
+public void test1(){
+    WhiteAEntity whiteAEntity = new WhiteAEntity();
+    whiteAEntity.setName("d");
+
+    // 可以使用带有返回值的核查
+    if (!MkValidators.check(whiteAEntity)) {
+        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+        System.out.println(MkValidators.getErrMsgChain());
+        // 输出：属性 name 的值 d 不在只可用列表 [null, a, b, c] 中
+        System.out.println(MkValidators.getErrMsg());
+    }
+
+    // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式
+    MkValidators.validate(whiteAEntity);
+}
+```
+
+<h3 id="拦截还是拒绝">3.10 拦截还是拒绝</h3>
+该属性表示匹配后的数据是接收，还是拒绝，如果为true表示接收，则表示只接收按照匹配器匹配的数据，为白名单概念。如果为false，则表示值拒绝对于匹配到的数据，为黑名单概念。白名单就不再介绍，这里介绍下为false情况
+```java
+@Data
+@Accessors(chain = true)
+public class DenyEntity {
+
+    @Matcher(value = {"a", "b", "null"}, accept = false)
+    private String name;
+    @Matcher(range = "[0, 100]", accept = false)
+    private Integer age;
+}
+```
+拦截用例
+```groovy
+def "测试指定的属性age"() {
+    given:
+    DenyEntity entity = new DenyEntity().setName(name).setAge(age)
+
+    expect:
+    def act = MkValidators.check(entity);
+    Assert.assertEquals(result, act)
+    if (!act) {
+        println MkValidators.errMsgChain
+    }
+
+    where:
+    name | age | result
+    "a"  | 0   | false
+    "b"  | 89  | false
+    "c"  | 100 | false
+    null | 200 | false
+    "d"  | 0   | false
+    "d"  | 200 | true
+}
+```
+
+<h2 id="核查某个属性">4 核查某个属性</h2>
 上面我们说到，可以核查整个对象，但是如果我们只想核查对象中的某几个属性，那么应该怎么办呢，这里增加了这么个方法`check(Object object, String... fieldSet)`，后者为要核查的属性名字
 
 ```java
@@ -750,7 +911,7 @@ def "测试指定分组"() {
 @Accessors(chain = true)
 public class TestEntity {
 
-    @Matcher(value = {"nihao", "ok"}, acceptOrDeny = false)
+    @Matcher(value = {"nihao", "ok"}, accept = false)
     private String name;
     @Matcher(range = "[12, 32]")
     private Integer age;

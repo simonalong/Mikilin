@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.errmsg;
+package com.simonalong.mikilin.acceptOrDeny;
 
 import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
@@ -6,13 +6,14 @@ import lombok.experimental.Accessors;
 
 /**
  * @author shizi
- * @since 2020/3/18 上午12:00
+ * @since 2020/3/19 下午7:15
  */
 @Data
 @Accessors(chain = true)
-public class ErrMsgEntity2 {
+public class DenyEntity {
 
+    @Matcher(value = {"a", "b", "null"}, accept = false)
     private String name;
-    @Matcher(range = "(200, )", errMsg = "年龄为200以上是不合法的", accept = false)
+    @Matcher(range = "[0, 100]", accept = false)
     private Integer age;
 }

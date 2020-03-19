@@ -15,6 +15,6 @@ public class IpEntity {
 
     @Matcher(model = FieldModel.IP_ADDRESS)
     private String ipValid;
-    @Matcher(model = FieldModel.IP_ADDRESS, acceptOrDeny = false)
+    @Matcher(model = FieldModel.IP_ADDRESS, accept = false)
     private String ipInvalid;
 }

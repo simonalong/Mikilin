@@ -1,17 +1,19 @@
-package com.simonalong.mikilin.value.str;
+package com.simonalong.mikilin.acceptOrDeny;
 
 import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * @author zhouzhenyong
- * @since 2019/1/5 下午6:21
+ * @author shizi
+ * @since 2020/3/19 下午7:15
  */
 @Data
 @Accessors(chain = true)
-public class BlackAEntity {
-    @Matcher(value = {"a","b","c","null"}, accept = false)
+public class AcceptEntity {
+
+    @Matcher(value = {"a", "b", "null"})
     private String name;
+    @Matcher(range = "[0, 100]")
     private Integer age;
 }

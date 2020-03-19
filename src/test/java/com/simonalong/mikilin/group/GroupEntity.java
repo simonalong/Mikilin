@@ -14,9 +14,9 @@ import lombok.experimental.Accessors;
 public class GroupEntity {
 
     @Matchers({
-        @Matcher(range = "[50, 100]", acceptOrDeny = false),
-        @Matcher(group = "test1", range = "[12, 23]", acceptOrDeny = false),
-        @Matcher(group = "test2", range = "[1, 10]", acceptOrDeny = false)
+        @Matcher(range = "[50, 100]", accept = false),
+        @Matcher(group = "test1", range = "[12, 23]", accept = false),
+        @Matcher(group = "test2", range = "[1, 10]", accept = false)
     })
     private Integer age;
 

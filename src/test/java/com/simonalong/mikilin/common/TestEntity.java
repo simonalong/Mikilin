@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class TestEntity {
 
-    @Matcher(value = {"nihao", "ok"}, acceptOrDeny = false)
+    @Matcher(value = {"nihao", "ok"}, accept = false)
     private String name;
     @Matcher(range = "[12, 32]")
     private Integer age;

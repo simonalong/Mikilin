@@ -14,6 +14,6 @@ public class BlackWhiteAEntity {
 
     @Matcher({"a","b"})
     private String name;
-    @Matcher(value = {"1","2"}, acceptOrDeny = false)
+    @Matcher(value = {"1","2"}, accept = false)
     private Integer age;
 }

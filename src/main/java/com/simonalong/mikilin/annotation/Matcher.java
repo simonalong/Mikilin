@@ -127,7 +127,7 @@ public @interface Matcher {
      *     其他的属性都是匹配，而该属性表示匹配之后对应的数据的处理，是接受放进来，还是只拒绝这样的数据
      * @return true：accept（放进来），false：deny（拒绝）
      */
-    boolean acceptOrDeny() default true;
+    boolean accept() default true;
 
     /**
      * 是否启用核查

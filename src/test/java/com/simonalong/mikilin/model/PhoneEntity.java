@@ -15,6 +15,6 @@ public class PhoneEntity {
 
     @Matcher(model = FieldModel.PHONE_NUM)
     private String phoneValid;
-    @Matcher(model = FieldModel.PHONE_NUM, acceptOrDeny = false)
+    @Matcher(model = FieldModel.PHONE_NUM, accept = false)
     private String phoneInValid;
 }

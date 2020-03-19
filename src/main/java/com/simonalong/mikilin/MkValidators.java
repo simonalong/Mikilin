@@ -285,7 +285,7 @@ public final class MkValidators {
                 Matcher matcher = f.getAnnotation(Matcher.class);
                 if (null != matcher && !matcher.disable()) {
                     addObjectFieldMap(objectClsName, f.getName());
-                    if (matcher.acceptOrDeny()) {
+                    if (matcher.accept()) {
                         addWhiteValueMap(whiteGroupMap, objectClsName, f, matcher);
                     } else {
                         addWhiteValueMap(blackGroupMap, objectClsName, f, matcher);
@@ -296,7 +296,7 @@ public final class MkValidators {
                 if (null != matchers) {
                     Stream.of(matchers.value()).forEach(w -> {
                         addObjectFieldMap(objectClsName, f.getName());
-                        if (w.acceptOrDeny()) {
+                        if (w.accept()) {
                             addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
                         } else {
                             addWhiteValueMap(blackGroupMap, objectClsName, f, w);

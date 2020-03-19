@@ -15,6 +15,6 @@ public class MailEntity {
 
     @Matcher(model = FieldModel.MAIL)
     private String mailValid;
-    @Matcher(model = FieldModel.MAIL, acceptOrDeny = false)
+    @Matcher(model = FieldModel.MAIL, accept = false)
     private String mailInValid;
 }

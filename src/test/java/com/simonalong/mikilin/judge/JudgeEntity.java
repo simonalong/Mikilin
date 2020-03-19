@@ -18,7 +18,7 @@ public class JudgeEntity {
     @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#nameValid")
     private String name;
 
-    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid", acceptOrDeny = false)
+    @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#addressInvalid", accept = false)
     private String address;
 
     @Matcher(judge = "com.simonalong.mikilin.judge.JudgeCheck#ratioJudge")

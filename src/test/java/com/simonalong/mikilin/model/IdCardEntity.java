@@ -15,6 +15,6 @@ public class IdCardEntity {
 
     @Matcher(model = FieldModel.ID_CARD)
     private String idCardValid;
-    @Matcher(model = FieldModel.ID_CARD, acceptOrDeny = false)
+    @Matcher(model = FieldModel.ID_CARD, accept = false)
     private String idCardInValid;
 }

@@ -15,6 +15,6 @@ public class RegexEntity {
     @Matcher(regex = "^\\d+$")
     private String regexValid;
 
-    @Matcher(regex = "^\\d+$", acceptOrDeny = false)
+    @Matcher(regex = "^\\d+$", accept = false)
     private String regexInValid;
 }

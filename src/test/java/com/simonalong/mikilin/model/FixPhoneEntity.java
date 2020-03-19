@@ -15,6 +15,6 @@ public class FixPhoneEntity {
 
     @Matcher(model = FieldModel.FIXED_PHONE)
     private String fixedPhone;
-    @Matcher(model = FieldModel.FIXED_PHONE, acceptOrDeny = false)
+    @Matcher(model = FieldModel.FIXED_PHONE, accept = false)
     private String fixedPhoneInValid;
 }

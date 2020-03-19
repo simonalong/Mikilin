@@ -15,11 +15,11 @@ import lombok.experimental.Accessors;
 public class GroupMultiEntity {
 
     @Matchers({
-        @Matcher(range = "[10, 20)", acceptOrDeny = false),
-        @Matcher(group = "test0", range = "[70, 80)", acceptOrDeny = false),
-        @Matcher(group = {"test1","test2"}, range = "[20, 30)", acceptOrDeny = false),
+        @Matcher(range = "[10, 20)", accept = false),
+        @Matcher(group = "test0", range = "[70, 80)", accept = false),
+        @Matcher(group = {"test1","test2"}, range = "[20, 30)", accept = false),
         // 下面的会覆盖上面的默认组
-        @Matcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)", acceptOrDeny = false),
+        @Matcher(group = {MkConstant.DEFAULT_GROUP,"test3"}, range = "[30, 40)", accept = false),
     })
     private Integer age;
 
