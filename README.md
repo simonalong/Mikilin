@@ -12,6 +12,9 @@
 - 高性能：所有的核查均是内存直接调用，第一次构建匹配树后，后面就无须重建
 - 可扩展：针对一些不好核查的属性，可以设置自定义匹配，可以通过自定义匹配器类，也可以使用spring的Bean作为系统匹配器类
 
+## 使用文档
+[Mikilin文档](https://persimon.gitbook.io/mikilin/)
+
 # 目录：
 
 * [一、快速入门](#快速入门)
@@ -37,10 +40,6 @@
         * 9.[errMsg: 自定义拦截文案](#自定义拦截文案)
         * 10.[accept: 拦截还是拒绝](#拦截还是拒绝)
     * 4.[核查某个属性](#核查某个属性)
-    
-[to_be_link](#id_name)
-## 使用文档
-[Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
 # 一、快速入门 <a name="快速入门"></a>
 本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据accept区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
@@ -281,7 +280,7 @@ public @interface Matcher {
 }
 ```
 
-#### 匹配指定的值 <a name="匹配指定的值"></a>
+### 匹配指定的值 <a name="匹配指定的值"></a>
 ```java
 @Data
 @Accessors(chain = true)
@@ -315,7 +314,7 @@ def "只有指定的值才能通过"() {
 }
 ```
 
-<h3 id="匹配枚举值">3.2 匹配枚举值</h3>
+### 匹配枚举值 <a name="匹配枚举值"></a>
 ```java
 @Data
 @AllArgsConstructor
@@ -369,7 +368,7 @@ def "枚举类型测试"() {
 }
 ```
 
-<h3 id="匹配内置类型">3.3 匹配内置类型</h3>
+### 匹配内置类型 <a name="匹配内置类型"></a>
 目前内置了常见的几种类型：身份证号、手机号、固定电话、邮箱、IP地址
 > ID_CARD ：身份证号 <br/>
 > PHONE_NUM ：手机号<br/>
@@ -408,9 +407,9 @@ def "IP测试"() {
 }
 ```
 
-<h3 id="匹配范围">3.4 匹配范围</h3>
+### 匹配范围 <a name="匹配范围"></a>
 目前该属性不只是数值类型（Integer, Long, Float, Short, Double等一切数值类型），也支持时间类型，也支持集合类型（集合比较的是集合的大小），范围是用的是数学的开闭写法
-<h4 id="数值范围">3.4.1 数值范围</h4>
+#### 数值范围 <a name="数值范围"></a>
 ```java
 @Data
 @Accessors(chain = true)
@@ -466,7 +465,7 @@ public class RangeEntity4 {
 }
 ```
 
-<h4 id="时间范围">3.4.2 时间范围</h4>
+#### 时间范围 <a name="时间范围"></a>
 修饰的类型可以为Date类型，也可以为Long类型
 ```java
 @Data
@@ -535,7 +534,7 @@ public class RangeTimeEntity {
 }
 ```
 
-<h4 id="集合大小范围">3.4.3 集合大小范围</h4>
+#### 集合大小范围 <a name="集合大小范围"></a>
 集合这里只核查集合的数据大小
 ```java
 @Data
@@ -552,7 +551,7 @@ public class CollectionSizeEntityA {
 }
 ```
 
-<h3 id="表达式匹配">3.5 表达式匹配</h3>
+### 表达式匹配 <a name="表达式匹配"></a>
 这里的表达式只要是任何返回Boolean的表达式即可，框架提供两个占位符，#current和#root，其中#current表示当前属性的值，#root表示的是当前属性所在的对象的值，可以通过#root.xxx访问其他的属性。该表达式支持java中的任何符号操作，此外还支持java.lang.math中的所有静态函数，比如：min、max和abs等等
 ```java
 @Data
@@ -601,7 +600,7 @@ public class ConditionEntity {
 }
 ```
 
-<h3 id="正则表达式匹配">3.6 正则表达式匹配</h3>
+### 正则表达式匹配 <a name="正则表达式匹配"></a>
 ```java
 @Data
 @Accessors(chain = true)
@@ -615,10 +614,9 @@ public class RegexEntity {
 }
 ```
 
-#### 用户自定义匹配
-<h3 id="自定义扩展匹配">3.7 自定义扩展匹配</h3>
+### 自定义扩展匹配 <a name="自定义扩展匹配"></a>
 上面都是系统内置的一些匹配，如果用户想自定义匹配，可以自行扩展，需要通过该函数指定一个全限定名的类和函数指定即可，目前支持的参数类型有如下几种，比如
-<h4 id="自定义函数路径匹配">3.7.1 自定义函数路径匹配</h4>
+#### 自定义函数路径匹配 <a name="自定义函数路径匹配"></a>
 ```java
 @Data
 @Accessors(chain = true)
@@ -707,7 +705,7 @@ public class JudgeCheck {
 }
 ```
 
-<h4 id="spring的Bean自定义匹配器">3.7.2 spring的Bean自定义匹配器</h4>
+#### spring的Bean自定义匹配器 <a name="spring的Bean自定义匹配器"></a>
 上面看到了，我们指定一个全限定路径即可设置过滤器，其实是反射了一个代理类，在真实的业务场景中，我们的bean是用spring进行管理的，因此这里增加了一个通过spring管理的匹配器，如下
 使用时候需要在指定为扫描一下如下路径即可
 
@@ -738,7 +736,7 @@ public class JudgeCls {
 }
 ```
 
-<h3 id="分组匹配">3.8 分组匹配</h3>
+### 分组匹配 <a name="分组匹配"></a>
 上面看到，每个属性只有一种核查规则，但是如果我们要在不同的场景中使用不同的规则，那么这个时候应该怎么办呢，分组就来了，新增一个注解`Matchers`
 ```java
 @Target(ElementType.FIELD)
@@ -792,7 +790,7 @@ def "测试指定分组"() {
 }
 ```
 
-<h3 id="自定义拦截文案">3.9 自定义拦截文案</h3>
+### 自定义拦截文案 <a name="自定义拦截文案"></a>
 errMsg是用于在当前的数据被拦截之后的输出，比如刚开始的介绍案例，如果
 ```java
 @Data
@@ -863,7 +861,7 @@ public void test1(){
 }
 ```
 
-<h3 id="拦截还是拒绝">3.10 拦截还是拒绝</h3>
+### 拦截还是拒绝 <a name="拦截还是拒绝"></a>
 该属性表示匹配后的数据是接收，还是拒绝，如果为true表示接收，则表示只接收按照匹配器匹配的数据，为白名单概念。如果为false，则表示值拒绝对于匹配到的数据，为黑名单概念。白名单就不再介绍，这里介绍下为false情况
 ```java
 @Data
@@ -900,7 +898,7 @@ def "测试指定的属性age"() {
 }
 ```
 
-<h2 id="核查某个属性">4 核查某个属性</h2>
+## 核查某个属性 <a name="核查某个属性"></a>
 上面我们说到，可以核查整个对象，但是如果我们只想核查对象中的某几个属性，那么应该怎么办呢，这里增加了这么个方法`check(Object object, String... fieldSet)`，后者为要核查的属性名字
 
 ```java
