@@ -110,8 +110,8 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                             try {
                                 m.setAccessible(true);
                                 return (boolean) m.invoke(object, v);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
+                            } catch (IllegalAccessException | InvocationTargetException ignored) {
+
                             }
                             return false;
                         };
@@ -123,8 +123,8 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                                } catch (IllegalAccessException | InvocationTargetException ignored) {
+
                                 }
                                 return false;
                             };
@@ -134,8 +134,8 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                                } catch (IllegalAccessException | InvocationTargetException ignored) {
+
                                 }
                                 return false;
                             };
@@ -148,8 +148,8 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                                } catch (IllegalAccessException | InvocationTargetException ignored) {
+
                                 }
                                 return false;
                             };
@@ -157,21 +157,21 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                             try {
                                 throw new JudgeException("函数"+funStr+"参数匹配失败，三个参数的时候，第三个参数需要为MkContext类型");
                             } catch (JudgeException e) {
-                                e.printStackTrace();
+                                throw new RuntimeException(e);
                             }
                         }
                     } else {
                         try {
                             throw new JudgeException("函数"+funStr+"的参数匹配失败，最多三个参数");
                         } catch (JudgeException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                     }
                 } else {
                     try {
                         throw new JudgeException("函数"+funStr+"返回值不是boolean，添加匹配器失败");
                     } catch (JudgeException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 }
             });
@@ -179,7 +179,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
             if (e instanceof ClassNotFoundException) {
                 log.error("类{}路径没有找到", classStr, e);
             } else {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -187,7 +187,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
             try {
                 throw new JudgeException("类"+classStr+"不包含函数" + funStr);
             } catch (JudgeException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 

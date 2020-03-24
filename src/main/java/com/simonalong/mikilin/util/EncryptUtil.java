@@ -68,7 +68,7 @@ public class EncryptUtil {
             }
             encodeStr = stringBuffer.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return encodeStr;
     }

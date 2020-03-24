@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/3/10 下午10:08
  */
-class FieldJudgeTest extends Specification {
+class FieldMatchManagerTest extends Specification {
 
     /**
      * 测试外部判断的调用

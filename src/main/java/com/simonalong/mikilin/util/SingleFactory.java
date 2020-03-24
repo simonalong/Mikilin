@@ -32,9 +32,7 @@ public class SingleFactory {
                 Constructor<?> constructor = tClass.getDeclaredConstructor();
                 constructor.setAccessible(true);
                 return constructor.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (Exception ignored) {}
             return null;
         });
     }

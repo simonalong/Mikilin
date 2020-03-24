@@ -1,7 +1,7 @@
 package com.simonalong.mikilin.match.matcher;
 
 import com.simonalong.mikilin.annotation.Matcher;
-import com.simonalong.mikilin.util.Objects;
+import com.simonalong.mikilin.util.ObjectUtil;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Set;
@@ -15,7 +15,7 @@ import lombok.Setter;
  * @since 2019/4/11 下午8:49
  */
 @Setter
-public class ValueMather extends AbstractBlackWhiteMatch {
+public class ValueMath extends AbstractBlackWhiteMatch {
 
     private Set<Object> values;
 
@@ -42,20 +42,20 @@ public class ValueMather extends AbstractBlackWhiteMatch {
      * @param values 属性的可用的或者不可用列表String形式
      * @return 值匹配器
      */
-    public static ValueMather build(Field field, String[] values) {
+    public static ValueMath build(Field field, String[] values) {
         if (null == values || 0 == values.length) {
             return null;
         }
 
-        ValueMather valueMather = new ValueMather();
-        valueMather.setValues(Arrays.stream(values).map(i -> {
+        ValueMath valueMath = new ValueMath();
+        valueMath.setValues(Arrays.stream(values).map(i -> {
             if (null != i && !"".equals(i)) {
-                return Objects.cast(field.getType(), i);
+                return ObjectUtil.cast(field.getType(), i);
             } else {
                 return null;
             }
         }).collect(Collectors.toSet()));
 
-        return valueMather;
+        return valueMath;
     }
 }

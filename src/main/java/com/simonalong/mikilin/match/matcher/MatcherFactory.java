@@ -16,8 +16,8 @@ public class MatcherFactory {
         }
         try {
             return tClass.newInstance().build(params);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (InstantiationException | IllegalAccessException ignored) {
+
         }
         return null;
     }

@@ -51,8 +51,7 @@ public class ExpressParser {
             }
             return (Boolean) result;
         }catch (Exception e){
-            e.printStackTrace();
-            log.error("表达式执行失败");
+            log.error("表达式执行失败", e);
         }
         return null;
     }

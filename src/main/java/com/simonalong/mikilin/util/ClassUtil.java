@@ -1,22 +1,15 @@
 package com.simonalong.mikilin.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.lang.reflect.*;
+import java.util.*;
 import lombok.experimental.UtilityClass;
 
 /**
  * @author zhouzhenyong
  * @since 2018/12/25 下午5:17
  */
-public final class ClassUtil {
+@UtilityClass
+public class ClassUtil {
 
     /**
      * 获取一个对象类的所有属性，包括继承的
@@ -24,23 +17,11 @@ public final class ClassUtil {
      * @param cls 待获取的类
      * @return 类的所有属性
      */
-    public static Set<Field> allFieldsOfClass(Class<?> cls) {
+    public Set<Field> allFieldsOfClass(Class<?> cls) {
         Set<Field> fieldSet = new HashSet<>();
-        while (cls != null) {
-            fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
-            cls = cls.getSuperclass();
-        }
+        fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
+        fieldSet.addAll(Arrays.asList(cls.getFields()));
         return fieldSet;
-    }
-
-    /**
-     * 获取一个对象类的所有属性（包括继承的）的类
-     *
-     * @param cls 待获取的类
-     * @return 类的属性对应的类
-     */
-    public Set<Class<?>> allFieldsClassOfClass(Class<?> cls) {
-        return allFieldsOfClass(cls).stream().map(Field::getType).collect(Collectors.toSet());
     }
 
     /**
@@ -51,14 +32,18 @@ public final class ClassUtil {
      * 注意: 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      *
      * @param cls 待校验的类
-     * @return true=是基类，false=非基类
+     * @return true=要核查的类型，false=不用核查的类型
      */
-    public static boolean isCheckedType(Class<?> cls) {
+    public boolean isCheckedType(Class<?> cls) {
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class));
         if (baseFlag) {
             return true;
         } else {
             if (Void.class.isAssignableFrom(cls)) {
+                return false;
+            }
+
+            if (cls.isEnum()) {
                 return false;
             }
 
@@ -82,46 +67,38 @@ public final class ClassUtil {
     }
 
     /**
-     * 将集合或者Map的Class文件进行拆解开，获取对应的值的类
+     * 解析对象包括通配符部分的结构
      *
-     * 注意： 当前集合泛型只处理基本的 ParameterizedType，其他暂时不支持（TypeVariable, WildcardType, GenericArrayType）
+     * <p>
+     *  将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类 例如：{@code Map<String, AEntity>} 到 {@code Class<AEntity>}，{@code List<BEntity>} 到 {@code Class<BEntity>}
+     * <p>
+     *  逻辑同{@link ObjectUtil#parseObjectStruct(Object)}，但是parseObjectStruct会将对象削减
      *
-     * @param type 待拆分的类
-     * @return 拆分之后类的类型
+     * @param object 待解析对象
+     * @return 解析后的对象和对象的类型：key为解析后的对象值，value为key对应的类型
      */
-    public static Class<?> peel(Type type) {
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType p = (ParameterizedType) type;
-            Type[] types = p.getActualTypeArguments();
-            if (types.length == 1) {
-                return peel(types[0]);
-            } else if (types.length == 2) {
-                return peel(types[1]);
-            }
+    public Class<?> peel(Object object) {
+        if (null == object) {
+            return null;
         }
-        return null;
-    }
-
-    /**
-     * 将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类 例如：{@code Map<String, AEntity>} 到 {@code Class<AEntity>}，{@code List<BEntity>}
-     * 到 {@code Class<BEntity>}
-     *
-     * @param object 待拆解的类
-     * @return 拆解后类的类型
-     */
-    public static Class<?> peel(Object object) {
         if (object instanceof Collection) {
-            Collection<?> collection = (Collection<?>) object;
+            Collection collection = (Collection) object;
             if (!collection.isEmpty()) {
-                return peel(collection.stream().findFirst().get());
+                Iterator<?> iterator = collection.iterator();
+                if (iterator.hasNext()) {
+                    return peel(iterator.next());
+                }
             }
             return null;
         } else if (object instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) object;
+            Map map = (Map) object;
             return peel(map.values());
+        } else if (object.getClass().isArray()) {
+            return peel(Array.get(object, 0));
         } else {
+            if (ClassUtil.isCheckedType(object.getClass())) {
+                return null;
+            }
             return object.getClass();
         }
     }

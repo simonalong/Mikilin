@@ -40,11 +40,10 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        boolean result = predicate.test(object, (Number) value);
-        if(result){
+        if (predicate.test(object, (Number) value)) {
             setBlackMsg("属性 {0} 的值 {1} 命中禁用条件 {2} ", name, value, replaceSystem(express));
             return true;
-        }else{
+        } else {
             setWhiteMsg("属性 {0} 的值 {1} 不符合条件 {2} ", name, value, replaceSystem(express));
             return false;
         }
@@ -112,8 +111,8 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
             Field field = root.getClass().getDeclaredField(filedName);
             field.setAccessible(true);
             return field.get(root);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+
         }
         return null;
     }

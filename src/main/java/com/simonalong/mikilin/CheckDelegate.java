@@ -1,10 +1,13 @@
 package com.simonalong.mikilin;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.match.FieldJudge;
+import com.simonalong.mikilin.exception.MkException;
+import com.simonalong.mikilin.match.FieldMatchManager;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
@@ -46,8 +49,7 @@ final class CheckDelegate {
      * @param blackSet 对象属性集合的不可用值列表
      * @return false：如果对象中有某个属性不可用 true：所有属性都可用
      */
-    boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             // 对于对象中的其他属性不核查
             return true;
@@ -81,6 +83,22 @@ final class CheckDelegate {
                 // 为空则忽略
                 return true;
             }
+        } else if (cls.isArray()) {
+            // 数组类型处理
+            boolean available = true;
+            int arrayLength = Array.getLength(object);
+            for (int index = 0; index < arrayLength; index++) {
+                if (!available(Array.get(object, index), fieldSet, objectFieldMap, whiteSet, blackSet)) {
+                    available = false;
+                    break;
+                }
+            }
+
+            if (!available) {
+                context.append("数组值有不合法");
+                return false;
+            }
+            return true;
         } else {
             // 自定义类型的话，则需要核查当前属性是否需要核查，不需要核查则略过
             if (!objectNeedCheck(object, objectFieldMap)) {
@@ -129,7 +147,7 @@ final class CheckDelegate {
                     field.setAccessible(true);
                     result &= available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -162,8 +180,8 @@ final class CheckDelegate {
         if (null == object) {
             return true;
         }
-        return available(object, ClassUtil.allFieldsOfClass(ClassUtil.peel(object)), objectFieldMap, whiteSet,
-            blackSet);
+
+        return available(object, ClassUtil.allFieldsOfClass(ClassUtil.peel(object)), objectFieldMap, whiteSet, blackSet);
     }
 
     /**
@@ -175,6 +193,7 @@ final class CheckDelegate {
      * @param blackGroupMather 属性的不可用值列表
      * @return true：可用，false：不可用
      */
+    @SuppressWarnings("all")
     private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatchManager> whiteGroupMather,
         Map<String, MatchManager> blackGroupMather) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
@@ -185,12 +204,17 @@ final class CheckDelegate {
         }
 
         field.setAccessible(true);
-        // 2.黑名单不空且包含，则不可用
-        if (!blackEmpty && fieldContain(object, field, blackGroupMather, false)) {
+        // 2.黑名单不空，而且匹配到了，则不可用
+        if (!blackEmpty && fieldMatch(object, field, blackGroupMather)) {
             return false;
         }
-        // 3.白名单为空或者白名单不空且包含，则可用
-        return whiteEmpty || fieldContain(object, field, whiteGroupMather, true);
+
+        // 3.白名单不空，而且该属性没有匹配到，则不可用
+        if (!whiteEmpty && !fieldMatch(object, field, whiteGroupMather)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -220,7 +244,7 @@ final class CheckDelegate {
             return true;
         }
 
-        Map<String, FieldJudge> fieldValueSetMap = groupMather.get(localGroup.get())
+        Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(localGroup.get())
             .getJudge(object.getClass().getCanonicalName());
         if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
             return fieldValueSetMap.get(field.getName()).isEmpty();
@@ -239,12 +263,12 @@ final class CheckDelegate {
     private boolean checkDisable(Object object, Field field, Map<String, MatchManager> groupMather) {
         String group = localGroup.get();
         if (groupMather.containsKey(group)) {
-            Map<String, FieldJudge> fieldValueSetMap = groupMather.get(group)
+            Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(group)
                 .getJudge(object.getClass().getCanonicalName());
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
-                FieldJudge fieldJudge = fieldValueSetMap.get(field.getName());
-                if (null != fieldJudge) {
-                    return fieldJudge.getDisable();
+                FieldMatchManager fieldMatchManager = fieldValueSetMap.get(field.getName());
+                if (null != fieldMatchManager) {
+                    return fieldMatchManager.getDisable();
                 }
             }
         }
@@ -252,38 +276,31 @@ final class CheckDelegate {
     }
 
     /**
-     * 对象的某个属性可用或者不可用核查中是否包含
+     * 对象的某个属性进行匹配
      *
      * @param object 对象
      * @param field 对象的属性
      * @param groupMather 可用或者不可用数据
-     * @param whiteOrBlack true=white, false=black
-     * @return true 包含，false 不包含
+     * @return true 匹配上任何一个则返回true，false 所有都没有匹配上则返回false
      */
-    private boolean fieldContain(Object object, Field field, Map<String, MatchManager> groupMather,
-        Boolean whiteOrBlack) {
+    private boolean fieldMatch(Object object, Field field, Map<String, MatchManager> groupMather) {
         if (checkDisable(object, field, groupMather)) {
             return false;
         }
 
         String group = localGroup.get();
         if (groupMather.containsKey(group)) {
-            Map<String, FieldJudge> fieldValueSetMap = groupMather.get(group)
-                .getJudge(object.getClass().getCanonicalName());
+            Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(group).getJudge(object.getClass().getCanonicalName());
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
-                FieldJudge fieldJudge = fieldValueSetMap.get(field.getName());
-                if (null != fieldJudge) {
+                FieldMatchManager fieldMatchManager = fieldValueSetMap.get(field.getName());
+                if (null != fieldMatchManager) {
                     field.setAccessible(true);
                     Object data;
                     try {
                         data = field.get(object);
-                        if (whiteOrBlack) {
-                            return fieldJudge.judgeWhite(object, data, context);
-                        } else {
-                            return fieldJudge.judgeBlack(object, data, context);
-                        }
+                        return fieldMatchManager.match(object, data, context);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 }
             }

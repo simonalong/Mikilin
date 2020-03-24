@@ -5,6 +5,7 @@ import com.simonalong.mikilin.exception.MkCheckException;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.CollectionUtil;
+import com.simonalong.mikilin.util.ObjectUtil;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -22,15 +23,15 @@ import java.util.stream.Stream;
 public final class MkValidators {
 
     /**
-     * 对象属性值白名单
+     * 对象属性值白名单：key为属性名，value为属性的匹配器
      */
     private Map<String, MatchManager> whiteGroupMap;
     /**
-     * 对象属性值黑名单
+     * 对象属性值黑名单：key为属性名，value为属性的匹配器
      */
     private Map<String, MatchManager> blackGroupMap;
     /**
-     * 对象属性核查映射
+     * 对象属性核查映射：key为规范化的类名，value为属性名
      */
     private Map<String, Set<String>> objectFieldCheckMap;
     private CheckDelegate delegate;
@@ -80,7 +81,7 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object) {
-        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
+        String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             context.append("数据为空");
             return false;
@@ -90,7 +91,7 @@ public final class MkValidators {
         if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
-            return check(groupDelete, object, ClassUtil.allFieldsOfClass(object.getClass()), getObjFieldMap(object), getWhiteMap(), getBlackMap());
+            return check(groupDelegate, object, ClassUtil.allFieldsOfClass(ClassUtil.peel(object)), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
@@ -103,7 +104,7 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object, String... fieldSet) {
-        String groupDelete = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
+        String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
             context.append("数据为空");
             return false;
@@ -113,7 +114,7 @@ public final class MkValidators {
         if (ClassUtil.isCheckedType(object.getClass())) {
             return true;
         } else {
-            return check(groupDelete, object, getFieldToCheck(object, new HashSet<>(Arrays.asList(fieldSet))), getObjFieldMap(object), getWhiteMap(), getBlackMap());
+            return check(groupDelegate, object, getFieldToCheck(ClassUtil.peel(object), new HashSet<>(Arrays.asList(fieldSet))), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
     }
 
@@ -192,8 +193,8 @@ public final class MkValidators {
      * @param fieldStrSet 调用方想要调用的属性的字符串名字集合
      * @return 属性的Field类型集合
      */
-    private Set<Field> getFieldToCheck(Object object, Set<String> fieldStrSet) {
-        return ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(f -> fieldStrSet.contains(f.getName())).collect(Collectors.toSet());
+    private Set<Field> getFieldToCheck(Class tClass, Set<String> fieldStrSet) {
+        return ClassUtil.allFieldsOfClass(tClass).stream().filter(f -> fieldStrSet.contains(f.getName())).collect(Collectors.toSet());
     }
 
     /**
@@ -249,7 +250,7 @@ public final class MkValidators {
         }
 
         // 若当前对象没有对象属性索引树，则进行创建
-        createObjectFieldMap(ClassUtil.peel(object));
+        createObjectFieldMap(object);
 
         return objectFieldCheckMap;
     }
@@ -267,14 +268,19 @@ public final class MkValidators {
      *
      * @param cls 待处理的对象的类
      */
-    private void createObjectFieldMap(Class<?> cls) {
-        if (null == cls) {
+    private void createObjectFieldMap(Object objectOrigin) {
+        if (null == objectOrigin) {
             return;
         }
-        // 剥离外部的一些壳之后类的类型
-        String objectClsName = cls.getCanonicalName();
+        Map.Entry<Object, Class<?>> objectAndClass = ObjectUtil.parseObjectStruct(objectOrigin);
+        if (null == objectAndClass) {
+            return;
+        }
+        Object object = objectAndClass.getKey();
+        Class<?> cls = objectAndClass.getValue();
+        String clsCanonicalName = cls.getCanonicalName();
         // 若已经解析，则不再解析
-        if (objectFieldCheckMap.containsKey(objectClsName)) {
+        if (objectFieldCheckMap.containsKey(clsCanonicalName)) {
             return;
         }
 
@@ -284,22 +290,22 @@ public final class MkValidators {
             fieldSet.forEach(f -> {
                 Matcher matcher = f.getAnnotation(Matcher.class);
                 if (null != matcher && !matcher.disable()) {
-                    addObjectFieldMap(objectClsName, f.getName());
+                    addObjectFieldMap(clsCanonicalName, f.getName());
                     if (matcher.accept()) {
-                        addWhiteValueMap(whiteGroupMap, objectClsName, f, matcher);
+                        addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, matcher);
                     } else {
-                        addWhiteValueMap(blackGroupMap, objectClsName, f, matcher);
+                        addWhiteValueMap(blackGroupMap, clsCanonicalName, f, matcher);
                     }
                 }
 
                 Matchers matchers = f.getAnnotation(Matchers.class);
                 if (null != matchers) {
                     Stream.of(matchers.value()).forEach(w -> {
-                        addObjectFieldMap(objectClsName, f.getName());
+                        addObjectFieldMap(clsCanonicalName, f.getName());
                         if (w.accept()) {
-                            addWhiteValueMap(whiteGroupMap, objectClsName, f, w);
+                            addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, w);
                         } else {
-                            addWhiteValueMap(blackGroupMap, objectClsName, f, w);
+                            addWhiteValueMap(blackGroupMap, clsCanonicalName, f, w);
                         }
                     });
                 }
@@ -308,10 +314,16 @@ public final class MkValidators {
             // 非待核查类型拆分开进行迭代分析
             fieldSet.stream().filter(f -> !ClassUtil.isCheckedType(f.getType())).forEach(f -> {
                 // 该属性对应的类型是否添加了注解 Check
-                Check check = f.getAnnotation(Check.class);
-                if (null != check) {
-                    addObjectFieldMap(objectClsName, f.getName());
-                    createObjectFieldMap(ClassUtil.peel(f.getGenericType()));
+                if (f.isAnnotationPresent(Check.class)) {
+                    addObjectFieldMap(clsCanonicalName, f.getName());
+                    Object fieldData = null;
+                    try {
+                        f.setAccessible(true);
+                        fieldData = f.get(object);
+                        createObjectFieldMap(fieldData);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         }
@@ -330,12 +342,12 @@ public final class MkValidators {
         });
     }
 
-    private void addWhiteValueMap(Map<String, MatchManager> groupMather, String objectName, Field field, Matcher matcher) {
+    private void addWhiteValueMap(Map<String, MatchManager> groupMather, String clsCanonicalName, Field field, Matcher matcher) {
         Arrays.asList(matcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatchManager().addWhite(objectName, field, matcher, context);
+                return new MatchManager().addWhite(clsCanonicalName, field, matcher, context);
             } else {
-                v.addWhite(objectName, field, matcher, context);
+                v.addWhite(clsCanonicalName, field, matcher, context);
                 return v;
             }
         }));

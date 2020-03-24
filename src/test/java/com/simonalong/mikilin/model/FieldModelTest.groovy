@@ -16,7 +16,8 @@ class FieldModelTest extends Specification {
 
         expect:
         boolean actResult = MkValidators.check(entity)
-        if (!result) {
+        if (!actResult) {
+            println MkValidators.getErrMsg()
             println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
