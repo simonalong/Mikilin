@@ -72,7 +72,7 @@ public class ClassUtil {
      * <p>
      *  将对象集合或者Map对象（只关心value）拆解开，获取对应的值的类 例如：{@code Map<String, AEntity>} 到 {@code Class<AEntity>}，{@code List<BEntity>} 到 {@code Class<BEntity>}
      * <p>
-     *  逻辑同{@link ObjectUtil#parseObjectStruct(Object)}，但是parseObjectStruct会将对象削减
+     *  逻辑同{@link ObjectUtil#parseObject(Object)}，但是 parseObject 会将对象削减
      *
      * @param object 待解析对象
      * @return 解析后的对象和对象的类型：key为解析后的对象值，value为key对应的类型

@@ -272,7 +272,7 @@ public final class MkValidators {
         if (null == objectOrigin) {
             return;
         }
-        Map.Entry<Object, Class<?>> objectAndClass = ObjectUtil.parseObjectStruct(objectOrigin);
+        Map.Entry<Object, Class<?>> objectAndClass = ObjectUtil.parseObject(objectOrigin);
         if (null == objectAndClass) {
             return;
         }

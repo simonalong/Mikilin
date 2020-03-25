@@ -28,7 +28,7 @@ public class ObjectUtilTest {
         DataEntity dataEntity = new DataEntity();
         dataEntity.setName("a");
         // DataEntity(name=a)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(dataEntity));
+        System.out.println(ObjectUtil.parseObject(dataEntity));
     }
 
     /**
@@ -41,21 +41,21 @@ public class ObjectUtilTest {
         List<String> strList = new ArrayList<>();
         strList.add("a");
         // null
-        System.out.println(ObjectUtil.parseObjectStruct(strList));
+        System.out.println(ObjectUtil.parseObject(strList));
 
         System.out.println("=======");
         // List<DataEntity>
         List<DataEntity> dataEntities = new ArrayList<>();
         dataEntities.add(new DataEntity().setName("b"));
         // DataEntity(name=b)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(dataEntities));
+        System.out.println(ObjectUtil.parseObject(dataEntities));
 
         System.out.println("=======");
         // Map<String, DataEntity>
         Map<String, DataEntity> entityMap = new HashMap<>();
         entityMap.put("c", new DataEntity().setName("c2"));
         // DataEntity(name=c2)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(entityMap));
+        System.out.println(ObjectUtil.parseObject(entityMap));
 
         System.out.println("=======");
         // Map<String, ? extends DataEntity> dataMap
@@ -66,7 +66,7 @@ public class ObjectUtilTest {
         Field field = wildcardTypeEntity.getClass().getDeclaredField("dataMap");
         field.setAccessible(true);
         // DataEntity(name=d1)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(field.get(wildcardTypeEntity)));
+        System.out.println(ObjectUtil.parseObject(field.get(wildcardTypeEntity)));
     }
 
     /**
@@ -81,7 +81,7 @@ public class ObjectUtilTest {
         Field field = typeEntity.getClass().getDeclaredField("data");
         field.setAccessible(true);
         // DataEntity(name=a)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(field.get(typeEntity)));
+        System.out.println(ObjectUtil.parseObject(field.get(typeEntity)));
 
         // List<T>
         List<DataEntity> dataEntityList = new ArrayList<>();
@@ -92,7 +92,7 @@ public class ObjectUtilTest {
         Field field2 = typeEntity2.getClass().getDeclaredField("dataList");
         field2.setAccessible(true);
         // DataEntity(name=a)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(field2.get(typeEntity2)));
+        System.out.println(ObjectUtil.parseObject(field2.get(typeEntity2)));
     }
 
     @Test
@@ -107,14 +107,14 @@ public class ObjectUtilTest {
         Field field1 = genericEntity1.getClass().getDeclaredField("dataArray");
         field1.setAccessible(true);
         // DataEntity(name=a)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(field1.get(genericEntity1)));
+        System.out.println(ObjectUtil.parseObject(field1.get(genericEntity1)));
 
         // T[] 数据为空
         GenericArrayTypeEntity genericEntity2 = new GenericArrayTypeEntity();
         Field field2 = genericEntity2.getClass().getDeclaredField("dataArray");
         field2.setAccessible(true);
         // null
-        System.out.println(ObjectUtil.parseObjectStruct(field2.get(genericEntity2)));
+        System.out.println(ObjectUtil.parseObject(field2.get(genericEntity2)));
     }
 
     @Test
@@ -130,13 +130,13 @@ public class ObjectUtilTest {
         Field field1 = genericEntity1.getClass().getDeclaredField("dataArrays");
         field1.setAccessible(true);
         // DataEntity(name=a)=class com.simonalong.mikilin.typeClass.DataEntity
-        System.out.println(ObjectUtil.parseObjectStruct(field1.get(genericEntity1)));
+        System.out.println(ObjectUtil.parseObject(field1.get(genericEntity1)));
 
         // T[][] 但是数据为空
         GenericArrayTypeEntity genericEntity2 = new GenericArrayTypeEntity();
         Field field2 = genericEntity2.getClass().getDeclaredField("dataArrays");
         field2.setAccessible(true);
         // null
-        System.out.println(ObjectUtil.parseObjectStruct(field2.get(genericEntity2)));
+        System.out.println(ObjectUtil.parseObject(field2.get(genericEntity2)));
     }
 }

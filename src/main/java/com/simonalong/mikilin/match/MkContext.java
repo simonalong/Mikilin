@@ -32,10 +32,16 @@ public class MkContext {
     }
 
     public void append(String errMsgStr, Object... keys) {
+        if(null == errMsgStr){
+            return;
+        }
         errMsgChain.get().append("-->").append(MessageFormat.format(errMsgStr, keys));
     }
 
     public void append(String errMsgStr) {
+        if(null == errMsgStr){
+            return;
+        }
         errMsgChain.get().append("-->").append(errMsgStr);
     }
 
@@ -47,6 +53,9 @@ public class MkContext {
     }
 
     public void setLastErrMsg(String errMsg) {
+        if(null == errMsg){
+            return;
+        }
         this.theLastErrMsg.set(errMsg);
     }
 

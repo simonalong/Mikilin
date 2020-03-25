@@ -55,7 +55,7 @@ public class ObjectUtil {
      * @param object 待解析对象
      * @return 解析后的对象和对象的类型：key为解析后的对象值，value为key对应的类型
      */
-    public Map.Entry<Object, Class<?>> parseObjectStruct(Object object) {
+    public Map.Entry<Object, Class<?>> parseObject(Object object) {
         if (null == object) {
             return null;
         }
@@ -64,15 +64,15 @@ public class ObjectUtil {
             if (!collection.isEmpty()) {
                 Iterator<?> iterator = collection.iterator();
                 if (iterator.hasNext()) {
-                    return parseObjectStruct(iterator.next());
+                    return parseObject(iterator.next());
                 }
             }
             return null;
         } else if (object instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) object;
-            return parseObjectStruct(map.values());
+            return parseObject(map.values());
         } else if (object.getClass().isArray()) {
-            return parseObjectStruct(Array.get(object, 0));
+            return parseObject(Array.get(object, 0));
         } else {
             if (ClassUtil.isCheckedType(object.getClass())) {
                 return null;

@@ -1,7 +1,6 @@
 package com.simonalong.mikilin;
 
 import com.simonalong.mikilin.annotation.Check;
-import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.match.FieldMatchManager;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.ClassUtil;
