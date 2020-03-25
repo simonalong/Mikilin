@@ -8,10 +8,8 @@ import com.simonalong.mikilin.util.CollectionUtil;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zhouzhenyong
@@ -28,6 +26,7 @@ final class CheckDelegate {
     }
 
     void setGroup(String group) {
+        context.set();
         localGroup.set(group);
     }
 
@@ -104,15 +103,15 @@ final class CheckDelegate {
                 return true;
             }
 
-            // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查所有的属性
-            long unAvailableCount = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains)
-                .filter(f -> !available(object, f, objectFieldMap, whiteSet, blackSet)).count();
-            if (0 == unAvailableCount) {
-                return true;
+            // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查自己的所有属性和继承的父类的public属性
+            List<Field> fieldList = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains).collect(Collectors.toList());
+            for (Field field : fieldList) {
+                if (!available(object, field, objectFieldMap, whiteSet, blackSet)) {
+                    context.append("类型 {0} 核查失败", object.getClass().getSimpleName());
+                    return false;
+                }
             }
-
-            context.append("类型 {0} 核查失败", object.getClass().getSimpleName());
-            return false;
+            return true;
         }
     }
 
@@ -204,12 +203,12 @@ final class CheckDelegate {
 
         field.setAccessible(true);
         // 2.黑名单不空，而且匹配到了，则不可用
-        if (!blackEmpty && fieldMatch(object, field, blackGroupMather)) {
+        if (!blackEmpty && fieldMatch(object, field, blackGroupMather, false)) {
             return false;
         }
 
         // 3.白名单不空，而且该属性没有匹配到，则不可用
-        if (!whiteEmpty && !fieldMatch(object, field, whiteGroupMather)) {
+        if (!whiteEmpty && !fieldMatch(object, field, whiteGroupMather, true)) {
             return false;
         }
 
@@ -282,7 +281,7 @@ final class CheckDelegate {
      * @param groupMather 可用或者不可用数据
      * @return true 匹配上任何一个则返回true，false 所有都没有匹配上则返回false
      */
-    private boolean fieldMatch(Object object, Field field, Map<String, MatchManager> groupMather) {
+    private boolean fieldMatch(Object object, Field field, Map<String, MatchManager> groupMather, Boolean whiteOrBlack) {
         if (checkDisable(object, field, groupMather)) {
             return false;
         }
@@ -297,7 +296,7 @@ final class CheckDelegate {
                     Object data;
                     try {
                         data = field.get(object);
-                        return fieldMatchManager.match(object, data, context);
+                        return fieldMatchManager.match(object, data, context, whiteOrBlack);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }

@@ -22,13 +22,10 @@ public class MkContext {
     public MkContext() {
         errMsgChain = new ThreadLocal<>();
         theLastErrMsg = new ThreadLocal<>();
-        initErrMsg();
     }
 
     public String getErrMsgChain() {
-        String msg = errMsgChain.get().toString();
-        initErrMsg();
-        return msg;
+        return errMsgChain.get().toString();
     }
 
     public void append(String errMsgStr, Object... keys) {
@@ -49,7 +46,8 @@ public class MkContext {
         if (CollectionUtil.isEmpty(errMsgList)) {
             return;
         }
-        errMsgList.forEach(this::append);
+
+        append(String.join("，而且", errMsgList));
     }
 
     public void setLastErrMsg(String errMsg) {
@@ -63,8 +61,15 @@ public class MkContext {
         return theLastErrMsg.get();
     }
 
-    private void initErrMsg() {
+    public void set() {
         errMsgChain.remove();
-        errMsgChain.set(new StringBuilder().append("数据校验失败"));
+        theLastErrMsg.remove();
+        errMsgChain.set(new StringBuilder().append("数据校验失败："));
+    }
+
+    public void clear() {
+        errMsgChain.remove();
+        theLastErrMsg.remove();
+        errMsgChain.set(new StringBuilder().append("数据校验失败："));
     }
 }

@@ -15,22 +15,24 @@ class MultiMatcherTest extends Specification {
 
     def "多匹配器测试1"() {
         given:
-        MultiMatcherEntity entity = new MultiMatcherEntity().setName(name).setCode(code)
+        MultiMatcherEntity entity = new MultiMatcherEntity().setCityCode(cityCode).setAge(age).setCode(code)
 
         expect:
         boolean actResult = MkValidators.check(entity)
         if (!actResult) {
+            println MkValidators.getErrMsg()
             println MkValidators.getErrMsgChain()
+            println()
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        name                  | code | result
-        "b"                   | 12   | true
-        "a"                   | 12   | true
-        "c"                   | 12   | false
-        "410928199102226311"  | 12   | true
-        "4211982119910725985" | 12   | false
-        "410928199107259855"  | 101  | false
+        cityCode | age | code | result
+        "12"     | 5   | 5    | true
+        "12"     | 11  | 5    | true
+        "13"     | 5   | 5    | false
+        "12"     | 120 | 5    | false
+        "12"     | 5   | 33   | false
+        "12"     | 5   | 15   | false
     }
 }

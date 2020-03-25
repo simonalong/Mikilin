@@ -15,11 +15,12 @@ class TypeClassTest extends Specification {
     def "泛型类型（字符类型）测试"() {
         given:
         DataEntity dataEntity = new DataEntity().setName(name);
-        TypeVariableEntity entity = new TypeVariableEntity().setPageSize(pageSize).setData(dataEntity);
+        TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setPageSize(pageSize).setData(dataEntity);
 
         expect:
         boolean actResult = MkValidators.check(entity)
         if (!result) {
+            println MkValidators.getErrMsg()
             println MkValidators.getErrMsgChain()
         }
         Assert.assertEquals(result, actResult)
@@ -50,12 +51,12 @@ class TypeClassTest extends Specification {
 
         where:
         name1 | name2 | result
-//        "a"   | "a"   | true
-//        "a"   | "b"   | true
+        "a"   | "a"   | true
+        "a"   | "b"   | true
         "a"   | "c"   | false
-//        "b"   | "b"   | true
-//        "c"   | "c"   | false
-//        "c"   | "a"   | false
+        "b"   | "b"   | true
+        "c"   | "c"   | false
+        "c"   | "a"   | false
     }
 
     def "水晶标签测试"() {
@@ -107,7 +108,7 @@ class TypeClassTest extends Specification {
         DataEntity[] dataEntities = new DataEntity[4];
         dataEntities[0] = new DataEntity().setName(name1)
         dataEntities[1] = new DataEntity().setName(name2)
-        GenericArrayTypeEntity entity = new GenericArrayTypeEntity().setDataArray(dataEntities)
+        GenericArrayTypeEntity<DataEntity> entity = new GenericArrayTypeEntity().setDataArray(dataEntities)
 
         expect:
         boolean actResult = MkValidators.check(entity)

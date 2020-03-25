@@ -50,17 +50,33 @@ public class FieldMatchManager {
      * @param context 核查上下文
      * @return true：匹配任何一个匹配器返回true，false：所有匹配器都没有匹配上
      */
-    public Boolean match(Object object, Object value, MkContext context) {
+    public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
+        List<String> errMsgList = new ArrayList<>();
         for (Match m : matchList) {
             if (null == m) {
                 continue;
             }
 
             if (m.match(object, name, value)) {
-                addErrMsg(context, m.getWhiteMsg());
+                if (!whiteOrBlack) {
+                    context.append(m.getBlackMsg());
+                    addErrMsg(context, m.getBlackMsg());
+                } else {
+                    context.clear();
+                }
                 return true;
+            } else {
+                if(whiteOrBlack) {
+                    errMsgList.add(m.getWhiteMsg());
+                    addErrMsg(context, m.getWhiteMsg());
+                }
             }
         }
+
+        if (whiteOrBlack) {
+            context.append(errMsgList);
+        }
+
         return false;
     }
 

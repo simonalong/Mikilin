@@ -83,7 +83,6 @@ public final class MkValidators {
     public boolean check(String group, Object object) {
         String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
-            context.append("数据为空");
             return false;
         }
 
@@ -106,7 +105,6 @@ public final class MkValidators {
     public boolean check(String group, Object object, String... fieldSet) {
         String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
         if (delegate.isEmpty(object)) {
-            context.append("数据为空");
             return false;
         }
 

@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.muti;
 
 import com.simonalong.mikilin.annotation.Matcher;
-import com.simonalong.mikilin.match.FieldModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,8 +12,20 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MultiMatcherEntity {
 
-    @Matcher(value = {"a", "b"}, model = FieldModel.ID_CARD)
-    private String name;
-    @Matcher(range = "[0, 100]", value = {"222", "111"})
+    /**
+     * 市编码
+     */
+    @Matcher(value = "12")
+    private String cityCode;
+    /**
+     * 名称
+     */
+    @Matcher(value = "11", range = "[0, 10]")
+    private Integer age;
+
+    /**
+     * 名称
+     */
+    @Matcher(value = "33", range = "[10, 20]", accept = false)
     private Integer code;
 }
