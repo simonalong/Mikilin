@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhouzhenyong
  * @since 2019/4/14 上午12:58
  */
-public class SingleFactory {
+public final class SingleFactory {
 
     private static Map<String, Object> dataMap = new ConcurrentHashMap<>();
 
