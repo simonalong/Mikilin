@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2018/12/22 下午10:16
  */
 @Slf4j
-public class Maps<K, V> {
+public final class Maps<K, V> {
 
     private Maps() {}
 
