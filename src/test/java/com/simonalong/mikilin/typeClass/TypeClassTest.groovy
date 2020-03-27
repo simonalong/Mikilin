@@ -59,7 +59,7 @@ class TypeClassTest extends Specification {
         "c"   | "a"   | false
     }
 
-    def "水晶标签测试"() {
+    def "<>符号测试"() {
         given:
         Map<String, DataEntity> dataEntityMap = new HashMap<>();
         dataEntityMap.put("a", new DataEntity().setName(name));

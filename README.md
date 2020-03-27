@@ -41,7 +41,12 @@
         * 10.[errMsg: 自定义拦截文案](#自定义拦截文案)
         * 11.[accept: 拦截还是拒绝](#拦截还是拒绝)
     * 4.[核查某个属性](#核查某个属性)
-
+    * 5.[泛型支持](#泛型支持)
+        * 1.[参数类型](#ParameterizedType)
+        * 2.[字符类型](#TypeVariable)
+        * 3.[通配符](#WildcardType)
+        * 4.[泛型数组](#GenericArrayType)
+        
 # 一、快速入门 <a name="快速入门"></a>
 本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据accept区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
 
@@ -97,6 +102,7 @@ public void test1(){
 
 # 详细介绍 <a name="详细介绍"></a>
 
+首先说明下，该框架的测试框架采用的是Spock，该测试框架可以用很少的代码测试很多很多场景
 ## 核查函数 <a name="核查函数"></a>
 
 ```java
@@ -988,3 +994,168 @@ def "测试指定的属性age"() {
     "haohao" | 40  | false
 }
 ```
+## 泛型支持 <a name="泛型支持"></a>
+前面提到的修饰的属性，其实都是各种各样的属性，但是都不是泛型类型，该框架也是支持泛型累心搞的。泛型类型分为四种：
+ParameterizedType：代表参数中是显而易见的类型，如：Map<String, TestEntity>
+TypeVariable：代表泛型类型中的字符类型，如：T t、Map<R, U>，或者Set<R extends MyEntity>，这种包含字符型的泛型
+WildcardType：代表的是泛型类型中含有通配符?，如：Set<? extends MyEntity>或者， 或只有一个?。注意为WildcardType的前提是这个对象一定是ParameterizedType
+GenericArrayType：代表的范型数组。 它的组成元素是 ParameterizedType、TypeVariable、WildcardType 或者GenericArrayType
+
+### ParameterizedType <a name="ParameterizedType"></a>
+```java
+// <>标签 这种泛型
+@Data
+@Accessors(chain = true)
+public class ParameterizedTypeEntity {
+
+    private String word;
+
+    @Check
+    private Map<String, DataEntity> dataEntityMap;
+}
+```
+```groovy
+def "<>符号测试"() {
+    given:
+    Map<String, DataEntity> dataEntityMap = new HashMap<>();
+    dataEntityMap.put("a", new DataEntity().setName(name));
+    ParameterizedTypeEntity entity = new ParameterizedTypeEntity().setDataEntityMap(dataEntityMap);
+
+    expect:
+    boolean actResult = MkValidators.check(entity)
+    if (!actResult) {
+        println MkValidators.getErrMsgChain()
+        println MkValidators.getErrMsg()
+    }
+    Assert.assertEquals(result, actResult)
+
+    where:
+    name | result
+    "a"  | true
+    "b"  | true
+    "c"  | false
+    "d"  | false
+}
+```
+
+### TypeVariable <a name="TypeVariable"></a>
+```java
+// TypeVariable：类型匹配符
+@Data
+@Accessors(chain = true)
+public class TypeVariableEntity<T> {
+
+    private Integer pageNo;
+    @Matcher(range = "[0, 100]", value = "null")
+    private Integer pageSize;
+
+    @Check
+    private T data;
+
+    @Check
+    private List<T> dataList;
+}
+```
+
+```java
+def "泛型类型（字符类型）测试"() {
+    given:
+    DataEntity dataEntity = new DataEntity().setName(name);
+    TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setPageSize(pageSize).setData(dataEntity);
+
+    expect:
+    boolean actResult = MkValidators.check(entity)
+    if (!result) {
+        println MkValidators.getErrMsg()
+        println MkValidators.getErrMsgChain()
+    }
+    Assert.assertEquals(result, actResult)
+
+    where:
+    pageSize | name | result
+    0        | "a"  | true
+    100      | "b"  | true
+    200      | "a"  | false
+    100      | "c"  | false
+}
+```
+
+### WildcardType <a name="WildcardType"></a>
+```java
+// 通配符测试
+@Data
+@Accessors(chain = true)
+public class WildcardTypeEntity {
+
+   private String wildName;
+
+   @Check
+   private Map<String, ? extends DataEntity> dataMap;
+}
+```
+```groovy
+def "通配符测试"() {
+    given:
+    Map<String, ChildDataEntity> dataEntityMap = new HashMap<>()
+    dataEntityMap.put("a", new ChildDataEntity().setNameChild(name))
+    WildcardTypeEntity entity = new WildcardTypeEntity().setDataMap(dataEntityMap)
+
+    expect:
+    boolean actResult = MkValidators.check(entity)
+    if (!actResult) {
+        println MkValidators.getErrMsgChain()
+        println MkValidators.getErrMsg()
+    }
+    Assert.assertEquals(result, actResult)
+
+    where:
+    name | result
+    "a"  | true
+    "b"  | true
+    "c"  | false
+    "d"  | false
+}
+```
+
+### GenericArrayType <a name="GenericArrayType"></a>
+```java
+// 泛型数组：GenericArray
+@Data
+@Accessors(chain = true)
+public class GenericArrayTypeEntity<T> {
+
+    @Check
+    private T[] dataArray;
+
+    @Check
+    private T[][] dataArrays;
+}
+```
+
+```groovy
+def "泛型数组测试"() {
+    given:
+    DataEntity[] dataEntities = new DataEntity[4];
+    dataEntities[0] = new DataEntity().setName(name1)
+    dataEntities[1] = new DataEntity().setName(name2)
+    GenericArrayTypeEntity<DataEntity> entity = new GenericArrayTypeEntity().setDataArray(dataEntities)
+
+    expect:
+    boolean actResult = MkValidators.check(entity)
+    if (!actResult) {
+        println MkValidators.getErrMsgChain()
+        println MkValidators.getErrMsg()
+    }
+    Assert.assertEquals(result, actResult)
+
+    where:
+    name1 | name2 | result
+    "a"   | "a"   | true
+    "a"   | "b"   | true
+    "b"   | "a"   | true
+    "b"   | "b"   | true
+    "c"   | "b"   | false
+    "c"   | "c"   | false
+}
+```
+
