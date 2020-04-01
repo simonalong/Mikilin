@@ -65,4 +65,25 @@ class ConditionTest extends Specification {
         31   | 30   | 20   | true
         31   | 30   | 31   | false
     }
+
+    def "测试复杂逻辑"() {
+        given:
+        ConditionEntity4 entity = new ConditionEntity4().setType(type).setName(name)
+
+        expect:
+        def act = MkValidators.check(entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        type | name | result
+        0    | "a"  | true
+        0    | "b"  | true
+        1    | "b"  | true
+        2    | "b"  | true
+        2    | "c"  | false
+        3    | "b"  | false
+    }
 }

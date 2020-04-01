@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class Maps<K, V> {
 
+    private static final Integer KV_NUM = 2;
     private Maps() {}
 
     private Map<K, V> dataMap = new HashMap<>();
@@ -23,13 +24,13 @@ public final class Maps<K, V> {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static Maps of(Object... kvs) {
-        if (kvs.length % 2 != 0) {
+        if (kvs.length % KV_NUM != 0) {
             log.error("Maps.of的参数需要是key-value-key-value...这种格式");
             return new Maps();
         }
 
         Maps maps = new Maps();
-        for (int i = 0; i < kvs.length; i += 2) {
+        for (int i = 0; i < kvs.length; i += KV_NUM) {
             if (null == kvs[i]) {
                 log.error("map的key不可以为null");
                 return maps;

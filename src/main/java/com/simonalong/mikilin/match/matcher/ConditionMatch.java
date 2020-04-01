@@ -27,7 +27,7 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
     /**
      * 判决对象
      */
-    private BiPredicate<Object, Number> predicate;
+    private BiPredicate<Object, Object> predicate;
     /**
      * 表达式解析对象
      */
@@ -40,7 +40,7 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        if (predicate.test(object, (Number) value)) {
+        if (predicate.test(object, value)) {
             setBlackMsg("属性 {0} 的值 {1} 命中禁用条件 {2} ", name, value, replaceSystem(express));
             return true;
         } else {
@@ -80,7 +80,7 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
      * @return 返回对应的替换的数据映射
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Maps parseConditionExpress(String express, Object root, Field currentField, Number current) {
+    private Maps parseConditionExpress(String express, Object root, Field currentField, Object current) {
         Maps maps = Maps.of();
         String regex = "(#root)\\.(\\w+)";
         java.util.regex.Matcher m = Pattern.compile(regex).matcher(express);

@@ -43,7 +43,7 @@ public class ExpressParser {
      * @return true=解析为true, false=解析结果为false
      */
     public Boolean parse(String importPath, String script){
-        script = importPath + "\n" +"return (" + script + ")";
+        script = importPath + "\n" + script;
         try {
             Object result = groovy.scriptGetAndRun(script, binding);
             if (null == result) {
