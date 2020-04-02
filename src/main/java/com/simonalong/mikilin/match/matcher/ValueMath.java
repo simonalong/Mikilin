@@ -49,7 +49,7 @@ public class ValueMath extends AbstractBlackWhiteMatch {
 
         ValueMath valueMath = new ValueMath();
         valueMath.setValues(Arrays.stream(values).map(i -> {
-            if (null != i && !"".equals(i)) {
+            if (null != i) {
                 return ObjectUtil.cast(field.getType(), i);
             } else {
                 return null;

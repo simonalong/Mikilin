@@ -204,4 +204,22 @@ class StringValueTest extends Specification {
         "b"    | "c"     | "b"     | "a"   | "a"     | false
         "b"    | "a"     | "b"     | "a"   | null    | true
     }
+
+    def "字符为空进行拒绝"() {
+        given:
+        StringValueEntity1 entity = new StringValueEntity1().setEmptyStr(emptyStr)
+        def act = MkValidators.check(entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+
+        expect:
+        where:
+        emptyStr | result
+        "a"      | true
+        "b"      | true
+        ""       | false
+    }
 }
