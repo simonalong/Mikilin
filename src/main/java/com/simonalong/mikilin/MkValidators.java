@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 public final class MkValidators {
 
     /**
-     * 对象属性值白名单：key为属性名，value为属性的匹配器
+     * 对象属性值白名单：key为group名字，value为属性的匹配器
      */
     private Map<String, MatchManager> whiteGroupMap;
     /**
-     * 对象属性值黑名单：key为属性名，value为属性的匹配器
+     * 对象属性值黑名单：key为group名字，value为属性的匹配器
      */
     private Map<String, MatchManager> blackGroupMap;
     /**
@@ -286,13 +286,15 @@ public final class MkValidators {
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 待核查类型用于获取注解的属性
             fieldSet.forEach(f -> {
-                Matcher matcher = f.getAnnotation(Matcher.class);
-                if (null != matcher && !matcher.disable()) {
-                    addObjectFieldMap(clsCanonicalName, f.getName());
-                    if (matcher.accept()) {
-                        addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, matcher);
-                    } else {
-                        addWhiteValueMap(blackGroupMap, clsCanonicalName, f, matcher);
+                List<Matcher> matcherList = Arrays.asList(f.getAnnotationsByType(Matcher.class));
+                for(Matcher matcher: matcherList) {
+                    if (null != matcher && !matcher.disable()) {
+                        addObjectFieldMap(clsCanonicalName, f.getName());
+                        if (matcher.accept()) {
+                            addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, matcher);
+                        } else {
+                            addWhiteValueMap(blackGroupMap, clsCanonicalName, f, matcher);
+                        }
                     }
                 }
 

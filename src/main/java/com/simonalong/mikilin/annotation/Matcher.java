@@ -24,6 +24,9 @@ public @interface Matcher {
     /**
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
      *
+     * <p>
+     * 该参数使用需要结合{@link Matchers}这个注解使用
+     *
      * @return 分组
      */
     String[] group() default {MkConstant.DEFAULT_GROUP};

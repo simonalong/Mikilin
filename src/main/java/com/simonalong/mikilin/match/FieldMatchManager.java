@@ -83,8 +83,7 @@ public class FieldMatchManager {
     private void addErrMsg(MkContext context, String sysErrMsg, Object value) {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
-                errMsg = errMsg.replaceAll("#current", value.toString());
-                context.setLastErrMsg(errMsg);
+                context.setLastErrMsg(errMsg.replaceAll("#current", value.toString()));
             } else {
                 context.setLastErrMsg(sysErrMsg);
             }

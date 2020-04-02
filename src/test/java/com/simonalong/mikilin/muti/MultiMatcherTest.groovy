@@ -13,7 +13,7 @@ import spock.lang.Specification
  */
 class MultiMatcherTest extends Specification {
 
-    def "多匹配器测试1"() {
+    def "一个匹配器多配器项（或）测试"() {
         given:
         MultiMatcherEntity entity = new MultiMatcherEntity().setCityCode(cityCode).setAge(age).setCode(code)
 
@@ -34,5 +34,25 @@ class MultiMatcherTest extends Specification {
         "12"     | 120 | 5    | false
         "12"     | 5   | 33   | false
         "12"     | 5   | 15   | false
+    }
+
+    def "多个匹配器测试"() {
+        given:
+        MultiMatcherEntity2 entity = new MultiMatcherEntity2().setCode(code)
+
+        expect:
+        boolean actResult = MkValidators.check(entity)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        code | result
+        0    | true
+        1    | false
+        2    | true
+        3    | false
+        102  | false
     }
 }

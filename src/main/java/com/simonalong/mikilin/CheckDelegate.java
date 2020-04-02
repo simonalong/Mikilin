@@ -238,12 +238,11 @@ final class CheckDelegate {
      * @return true:所有为空，false属性都有
      */
     private boolean fieldCheckIsEmpty(Object object, Field field, Map<String, MatchManager> groupMather) {
-        if (checkDisable(object, field, groupMather)) {
+        if (checkAllMatcherDisable(object, field, groupMather)) {
             return true;
         }
 
-        Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(localGroup.get())
-            .getJudge(object.getClass().getCanonicalName());
+        Map<String, List<FieldMatchManager>> fieldValueSetMap = groupMather.get(localGroup.get()).getJudge(object.getClass().getCanonicalName());
         if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
             return fieldValueSetMap.get(field.getName()).isEmpty();
         }
@@ -251,22 +250,27 @@ final class CheckDelegate {
     }
 
     /**
-     * 返回当前匹配器是否可用
+     * 返回当前属性的所有匹配器是否都禁用
      *
      * @param object 待核查对象
      * @param field 对象的属性
      * @param groupMather 组匹配器
-     * @return true 不可用，false 可用
+     * @return true 都禁用，false 有可用的
      */
-    private boolean checkDisable(Object object, Field field, Map<String, MatchManager> groupMather) {
+    private boolean checkAllMatcherDisable(Object object, Field field, Map<String, MatchManager> groupMather) {
         String group = localGroup.get();
         if (groupMather.containsKey(group)) {
-            Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(group)
+            Map<String, List<FieldMatchManager>> fieldValueSetMap = groupMather.get(group)
                 .getJudge(object.getClass().getCanonicalName());
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
-                FieldMatchManager fieldMatchManager = fieldValueSetMap.get(field.getName());
-                if (null != fieldMatchManager) {
-                    return fieldMatchManager.getDisable();
+                List<FieldMatchManager> fieldMatchManagerList = fieldValueSetMap.get(field.getName());
+                if (null != fieldMatchManagerList) {
+                    for (FieldMatchManager fieldMatchManager : fieldMatchManagerList) {
+                        // 有任何为false的，则认为可用
+                        if (!fieldMatchManager.getDisable()) {
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -279,31 +283,39 @@ final class CheckDelegate {
      * @param object 对象
      * @param field 对象的属性
      * @param groupMather 可用或者不可用数据
-     * @return true 匹配上任何一个则返回true，false 所有都没有匹配上则返回false
+     * @return true：所有匹配器匹配上（匹配器内部任何一个匹配项匹配上就叫匹配上）则返回true，false：有匹配器都没有匹配上（有一个匹配器内部的匹配项都没有匹配上）则返回false
      */
     private boolean fieldMatch(Object object, Field field, Map<String, MatchManager> groupMather, Boolean whiteOrBlack) {
-        if (checkDisable(object, field, groupMather)) {
+        if (checkAllMatcherDisable(object, field, groupMather)) {
             return false;
         }
 
         String group = localGroup.get();
         if (groupMather.containsKey(group)) {
-            Map<String, FieldMatchManager> fieldValueSetMap = groupMather.get(group).getJudge(object.getClass().getCanonicalName());
+            Map<String, List<FieldMatchManager>> fieldValueSetMap = groupMather.get(group).getJudge(object.getClass().getCanonicalName());
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
-                FieldMatchManager fieldMatchManager = fieldValueSetMap.get(field.getName());
-                if (null != fieldMatchManager) {
-                    field.setAccessible(true);
-                    Object data;
-                    try {
-                        data = field.get(object);
-                        return fieldMatchManager.match(object, data, context, whiteOrBlack);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                List<FieldMatchManager> fieldMatchManagerList = fieldValueSetMap.get(field.getName());
+                if (null != fieldMatchManagerList) {
+                    for (FieldMatchManager fieldMatchManager : fieldMatchManagerList) {
+                        if (fieldMatchManager.getDisable()) {
+                            continue;
+                        }
+                        field.setAccessible(true);
+                        Object data;
+                        try {
+                            data = field.get(object);
+                            // 某个匹配器没有匹配上，则认为没有匹配上
+                            if (!fieldMatchManager.match(object, data, context, whiteOrBlack)) {
+                                return false;
+                            }
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     String getErrMsgChain() {
