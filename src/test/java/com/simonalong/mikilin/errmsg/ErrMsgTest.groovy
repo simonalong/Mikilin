@@ -46,5 +46,23 @@ class ErrMsgTest extends Specification {
         201 | false
     }
 
+    def "提供占位符的要求"() {
+        given:
+        ErrMsgEntity3 entity = new ErrMsgEntity3().setName(name)
 
+        expect:
+        def act = MkValidators.check(entity)
+        if (!act) {
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, act)
+
+        where:
+        name | result
+        "a"  | true
+        "b"  | true
+        "c"  | true
+        "d"  | false
+    }
 }
