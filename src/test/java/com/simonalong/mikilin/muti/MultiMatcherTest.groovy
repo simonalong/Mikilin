@@ -55,4 +55,30 @@ class MultiMatcherTest extends Specification {
         3    | false
         102  | false
     }
+
+    def "多group的奇数配置"() {
+        given:
+        MultiMatcherEntity3 entity = new MultiMatcherEntity3().setCode(code)
+
+        expect:
+        boolean actResult = MkValidators.check(group, entity)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        group | code | result
+        "偶数"  | 0    | true
+        "偶数"  | 1    | false
+        "偶数"  | 2    | true
+        "偶数"  | 3    | false
+        "偶数"  | 102  | false
+
+        "奇数"  | 101  | true
+        "奇数"  | 102  | false
+        "奇数"  | 103  | true
+        "奇数"  | 201  | false
+        "奇数"  | 202  | false
+    }
 }
