@@ -18,14 +18,14 @@ public class MultiMatcherEntity {
     @Matcher(value = "12")
     private String cityCode;
     /**
-     * 名称
+     * num：数字为11或者0~10（包含边界值）
      */
     @Matcher(value = "11", range = "[0, 10]")
-    private Integer age;
+    private Integer num;
 
     /**
-     * 名称
+     * code：数字为33或者10~20（左开右闭）
      */
-    @Matcher(value = "33", range = "[10, 20]", accept = false)
+    @Matcher(value = "33", range = "(10, 20]", accept = false)
     private Integer code;
 }

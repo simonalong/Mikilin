@@ -15,7 +15,7 @@ class MultiMatcherTest extends Specification {
 
     def "一个匹配器多配器项（或）测试"() {
         given:
-        MultiMatcherEntity entity = new MultiMatcherEntity().setCityCode(cityCode).setAge(age).setCode(code)
+        MultiMatcherEntity entity = new MultiMatcherEntity().setCityCode(cityCode).setNum(num).setCode(code)
 
         expect:
         boolean actResult = MkValidators.check(entity)
@@ -27,7 +27,7 @@ class MultiMatcherTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        cityCode | age | code | result
+        cityCode | num | code | result
         "12"     | 5   | 5    | true
         "12"     | 11  | 5    | true
         "13"     | 5   | 5    | false
