@@ -1,6 +1,7 @@
 package com.simonalong.mikilin.type;
 
 import com.simonalong.mikilin.annotation.Matcher;
+import com.simonalong.mikilin.common.TestEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -18,12 +19,15 @@ public class TypeEntity {
     @Matcher(type = Integer.class)
     private Integer data;
 
-    @Matcher(type = CharSequence.class)
-    private String name;
+    @Matcher(type = String.class)
+    private CharSequence name;
 
     @Matcher(type = {Integer.class, Float.class})
     private Object obj;
 
     @Matcher(type = Number.class)
     private Object num;
+
+    @Matcher(type = TypeErrEntity.class)
+    private Integer errStr;
 }

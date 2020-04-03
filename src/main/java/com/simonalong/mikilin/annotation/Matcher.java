@@ -34,6 +34,9 @@ public @interface Matcher {
     /**
      * 匹配属性为对应的类型，比如Integer.class，Long.class等等
      *
+     * <p>
+     * 注意：type对应的类型为修饰属性的类型或者类型的子类型才行，否则转换失败
+     *
      * @return 指定的类型
      */
     Class<?>[] type() default {};
@@ -65,7 +68,7 @@ public @interface Matcher {
      * 数据范围的判断
      * <p> 该字段修饰的类型可以为数值类型，也可以为时间类型，也可以为集合类型（集合类型用来测试集合的size个数的范围）
      *
-     * @return 如果是数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]，(null,b)，[a, null), (a, null)
+     * @return 如果是数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]或者(, b]，(null,b)或者(,b)，[a, null)或者[a,), (a, null)或者(a,)
      * 如果是集合类型，则比较的是集合的size大小，使用和上面一样，比如：[a,b]等等
      * 如果是时间类型，可以使用这种，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数关键字
      * past: 表示过去
@@ -111,11 +114,11 @@ public @interface Matcher {
     String regex() default "";
 
     /**
-     * 系统自己编码判断
+     * 自定义匹配模式
      *
-     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，其中参数根据个数支持的类型也是不同，参考对应测试类
+     * @return 调用的核查的类和函数对应的表达式，比如："com.xxx.AEntity#isValid"，其中#后面是方法，方法返回boolean或者包装类，表示是否匹配上，其中参数根据个数支持的类型也是不同，参考对应测试类
      */
-    String judge() default "";
+    String customize() default "";
 
     /**
      * 核查失败后的返回语句

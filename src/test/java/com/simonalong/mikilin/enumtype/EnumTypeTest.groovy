@@ -12,7 +12,7 @@ class EnumTypeTest extends Specification {
 
     def "枚举类型测试"() {
         given:
-        JudgeEntity judgeEntity = new JudgeEntity(name, tag, invalidTag)
+        EnumTypeEntity1 judgeEntity = new EnumTypeEntity1(name, tag, invalidTag)
 
         expect:
         def act = MkValidators.check(judgeEntity)
@@ -39,5 +39,25 @@ class EnumTypeTest extends Specification {
         "A2" | "A3" | "C1"       | false
         "a"  | "A2" | "C4"       | false
         "c"  | "c"  | "C4"       | false
+    }
+
+    def "下标的Integer测试"(){
+        given:
+        EnumTypeEntity2 entity2 = new EnumTypeEntity2().setName(name)
+
+        expect:
+        def act = MkValidators.check(entity2)
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        name | result
+        0    | true
+        1    | true
+        2    | true
+        3    | true
+        4    | false
     }
 }

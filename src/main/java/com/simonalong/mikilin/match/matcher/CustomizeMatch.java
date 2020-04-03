@@ -14,13 +14,13 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统自行判断，对应{@link Matcher#judge()}
+ * 系统自行判断，对应{@link Matcher#customize()}
  *
  * @author zhouzhenyong
  * @since 2019/4/11 下午8:52
  */
 @Slf4j
-public class JudgeMatch extends AbstractBlackWhiteMatch {
+public class CustomizeMatch extends AbstractBlackWhiteMatch {
 
     private Predicate<Object> valuePre = null;
     private BiPredicate<Object, Object> objValuePre = null;
@@ -78,12 +78,12 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
      * @param context 上下文
      * @return 匹配器的判决器
      */
-    public static JudgeMatch build(String judge, MkContext context) {
+    public static CustomizeMatch build(String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
         }
 
-        JudgeMatch judgeMatcher = new JudgeMatch();
+        CustomizeMatch customizeMatcher = new CustomizeMatch();
         int index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);
@@ -94,8 +94,8 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
             Class<?> cls = Class.forName(classStr);
             Object object = SingleFactory.getSingle(cls);
             String booleanStr = "boolean";
-            judgeMatcher.judgeStr = judge;
-            judgeMatcher.context = context;
+            customizeMatcher.judgeStr = judge;
+            customizeMatcher.context = context;
 
             // 这里对系统回调支持两种回调方式
             Stream.of(cls.getDeclaredMethods()).filter(m -> m.getName().equals(funStr)).forEach(m -> {
@@ -106,7 +106,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                     int paramsCnt = m.getParameterCount();
                     // 一个参数，则该参数为属性的类型
                     if (1 == paramsCnt) {
-                        judgeMatcher.valuePre = v -> {
+                        customizeMatcher.valuePre = v -> {
                             try {
                                 m.setAccessible(true);
                                 return (boolean) m.invoke(object, v);
@@ -119,7 +119,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                         Class<?> p2Cls = m.getParameterTypes()[1];
                         if (MkContext.class.isAssignableFrom(p2Cls)) {
                             // 两个参数，则第一个为核查的对象，第二个为参数为属性的值
-                            judgeMatcher.valueContextPre = (v, c) -> {
+                            customizeMatcher.valueContextPre = (v, c) -> {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, v, c);
@@ -130,7 +130,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                             };
                         } else {
                             // 两个参数，则第一个为待核查的属性的值，第二个为MkConstext
-                            judgeMatcher.objValuePre = (o, v) -> {
+                            customizeMatcher.objValuePre = (o, v) -> {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v);
@@ -144,7 +144,7 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
                         Class<?> p3Cls = m.getParameterTypes()[2];
                         // 三个参数，这个时候，第一个参数是核查的对象，第二个参数为属性的值，第三个参数为contexts
                         if(MkContext.class.isAssignableFrom(p3Cls)) {
-                            judgeMatcher.objValueContextPre = (o, v, c) -> {
+                            customizeMatcher.objValueContextPre = (o, v, c) -> {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v, c);
@@ -191,6 +191,6 @@ public class JudgeMatch extends AbstractBlackWhiteMatch {
             }
         }
 
-        return judgeMatcher;
+        return customizeMatcher;
     }
 }

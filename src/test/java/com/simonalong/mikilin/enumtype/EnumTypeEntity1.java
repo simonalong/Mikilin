@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Data
 @AllArgsConstructor
 @Accessors(chain = true)
-public class JudgeEntity {
+public class EnumTypeEntity1 {
 
     @Matcher(enumType = AEnum.class)
     private String name;

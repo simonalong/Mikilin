@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.judge;
+package com.simonalong.mikilin.customize;
 
 import com.simonalong.mikilin.match.MkContext;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.List;
  * @author zhouzhenyong
  * @since 2019/3/10 下午11:19
  */
-public class JudgeCheck {
+public class CustomizeCheck {
 
     /**
      * 年龄是否合法
@@ -57,11 +57,11 @@ public class JudgeCheck {
      *
      * mRatio + nRatio < 1.0
      */
-    private boolean ratioJudge(JudgeEntity judgeEntity, Float nRatio) {
-        if(null == nRatio || null == judgeEntity){
+    private boolean ratioJudge(CustomizeEntity customizeEntity, Float nRatio) {
+        if(null == nRatio || null == customizeEntity){
             return false;
         }
-        return nRatio + judgeEntity.getMRatio() < 10.0f;
+        return nRatio + customizeEntity.getMRatio() < 10.0f;
     }
 
     /**
@@ -79,7 +79,7 @@ public class JudgeCheck {
     /**
      * 三个函数
      */
-    private boolean threeParam(JudgeEntity judgeEntity, String temK, MkContext context) {
+    private boolean threeParam(CustomizeEntity customizeEntity, String temK, MkContext context) {
         if (temK.equals("hello") || temK.equals("word")){
             context.append("匹配上字段'hello'和'word'");
             return true;

@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.judge
+package com.simonalong.mikilin.customize
 
 import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
@@ -8,14 +8,14 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/3/10 下午10:08
  */
-class FieldMatchManagerTest extends Specification {
+class CustomizeTest extends Specification {
 
     /**
      * 测试外部判断的调用
      */
     def "外部调用测试"() {
         given:
-        JudgeEntity entity = new JudgeEntity().setName(name).setAge(age).setAddress(address)
+        CustomizeEntity entity = new CustomizeEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
         boolean actResult = MkValidators.check(entity, "name", "age", "address")
@@ -42,7 +42,7 @@ class FieldMatchManagerTest extends Specification {
      */
     def "外部调用测试（包含请求实体）"() {
         given:
-        JudgeEntity entity = new JudgeEntity().setMRatio(mRatio).setNRatio(nRatio)
+        CustomizeEntity entity = new CustomizeEntity().setMRatio(mRatio).setNRatio(nRatio)
 
         expect:
         boolean actResult = MkValidators.check(entity, "mRatio")
@@ -59,7 +59,7 @@ class FieldMatchManagerTest extends Specification {
 
     def "测试上下文两个参数"(){
         given:
-        JudgeEntity entity = new JudgeEntity().setTwoPa(twoPa)
+        CustomizeEntity entity = new CustomizeEntity().setTwoPa(twoPa)
 
         expect:
         boolean actResult = MkValidators.check(entity, "twoPa")
@@ -77,7 +77,7 @@ class FieldMatchManagerTest extends Specification {
 
     def "测试上下文三个参数"() {
         given:
-        JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
+        CustomizeEntity entity = new CustomizeEntity().setThreePa(threePa)
 
         expect:
         boolean actResult = MkValidators.check(entity, "threePa")
@@ -96,7 +96,7 @@ class FieldMatchManagerTest extends Specification {
 
     def "测试上下文三个参数异常情况"() {
         given:
-        JudgeEntity entity = new JudgeEntity().setThreePa(threePa)
+        CustomizeEntity entity = new CustomizeEntity().setThreePa(threePa)
 
         expect:
         boolean actResult = MkValidators.check(entity, "threePa")
@@ -111,5 +111,16 @@ class FieldMatchManagerTest extends Specification {
         "word"  | true
         "ok"    | false
         "haode" | false
+    }
+
+    def "错误案例模拟"() {
+        given:
+        CustomizeEntity entity = new CustomizeEntity().setErrPath("asdf")
+
+        when:
+        MkValidators.check(entity, "errPath")
+
+        then:
+        thrown(Throwable)
     }
 }

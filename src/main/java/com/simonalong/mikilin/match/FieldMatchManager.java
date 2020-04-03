@@ -106,14 +106,14 @@ public class FieldMatchManager {
     @SuppressWarnings("all")
     public static FieldMatchManager buildFromValid(Field field, Matcher validCheck, MkContext context) {
         return new FieldMatchManager().setName(field.getName())
-            .addMatcher(TypeMatch.build(validCheck.type()))
+            .addMatcher(TypeMatch.build(field, validCheck.type()))
             .addMatcher(ValueMath.build(field, validCheck.value()))
             .addMatcher(MatcherFactory.build(ModelMatch.class, validCheck.model()))
             .addMatcher(MatcherFactory.build(EnumTypeMatch.class, validCheck.enumType()))
             .addMatcher(MatcherFactory.build(RangeMatch.class, validCheck.range()))
             .addMatcher(ConditionMatch.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
-            .addMatcher(JudgeMatch.build(validCheck.judge(), context))
+            .addMatcher(CustomizeMatch.build(validCheck.customize(), context))
             .setErrMsg(validCheck.errMsg())
             .setDisable(validCheck.disable());
     }

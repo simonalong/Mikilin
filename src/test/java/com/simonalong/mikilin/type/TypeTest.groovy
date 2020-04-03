@@ -1,6 +1,7 @@
 package com.simonalong.mikilin.type
 
 import com.simonalong.mikilin.MkValidators
+import com.simonalong.mikilin.exception.MkException
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -8,7 +9,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/8/15 下午10:49
  */
-class FieldTypeTest extends Specification {
+class TypeTest extends Specification {
 
     def "测试基本类型"() {
         given:
@@ -89,5 +90,16 @@ class FieldTypeTest extends Specification {
         1232f  | true
         12.0f  | true
         -12    | true
+    }
+
+    def "测试修饰类型不匹配情况"() {
+        given:
+        TypeEntity entity = new TypeEntity().setErrStr(1)
+
+        when:
+        MkValidators.check(entity, "errStr")
+
+        then:
+        thrown(MkException)
     }
 }

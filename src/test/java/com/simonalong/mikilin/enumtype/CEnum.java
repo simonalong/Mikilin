@@ -11,7 +11,8 @@ public enum CEnum {
 
     C1("C1"),
     C2("C2"),
-    C3("C3");
+    C3("C3"),
+    C4("C4");
 
     private String name;
 
