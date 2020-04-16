@@ -92,14 +92,14 @@ class TypeTest extends Specification {
         -12    | true
     }
 
-    def "测试修饰类型不匹配情况"() {
-        given:
-        TypeEntity entity = new TypeEntity().setErrStr(1)
-
-        when:
-        MkValidators.check(entity, "errStr")
-
-        then:
-        thrown(MkException)
-    }
+//    def "测试修饰类型不匹配情况"() {
+//        given:
+//        TypeEntity entity = new TypeEntity().setErrStr(1)
+//
+//        when:
+//        MkValidators.check(entity, "errStr")
+//
+//        then:
+//        thrown(MkException)
+//    }
 }

@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ConditionEntity2 {
 
-    @Matcher(condition = "#root.customize")
+    @Matcher(condition = "#root.judge")
     private Integer age;
 
     private Boolean judge;

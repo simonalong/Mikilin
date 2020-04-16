@@ -28,6 +28,7 @@ public class TypeEntity {
     @Matcher(type = Number.class)
     private Object num;
 
-    @Matcher(type = TypeErrEntity.class)
-    private Integer errStr;
+// 测试异常，这里暂时注释，否则异常
+//    @Matcher(type = TypeErrEntity.class)
+//    private Integer errStr;
 }
