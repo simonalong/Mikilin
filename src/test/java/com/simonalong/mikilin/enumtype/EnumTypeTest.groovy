@@ -33,12 +33,12 @@ class EnumTypeTest extends Specification {
         "A1" | "A1" | "c"        | true
         "A1" | "A1" | "c"        | true
         "A1" | "A4" | "c"        | false
-        "A1" | "A2" | "C4"       | true
-        "A1" | "A3" | "C4"       | true
-        "A1" | "a"  | "C4"       | false
+        "A1" | "A2" | "C5"       | true
+        "A1" | "A3" | "C5"       | true
+        "A1" | "a"  | "C5"       | false
         "A2" | "A3" | "C1"       | false
-        "a"  | "A2" | "C4"       | false
-        "c"  | "c"  | "C4"       | false
+        "a"  | "A2" | "C5"       | false
+        "c"  | "c"  | "C5"       | false
     }
 
     def "下标的Integer测试"(){

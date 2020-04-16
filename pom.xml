@@ -146,6 +146,18 @@
                 </executions>
             </plugin>
 
+            <!--maven支持spock测试框架-->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
             <!-- GPG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
