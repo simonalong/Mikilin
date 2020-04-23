@@ -78,6 +78,7 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
      * @param context 上下文
      * @return 匹配器的判决器
      */
+    @SuppressWarnings("all")
     public static CustomizeMatch build(String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
@@ -110,10 +111,10 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
                             try {
                                 m.setAccessible(true);
                                 return (boolean) m.invoke(object, v);
-                            } catch (IllegalAccessException | InvocationTargetException ignored) {
-
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                log.error(e.getMessage());
+                                throw new RuntimeException(e);
                             }
-                            return false;
                         };
                     } else if (2 == paramsCnt) {
                         Class<?> p2Cls = m.getParameterTypes()[1];
@@ -123,10 +124,10 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException ignored) {
-
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    log.error(e.getMessage());
+                                    throw new RuntimeException(e);
                                 }
-                                return false;
                             };
                         } else {
                             // 两个参数，则第一个为待核查的属性的值，第二个为MkConstext
@@ -134,10 +135,10 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v);
-                                } catch (IllegalAccessException | InvocationTargetException ignored) {
-
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    log.error(e.getMessage());
+                                    throw new RuntimeException(e);
                                 }
-                                return false;
                             };
                         }
                     } else if (3 == paramsCnt) {
@@ -148,10 +149,10 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
                                 try {
                                     m.setAccessible(true);
                                     return (boolean) m.invoke(object, o, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException ignored) {
-
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    log.error(e.getMessage());
+                                    throw new RuntimeException(e);
                                 }
-                                return false;
                             };
                         } else {
                             try {
