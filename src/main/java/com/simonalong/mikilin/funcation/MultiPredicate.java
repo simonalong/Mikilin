@@ -9,5 +9,12 @@ package com.simonalong.mikilin.funcation;
 @FunctionalInterface
 public interface MultiPredicate<T, K, U> {
 
+    /**
+     * 对给定的参数进行测量
+     * @param t 第一个参数
+     * @param k 第二个参数
+     * @param u 第三个参数
+     * @return 如果参数匹配则返回 {@code true} 否则返回{@code false}
+     */
     boolean test(T t, K k, U u);
 }
