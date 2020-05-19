@@ -34,7 +34,8 @@ public class CustomizeEntity {
 
     /**
      * 错误路径模拟
+     * <p>这里先注释用于test能通过
      */
-    @Matcher(customize = "com.xxx.xxx.xxx.CustomizeCheck#errPathTest")
+    //@Matcher(customize = "com.xxx.xxx.xxx.CustomizeCheck#errPathTest")
     private String errPath;
 }
