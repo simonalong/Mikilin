@@ -112,15 +112,4 @@ class CustomizeTest extends Specification {
         "ok"    | false
         "haode" | false
     }
-
-    def "错误案例模拟"() {
-        given:
-        CustomizeEntity entity = new CustomizeEntity().setErrPath("asdf")
-
-        when:
-        MkValidators.check(entity, "errPath")
-
-        then:
-        thrown(Throwable)
-    }
 }
