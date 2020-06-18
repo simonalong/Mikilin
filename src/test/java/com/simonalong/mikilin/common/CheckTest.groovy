@@ -28,6 +28,7 @@ class CheckTest extends Specification {
         "ok"     | 2   | false
         "hehe"   | 20  | true
         "haohao" | 30  | true
+        null     | 30  | true
     }
 
     def "测试指定的属性age"() {
@@ -47,6 +48,7 @@ class CheckTest extends Specification {
         "ok"     | 32  | true
         "hehe"   | 20  | true
         "haohao" | 40  | false
+        null     | null  | false
     }
 
     def "测试指定的属性address"() {

@@ -26,6 +26,7 @@ class ObjectTest extends Specification {
         "a"  | true
         "b"  | true
         "c"  | false
+        null  | false
     }
 
     def "集合类型测试"() {

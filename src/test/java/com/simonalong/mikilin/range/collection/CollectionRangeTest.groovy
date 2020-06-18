@@ -29,6 +29,7 @@ class CollectionRangeTest extends Specification {
         10  | 20  | false
         20  | 20  | true
         30  | 20  | false
+        null  | 20  | false
     }
 
     def "集合类型的启动2"() {

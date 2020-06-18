@@ -30,6 +30,7 @@ class RangeTest extends Specification {
         100  | 100  | true
         200  | 10   | false
         10   | 210  | false
+        null   | 210  | false
     }
 
     def "范围的边界测试"() {

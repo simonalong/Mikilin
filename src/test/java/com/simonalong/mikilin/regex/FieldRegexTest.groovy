@@ -27,5 +27,6 @@ class FieldRegexTest extends Specification {
         "asdf"      | "asf"     | false
         "3312312"   | "sdf"     | true
         "3312312"   | "3312312" | false
+        null   | "3312312" | false
     }
 }

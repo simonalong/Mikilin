@@ -28,6 +28,7 @@ class ConditionTest extends Specification {
         90   | 10   | 31   | false
         81   | 20   | 31   | false
         91   | 10   | 30   | false
+        null   | 10   | 30   | false
     }
 
     def "测试java表达式"() {

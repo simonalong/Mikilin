@@ -28,6 +28,7 @@ class FieldModelTest extends Specification {
         "28712381"           | "28712381"           | false
         "411928199102226311" | "28712381"           | true
         "411928199102226311" | "411928199102226311" | false
+        null | "411928199102226311" | false
     }
 
     def "手机号测试"() {
@@ -47,6 +48,7 @@ class FieldModelTest extends Specification {
         "28712381"    | "28712381"    | false
         "15700092345" | "28712381"    | true
         "15700092345" | "15700092345" | false
+        null | "15700092345" | false
     }
 
     def "固定电话测试"() {

@@ -25,6 +25,7 @@ class TypeTest extends Specification {
         where:
         intData | result
         12      | true
+        null      | false
     }
 
     def "测试明写继承关系类型"() {

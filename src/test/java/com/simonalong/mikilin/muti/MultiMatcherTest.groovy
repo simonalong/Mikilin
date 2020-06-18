@@ -34,6 +34,7 @@ class MultiMatcherTest extends Specification {
         "12"     | 120 | 5    | false
         "12"     | 5   | 33   | false
         "12"     | 5   | 15   | false
+        null     | 5   | 15   | false
     }
 
     def "多个匹配器测试"() {

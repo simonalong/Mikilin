@@ -22,10 +22,11 @@ class ErrMsgTest extends Specification {
         Assert.assertEquals(result, act)
 
         where:
-        age | result
-        12  | true
-        100 | true
-        200 | false
+        age  | result
+        12   | true
+        100  | true
+        200  | false
+        null | false
     }
 
     def "测试黑名单情况下的返回"() {
@@ -40,10 +41,11 @@ class ErrMsgTest extends Specification {
         Assert.assertEquals(result, act)
 
         where:
-        age | result
-        12  | true
-        100 | true
-        201 | false
+        age  | result
+        12   | true
+        100  | true
+        201  | false
+        null | true
     }
 
     def "提供占位符的要求"() {

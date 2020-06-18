@@ -30,6 +30,7 @@ class GroupTest extends Specification {
         50  | "beijing"  | false
         100 | "beijing"  | false
         49  | "tianjin"  | false
+        null  | "tianjin"  | false
     }
 
     def "测试指定分组"() {

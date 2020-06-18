@@ -44,6 +44,10 @@ public class TypeMatch extends AbstractBlackWhiteMatch {
      */
     @Override
     public boolean match(Object object, String name, Object value) {
+        if (null == value) {
+            setWhiteMsg("属性 {0} 的值为空", name);
+            return false;
+        }
         if (clsList.stream().anyMatch(cls -> cls.isAssignableFrom(value.getClass()))) {
             setBlackMsg("属性 {0} 的值 {1} 命中禁用类型 {2} ", name, value, clsList);
             return true;

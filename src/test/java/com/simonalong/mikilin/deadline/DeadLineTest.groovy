@@ -27,6 +27,7 @@ class DeadLineTest extends Specification {
         "a"  | true
         "b"  | true
         "c"  | false
+        null | false
     }
 
 }

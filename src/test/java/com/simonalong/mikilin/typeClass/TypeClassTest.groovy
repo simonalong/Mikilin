@@ -31,6 +31,7 @@ class TypeClassTest extends Specification {
         100      | "b"  | true
         200      | "a"  | false
         100      | "c"  | false
+        null      | "c"  | false
     }
 
     def "泛型类型（字符类型）数组测试"() {

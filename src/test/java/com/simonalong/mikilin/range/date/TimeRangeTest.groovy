@@ -30,6 +30,7 @@ class TimeRangeTest extends Specification {
         getDate(2019, 7, 24, 00, 00, 00) | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 150    | false
         getDate(2019, 7, 14, 00, 00, 00) | getDate(2019, 8, 14, 00, 00, 00).getTime() | 150    | false
         getDate(2019, 7, 14, 00, 00, 00) | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 400    | false
+        null | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 400    | false
     }
 
     /**
