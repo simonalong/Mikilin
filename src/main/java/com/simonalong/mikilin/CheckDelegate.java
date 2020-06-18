@@ -125,8 +125,7 @@ final class CheckDelegate {
      * @param objectFieldMap 对象核查的属性映射
      * @return true 可用， false 不可用
      */
-    private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
+    private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
         Class<?> cls = field.getType();
 
         if (ClassUtil.isCheckedType(cls)) {

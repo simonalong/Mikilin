@@ -53,7 +53,7 @@ public class FieldMatchManager {
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
         for (Match m : matchList) {
-            if (null == m) {
+            if (null == m || m.isEmpty()) {
                 continue;
             }
 
@@ -116,6 +116,8 @@ public class FieldMatchManager {
             .addMatcher(ConditionMatch.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
             .addMatcher(CustomizeMatch.build(validCheck.customize(), context))
+            .addMatcher(NotBlankMatch.build(field, validCheck.notBlank()))
+            .addMatcher(MatcherFactory.build(NotNullMatch.class, validCheck.notNull()))
             .setErrMsg(validCheck.errMsg())
             .setDisable(validCheck.disable());
     }

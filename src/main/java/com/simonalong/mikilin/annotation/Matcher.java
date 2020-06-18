@@ -42,11 +42,28 @@ public @interface Matcher {
     Class<?>[] type() default {};
 
     /**
-     * 如果要匹配值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null
+     * 如果要匹配值为null，那么添加一个排除的值为"null"，因为不允许直接设置为null，也可以使用属性{@link Matcher#notNull()}
      *
      * @return 只允许的值的列表
      */
     String[] value() default {};
+
+    /**
+     * 为'true'：则修饰的字符串不可为null
+     * 为'false'（或者其他）：则修饰的字符串只可为null
+     *
+     * @return 匹配的值是否为空
+     */
+    String notNull() default "";
+
+    /**
+     * 为'true'：则修饰的字符串不可为null，也不可为空字符
+     * 为'false'（或者其他）：则修饰的字符串只可为null或者空字符
+     *
+     * <p>只有修饰类型为{@link CharSequence}的类及子类才会生效，否则抛出异常{@link com.simonalong.mikilin.exception.MkException}
+     * @return 匹配的值是否为空字符
+     */
+    String notBlank() default "";
 
     /**
      * 可用的值对应的类型

@@ -6,7 +6,7 @@ package com.simonalong.mikilin.exception;
  */
 public class MkException extends RuntimeException {
 
-    private static final String PRE = "核查异常:";
+    private static final String PRE = "核查异常：";
 
     public MkException(String message) {
         super(PRE + message);
