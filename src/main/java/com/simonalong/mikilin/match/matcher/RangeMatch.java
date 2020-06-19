@@ -1,6 +1,5 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.alibaba.fastjson.JSON;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.match.Builder;
@@ -97,6 +96,8 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
             return match(name, value, RangeDataType.DATE_TYPE);
         } else if (value instanceof Collection) {
             return match(name, Collection.class.cast(value).size(), RangeDataType.COLLECTION_TYPE);
+        } else if (value instanceof CharSequence) {
+            return match(name, CharSequence.class.cast(value).length(), RangeDataType.COLLECTION_TYPE);
         } else {
             setWhiteMsg("属性 {0} 的值 {1} 不是数字也不是时间类型", name, value);
         }
@@ -120,10 +121,13 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                 return "值 " + value;
             }
             case DATE_TYPE:{
-                return "值 " + ymdhmssFormat.format(value);
+                return "时间对应的值 " + value;
             }
             case COLLECTION_TYPE:{
-                return "集合个数 " + JSON.toJSONString(value);
+                return "集合个数 " + value;
+            }
+            case CHAR_SEQUENCE:{
+                return "字符个数 " + value;
             }
             default:return "";
         }
@@ -210,7 +214,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
             String end = matcher.group(4);
             String endAli = matcher.group(5);
 
-            if ((begin.equals(NULL_STR) || begin.equals("")) && (end.equals(NULL_STR) || end.equals(""))) {
+            if ((begin.equals(NULL_STR) || "".equals(begin)) && (end.equals(NULL_STR) || "".equals(end))) {
                 log.error("range匹配器格式输入错误，start和end不可都为null或者空字符, input={}", input);
             } else if (begin.equals(PAST) || begin.equals(FUTURE)) {
                 log.error("range匹配器格式输入错误, start不可含有past或者future, input={}", input);
@@ -248,7 +252,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
 
     private Number parseNum(String data) {
         try {
-            if (data.equals(NULL_STR) || data.equals("")){
+            if (data.equals(NULL_STR) || "".equals(data)){
                 return null;
             }
             return Numbers.parseDecimal(data);
@@ -363,6 +367,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     public enum RangeDataType {
         DATE_TYPE,
         NUM_TYPE,
-        COLLECTION_TYPE
+        COLLECTION_TYPE,
+        CHAR_SEQUENCE
     }
 }

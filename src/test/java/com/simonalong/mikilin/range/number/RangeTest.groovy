@@ -30,7 +30,7 @@ class RangeTest extends Specification {
         100  | 100  | true
         200  | 10   | false
         10   | 210  | false
-        null   | 210  | false
+        null | 210  | false
     }
 
     def "范围的边界测试"() {
@@ -130,5 +130,27 @@ class RangeTest extends Specification {
         101  | 90   | 49   | 50   | false
         101  | 100  | 50   | 50   | false
         101  | 100  | 50   | 51   | false
+    }
+
+    def "字符串长度的测试"() {
+        given:
+        RangeStrEntity range = new RangeStrEntity()
+        range.setStr(str)
+        range.setStr2(str2)
+
+        expect:
+        boolean actResult = MkValidators.check(range)
+        if (!actResult) {
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        str      | str2     | result
+        "abcd"   | "abcd"   | true
+        "abcde"  | "abcd"   | true
+        "abcdef" | "abcd"   | false
+        "abcd"   | "abcdef" | false
     }
 }

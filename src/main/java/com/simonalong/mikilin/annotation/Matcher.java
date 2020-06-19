@@ -3,11 +3,7 @@ package com.simonalong.mikilin.annotation;
 import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.match.FieldModel;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 属性核查器
@@ -23,7 +19,7 @@ public @interface Matcher {
 
     /**
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
-     *
+     * <p>
      * <p>
      * 该参数使用一般结合{@link Matchers}这个注解使用
      *
@@ -33,7 +29,7 @@ public @interface Matcher {
 
     /**
      * 匹配属性为对应的类型，比如Integer.class，Long.class等等
-     *
+     * <p>
      * <p>
      * 注意：type对应的类型为修饰属性的类型或者类型的子类型才行，否则转换失败
      *
@@ -61,6 +57,7 @@ public @interface Matcher {
      * 为'false'（或者其他）：则修饰的字符串只可为null或者空字符
      *
      * <p>只有修饰类型为{@link CharSequence}的类及子类才会生效，否则抛出异常{@link com.simonalong.mikilin.exception.MkException}
+     *
      * @return 匹配的值是否为空字符
      */
     String notBlank() default "";
@@ -83,11 +80,20 @@ public @interface Matcher {
 
     /**
      * 数据范围的判断
-     * <p> 该字段修饰的类型可以为数值类型，也可以为时间类型，也可以为集合类型（集合类型用来测试集合的size个数的范围）
+     * <p> 该字段修饰的类型可以为数值类型（数值大小）、也可以为时间类型（long大小）、也可以为集合类型、（size个数的范围）和字符串类型（CharSequence类型，长度大小）
      *
-     * @return 如果是数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]或者(, b]，(null,b)或者(,b)，[a, null)或者[a,), (a, null)或者(a,)
-     * 如果是集合类型，则比较的是集合的size大小，使用和上面一样，比如：[a,b]等等
-     * 如果是时间类型，可以使用这种，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数关键字
+     * <ul>
+     * <li>
+     * 数值类型，则比较的是数值的范围，使用比如：[a,b]，[a,b)，(a,b]，(a,b)，(null,b]或者(, b]，(null,b)或者(,b)，[a, null)或者[a,), (a, null)或者(a,)
+     * </li>
+     * <li>
+     * 集合类型，则比较的是集合的size大小，使用和上面一样，比如：[a,b]等等
+     * </li>
+     * <li>
+     * 字符串类型，同上
+     * </li>
+     * <li>
+     * 时间类型，可以使用这种，比如["2019-08-03 12:00:32.222", "2019-08-03 15:00:32.222")，也可以用单独的一个函数关键字
      * past: 表示过去
      * now: 表示现在
      * future: 表示未来
@@ -102,6 +108,10 @@ public @interface Matcher {
      * yyyy-MM-dd HH:mm
      * yyyy-MM-dd HH:mm:ss
      * yyyy-MM-dd HH:mm:ss.SSS
+     * </li>
+     * </ul>
+     *
+     * @return 返回的是范围的字符串，比如："[0,1]"。具体的请看上面说明
      */
     String range() default "";
 
@@ -147,7 +157,8 @@ public @interface Matcher {
     /**
      * 过滤器模式
      * <p>
-     *     其他的属性都是匹配，而该属性表示匹配之后对应的数据的处理，是接受放进来，还是只拒绝这样的数据
+     * 其他的属性都是匹配，而该属性表示匹配之后对应的数据的处理，是接受放进来，还是只拒绝这样的数据
+     *
      * @return true：accept（放进来），false：deny（拒绝）
      */
     boolean accept() default true;
