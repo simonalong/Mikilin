@@ -32,10 +32,6 @@ public class CustomizeEntity {
     @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#threeParam")
     private String threePa;
 
-    /**
-     * 错误路径模拟
-     * <p>这里先注释用于test能通过
-     */
-    //@Matcher(customize = "com.xxx.xxx.xxx.CustomizeCheck#errPathTest")
-    private String errPath;
+    @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#fieldErrMsgMatch", errMsg = "#current 数据不符合")
+    private String fieldErrMsg;
 }

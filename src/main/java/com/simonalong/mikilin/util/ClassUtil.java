@@ -19,6 +19,9 @@ public class ClassUtil {
      */
     public Set<Field> allFieldsOfClass(Class<?> cls) {
         Set<Field> fieldSet = new HashSet<>();
+        if (null == cls) {
+            return fieldSet;
+        }
         fieldSet.addAll(Arrays.asList(cls.getDeclaredFields()));
         fieldSet.addAll(Arrays.asList(cls.getFields()));
         return fieldSet;

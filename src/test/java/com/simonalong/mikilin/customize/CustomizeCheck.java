@@ -1,6 +1,7 @@
 package com.simonalong.mikilin.customize;
 
 import com.simonalong.mikilin.match.MkContext;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,5 +87,13 @@ public class CustomizeCheck {
         }
         context.append("没有匹配上字段'hello'和'word'");
         return false;
+    }
+
+    private boolean fieldErrMsgMatch(String fieldErrMsg) {
+        if (fieldErrMsg.contains("mock")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
