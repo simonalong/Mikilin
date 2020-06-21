@@ -28,4 +28,11 @@ public class GroupMultiEntity {
         @Matcher(group = {"test2", "test3"}, value = {"beijing", "shanghai"}),
     })
     private String name;
+
+    @Matchers({
+        @Matcher(value = {"hangzhou", "guangzhou"}),
+        @Matcher(group = "test2", range = "[0,5]"),
+        @Matcher(group = {"test2", "test3"}, value = {"hanke", "shanghai"}),
+    })
+    private String address;
 }

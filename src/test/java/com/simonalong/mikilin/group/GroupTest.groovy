@@ -168,4 +168,26 @@ class GroupTest extends Specification {
         80  | "zhengzhou" | true
         90  | "shanghai"  | true
     }
+
+    /**
+     * 多个分组中的多个条件
+     * @return
+     */
+    def "多个分组中的多个条件与操作"() {
+        given:
+        GroupMultiEntity entity = new GroupMultiEntity().setAddress(address)
+
+        expect:
+        def act = MkValidators.check("test2", entity, "address");
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        address    | result
+        "hanke"    | true
+        "shanghai" | false
+        "beijing"  | false
+    }
 }
