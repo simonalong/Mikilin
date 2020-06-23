@@ -136,13 +136,16 @@ final class CheckDelegate {
             // 不是待核查类型，先判断是否添加了黑白名单注解配置，否则按照复杂类型处理
             if (matcherContainField(object, field, whiteGroupMather, blackGroupMather)) {
                 result = primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
+                if (!result) {
+                    return false;
+                }
             }
 
             // 包含拆解注解，则要查看拆解后的处理
             if (field.isAnnotationPresent(Check.class)) {
                 try {
                     field.setAccessible(true);
-                    result &= available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
+                    result = available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }

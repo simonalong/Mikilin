@@ -13,5 +13,5 @@ import lombok.experimental.Accessors;
 public class CollectionSizeEntityB {
 
     @Matcher(range = "(10, 30)")
-    private Integer bSize;
+    private Integer bField;
 }

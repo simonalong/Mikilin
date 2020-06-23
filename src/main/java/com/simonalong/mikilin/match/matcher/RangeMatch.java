@@ -97,7 +97,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         } else if (value instanceof Collection) {
             return match(name, Collection.class.cast(value).size(), RangeDataType.COLLECTION_TYPE);
         } else if (value instanceof CharSequence) {
-            return match(name, CharSequence.class.cast(value).length(), RangeDataType.COLLECTION_TYPE);
+            return match(name, CharSequence.class.cast(value).length(), RangeDataType.CHAR_SEQUENCE);
         } else {
             setWhiteMsg("属性 {0} 的值 {1} 不是数字也不是时间类型", name, value);
         }
