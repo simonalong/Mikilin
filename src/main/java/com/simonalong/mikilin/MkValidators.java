@@ -203,11 +203,10 @@ public final class MkValidators {
      * @param fieldSet       待核查的属性
      * @param objectFieldMap 对象的属性映射表，key为类的canonicalName，value为当前类的属性的集合
      * @param whiteSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
-     * @param blackSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @param blackSet       属性的黑名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
      * @return 核查结果 true：核查成功；false：核查失败
      */
-    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
-        Map<String, MatchManager> blackSet) {
+    private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         delegate.setGroup(group);
         try {
             return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);

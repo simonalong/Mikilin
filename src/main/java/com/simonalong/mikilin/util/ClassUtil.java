@@ -29,8 +29,9 @@ public class ClassUtil {
 
     /**
      * 判断一个类型是否我们需要核查的类型
-     * 1.是基本类型或者基本类型的包装类型 Boolean Byte Character Short Integer Long Double Float 2.String 类型
-     * 2.java.util.Date 类型
+     * 1.是基本类型或者基本类型的包装类型 Boolean Byte Character Short Integer Long Double Float
+     * 2.String 类型
+     * 3.java.util.Date 类型
      *
      * 注意: 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      *

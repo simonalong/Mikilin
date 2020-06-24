@@ -175,8 +175,7 @@ final class CheckDelegate {
         return !whiteEmpty || !blackEmpty;
     }
 
-    private boolean available(Object object, Map<String, Set<String>> objectFieldMap,
-        Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean available(Object object, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             return true;
         }
@@ -194,8 +193,7 @@ final class CheckDelegate {
      * @return true：可用，false：不可用
      */
     @SuppressWarnings("all")
-    private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatchManager> whiteGroupMather,
-        Map<String, MatchManager> blackGroupMather) {
+    private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
         // 1.黑白名单都有空，则不核查该参数，可用
