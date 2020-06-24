@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class BlackAEntity {
+
     @Matcher(value = {"a","b","c","null"}, accept = false)
     private String name;
     private Integer age;

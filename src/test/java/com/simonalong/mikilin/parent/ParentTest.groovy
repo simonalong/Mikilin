@@ -33,6 +33,6 @@ class ParentTest extends Specification {
         5    | 101  | 20   | 20   | "a"  | true
         5    | 20   | 20   | 201  | "a"  | false
         5    | 20   | 201  | 20   | "b"  | false
-        null    | 20   | 201  | 20   | "b"  | false
+        null | 20   | 201  | 20   | "b"  | false
     }
 }

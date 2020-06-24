@@ -1,7 +1,6 @@
 package com.simonalong.mikilin.muti
 
 import com.simonalong.mikilin.MkValidators
-import com.simonalong.mikilin.model.IdCardEntity
 import org.junit.Assert
 import spock.lang.Specification
 
