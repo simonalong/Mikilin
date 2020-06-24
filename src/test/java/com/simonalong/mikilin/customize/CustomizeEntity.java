@@ -32,6 +32,9 @@ public class CustomizeEntity {
     @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#threeParam")
     private String threePa;
 
-    @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#fieldErrMsgMatch", errMsg = "#current 数据不符合")
+    @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#fieldErrMsgMatch")
     private String fieldErrMsg;
+
+    @Matcher(customize = "com.simonalong.mikilin.customize.CustomizeCheck#fieldErrMsgMatch2", errMsg = "#current 数据不符合")
+    private String fieldErrMsg2;
 }

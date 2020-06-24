@@ -89,10 +89,22 @@ public class CustomizeCheck {
         return false;
     }
 
-    private boolean fieldErrMsgMatch(String fieldErrMsg) {
+    private boolean fieldErrMsgMatch(String fieldErrMsg, MkContext mkContext) {
         if (fieldErrMsg.contains("mock")) {
+            mkContext.setLastErrMsg("当前的值命中黑名单");
             return true;
         } else {
+            mkContext.setLastErrMsg("当前的值不符合需求");
+            return false;
+        }
+    }
+
+    private boolean fieldErrMsgMatch2(String fieldErrMsg, MkContext mkContext) {
+        if (fieldErrMsg.contains("mock")) {
+            mkContext.setLastErrMsg("当前的值命中黑名单");
+            return true;
+        } else {
+            mkContext.setLastErrMsg("当前的值不符合需求");
             return false;
         }
     }

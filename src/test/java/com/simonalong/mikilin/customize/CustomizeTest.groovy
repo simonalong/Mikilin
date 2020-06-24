@@ -132,4 +132,24 @@ class CustomizeTest extends Specification {
         "mock3"     | true
         "asdf"      | false
     }
+
+    def "不匹配情况下的错误日志2"() {
+        given:
+        CustomizeEntity entity = new CustomizeEntity().setFieldErrMsg2(fieldErrMsg)
+
+        expect:
+        boolean actResult = MkValidators.check(entity, "fieldErrMsg2")
+        if (!actResult) {
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        fieldErrMsg | result
+        "mock1"     | true
+        "mock2"     | true
+        "mock3"     | true
+        "asdf"      | false
+    }
 }

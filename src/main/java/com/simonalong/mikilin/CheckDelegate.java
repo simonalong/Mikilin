@@ -26,7 +26,7 @@ final class CheckDelegate {
     }
 
     void setGroup(String group) {
-        context.set();
+        context.clear();
         localGroup.set(group);
     }
 

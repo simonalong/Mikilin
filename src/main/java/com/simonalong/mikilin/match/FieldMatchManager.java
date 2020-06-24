@@ -84,10 +84,14 @@ public class FieldMatchManager {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
                 if(null != value) {
-                    context.setLastErrMsg(errMsg.replaceAll("#current", value.toString()));
+                    if (null == context.getLastErrMsg()) {
+                        context.setLastErrMsg(errMsg.replaceAll("#current", value.toString()));
+                    }
                 }
             } else {
-                context.setLastErrMsg(sysErrMsg);
+                if (null == context.getLastErrMsg()) {
+                    context.setLastErrMsg(sysErrMsg);
+                }
             }
         }
     }

@@ -61,12 +61,6 @@ public class MkContext {
         return theLastErrMsg.get();
     }
 
-    public void set() {
-        errMsgChain.remove();
-        theLastErrMsg.remove();
-        errMsgChain.set(new StringBuilder().append("数据校验失败："));
-    }
-
     public void clear() {
         errMsgChain.remove();
         theLastErrMsg.remove();
