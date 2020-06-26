@@ -1,5 +1,7 @@
 package com.simonalong.mikilin.util;
 
+import com.simonalong.mikilin.spring.MkSpringBeanContext;
+
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,8 +17,8 @@ public final class SingleFactory {
     private static Map<String, Object> dataMap = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <T> T getSingle(Class<T> tClass){
-        if(null == tClass){
+    public static <T> T getSingle(Class<T> tClass) {
+        if (null == tClass) {
             return null;
         }
 
@@ -25,9 +27,14 @@ public final class SingleFactory {
             if (null != result) {
                 return result;
             }
-        }catch (Exception ignored){}
 
-        return (T) dataMap.computeIfAbsent(tClass.getCanonicalName(), k->{
+            result = MkSpringBeanContext.getBean(tClass);
+            if (null != result) {
+                return result;
+            }
+        } catch (Exception ignored) {}
+
+        return (T) dataMap.computeIfAbsent(tClass.getCanonicalName(), k -> {
             try {
                 Constructor<?> constructor = tClass.getDeclaredConstructor();
                 constructor.setAccessible(true);

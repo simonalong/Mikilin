@@ -133,7 +133,7 @@ pom.xml.versionsBackup
 .gradle
 /build/
 
-# Ignore Gradle GUI config
+# Ignore Gradle GUI spring
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)

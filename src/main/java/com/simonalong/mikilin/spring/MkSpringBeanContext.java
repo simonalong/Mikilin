@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.util;
+package com.simonalong.mikilin.spring;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -6,19 +6,17 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 /**
- * 后续为了防止混淆，这里改名，并迁移到{@link com.simonalong.mikilin.spring.MkSpringBeanContext}
- * @author zhouzhenyong
- * @since 2019/8/3 下午12:14
+ * @author shizi
+ * @since 2020/6/25 11:45 AM
  */
-@Deprecated
 @Service
-public class SpringBeanUtils implements ApplicationContextAware {
+public class MkSpringBeanContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        SpringBeanUtils.applicationContext = applicationContext;
+        MkSpringBeanContext.applicationContext = applicationContext;
     }
 
     public static ApplicationContext getApplicationContext() {

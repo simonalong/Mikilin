@@ -1,7 +1,10 @@
 package com.simonalong.mikilin.util;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -9,11 +12,12 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2018/12/22 下午10:16
  */
 @Slf4j
-public final class Maps<K, V> {
+public final class Maps<K, V> implements Serializable {
 
     private static final Integer KV_NUM = 2;
     private Maps() {}
 
+    @Getter
     private Map<K, V> dataMap = new HashMap<>();
 
     /**
@@ -62,5 +66,10 @@ public final class Maps<K, V> {
 
     public Map<K, V> build() {
         return dataMap;
+    }
+
+    @Override
+    public String toString(){
+        return dataMap.toString();
     }
 }
