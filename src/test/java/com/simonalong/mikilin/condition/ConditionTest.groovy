@@ -28,7 +28,6 @@ class ConditionTest extends Specification {
         90   | 10   | 31   | false
         81   | 20   | 31   | false
         91   | 10   | 30   | false
-        null   | 10   | 30   | false
     }
 
     def "测试java表达式"() {
@@ -86,5 +85,29 @@ class ConditionTest extends Specification {
         2    | "b"  | true
         2    | "c"  | false
         3    | "b"  | false
+    }
+
+
+    def "集合的配置处理"() {
+        given:
+        def nameList
+        if(null != names){
+            nameList = Arrays.asList(names.split(","));
+        }
+        ConditionEntity5 entity = new ConditionEntity5().setHandleType(type).setNameList(nameList)
+
+        expect:
+        def act = MkValidators.check(entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsg
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        type | names   | result
+        0    | null    | true
+        0    | "a,b,c" | false
+        1    | "a,b,c" | true
     }
 }

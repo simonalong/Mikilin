@@ -64,9 +64,6 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
         matcher.currentField = field;
         matcher.parser = new ExpressParser();
         matcher.predicate = (root, current) -> {
-            if (null == current) {
-                return false;
-            }
             matcher.parser.addBinding(matcher.parseConditionExpress(matcher.express, root, matcher.currentField, current));
             return matcher.parser.parse("import static java.lang.Math.*\n", matcher.rmvfix(matcher.express));
         };
