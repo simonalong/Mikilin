@@ -60,7 +60,7 @@ public class FieldMatchManager {
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
-                    addErrMsg(context, m.getBlackMsg(), value);
+                    setLastErrMsg(context, m.getBlackMsg(), value);
                 } else {
                     context.clear();
                 }
@@ -68,7 +68,7 @@ public class FieldMatchManager {
             } else {
                 if(whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    addErrMsg(context, m.getWhiteMsg(), value);
+                    setLastErrMsg(context, m.getWhiteMsg(), value);
                 }
             }
         }
@@ -80,12 +80,14 @@ public class FieldMatchManager {
         return false;
     }
 
-    private void addErrMsg(MkContext context, String sysErrMsg, Object value) {
+    private void setLastErrMsg(MkContext context, String sysErrMsg, Object value) {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
-                if(null != value) {
-                    if (null == context.getLastErrMsg()) {
+                if (null == context.getLastErrMsg()) {
+                    if(null != value) {
                         context.setLastErrMsg(errMsg.replaceAll("#current", value.toString()));
+                    } else {
+                        context.setLastErrMsg(errMsg.replaceAll("#current", "null"));
                     }
                 }
             } else {

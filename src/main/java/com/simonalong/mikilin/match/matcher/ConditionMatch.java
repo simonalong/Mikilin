@@ -87,11 +87,9 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
         while (m.find()) {
             String fieldFullName = m.group();
             Object fieldValue = getFieldValue(fieldFullName, root);
-            if (null != fieldValue) {
-                String rmvFieldName = rmvfix(fieldFullName);
-                maps.put(rmvFieldName, fieldValue);
-                fieldNameMap.put(fieldFullName, rmvFieldName);
-            }
+            String rmvFieldName = rmvfix(fieldFullName);
+            maps.put(rmvFieldName, fieldValue);
+            fieldNameMap.put(fieldFullName, rmvFieldName);
         }
 
         if (express.contains(CURRENT)) {

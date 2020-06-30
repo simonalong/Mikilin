@@ -110,4 +110,24 @@ class ConditionTest extends Specification {
         0    | "a,b,c" | false
         1    | "a,b,c" | true
     }
+
+    def "至少一个为非空"() {
+        given:
+        ConditionEntity6 entity = new ConditionEntity6().setF1(f1).setF2(f2).setF3(f3)
+
+        expect:
+        def act = MkValidators.check(entity);
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsg
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        f1   | f2   | f3   | result
+        1L   | "a"  | 2    | true
+        null | "a"  | 2    | true
+        null | null | 2    | true
+        null | null | null | false
+    }
 }
