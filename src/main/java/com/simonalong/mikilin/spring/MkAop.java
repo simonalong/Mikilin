@@ -31,6 +31,9 @@ public class MkAop {
 
     /**
      * 拦截添加注解的方法
+     * @param pjp 参数
+     * @return 执行的返回结果
+     * @throws Throwable 异常情况下返回
      */
     @Around("@within(com.simonalong.mikilin.annotation.AutoCheck) || @annotation(com.simonalong.mikilin.annotation.AutoCheck)")
     public Object aroundParameter(ProceedingJoinPoint pjp) throws Throwable {

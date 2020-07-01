@@ -78,11 +78,11 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = MkValidators.check(entity);
-        Assert.assertEquals(result, act)
+        def act = MkValidators.check(entity, "age", "name");
         if (!act) {
             println MkValidators.errMsgChain
         }
+        Assert.assertEquals(result, act)
 
         where:
         age | name       | result
@@ -126,11 +126,11 @@ class GroupTest extends Specification {
         GroupMultiEntity entity = new GroupMultiEntity().setAge(age).setName(name)
 
         expect:
-        def act = MkValidators.check("test2", entity);
-        Assert.assertEquals(result, act)
+        def act = MkValidators.check("test2", entity, "age", "name");
         if (!act) {
             println MkValidators.errMsgChain
         }
+        Assert.assertEquals(result, act)
 
         where:
         age | name        | result

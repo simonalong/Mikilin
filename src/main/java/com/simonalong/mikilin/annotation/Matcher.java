@@ -20,7 +20,6 @@ public @interface Matcher {
     /**
      * 针对不同场景下所需的匹配模式的不同，默认"_default_"，详见{@link com.simonalong.mikilin.MkConstant#DEFAULT_GROUP}
      * <p>
-     * <p>
      * 该参数使用一般结合{@link Matchers}这个注解使用
      *
      * @return 分组
@@ -29,7 +28,6 @@ public @interface Matcher {
 
     /**
      * 匹配属性为对应的类型，比如Integer.class，Long.class等等
-     * <p>
      * <p>
      * 注意：type对应的类型为修饰属性的类型或者类型的子类型才行，否则转换失败
      *

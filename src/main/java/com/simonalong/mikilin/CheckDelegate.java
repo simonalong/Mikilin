@@ -283,6 +283,7 @@ final class CheckDelegate {
      * @param object 对象
      * @param field 对象的属性
      * @param groupMather 可用或者不可用数据
+     * @param whiteOrBlack true：白名单（匹配则OK），false：黑名单（匹配则不OK）
      * @return true：所有匹配器匹配上（匹配器内部任何一个匹配项匹配上就叫匹配上）则返回true，false：有匹配器都没有匹配上（有一个匹配器内部的匹配项都没有匹配上）则返回false
      */
     private boolean fieldMatch(Object object, Field field, Map<String, MatchManager> groupMather, Boolean whiteOrBlack) {

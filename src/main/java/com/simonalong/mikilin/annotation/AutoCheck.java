@@ -5,9 +5,9 @@ import com.simonalong.mikilin.MkConstant;
 import java.lang.annotation.*;
 
 /**
- * 修饰函数和参数，用于属性的核查
+ * 自动核查注解
  *
- * <p>
+ * <p> 针对修饰的类和方法中的参数进行核查
  *     <ul>
  *         <li>1.修饰类：则会核查类下面所有函数的所有参数</li>
  *         <li>2.修饰函数：则会核查函数对应的所有参数</li>
@@ -22,11 +22,13 @@ public @interface AutoCheck {
 
     /**
      * 同{@link AutoCheck#group()}
+     * @return 分组
      */
     String value() default MkConstant.DEFAULT_GROUP;
 
     /**
      * 核查的分组
+     * @return 分组
      */
     String group() default MkConstant.DEFAULT_GROUP;
 }

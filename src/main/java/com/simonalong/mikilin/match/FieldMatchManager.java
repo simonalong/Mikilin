@@ -48,6 +48,7 @@ public class FieldMatchManager {
      * @param object 待校验的属性的对象
      * @param value 待校验的数据，就是属性的值
      * @param context 核查上下文
+     * @param whiteOrBlack 黑白名单标示：true:白名单，false:黑名单
      * @return true：匹配任何一个匹配器返回true，false：所有匹配器都没有匹配上
      */
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {

@@ -187,7 +187,7 @@ public final class MkValidators {
     /**
      * 将要核查的属性转换为Field类型
      *
-     * @param object      目标对象
+     * @param tClass      目标类型
      * @param fieldStrSet 调用方想要调用的属性的字符串名字集合
      * @return 属性的Field类型集合
      */
@@ -263,7 +263,7 @@ public final class MkValidators {
     /**
      * 根据对象的类型进行建立对象和属性映射树
      *
-     * @param cls 待处理的对象的类
+     * @param objectOrigin 待处理的对象
      */
     private void createObjectFieldMap(Object objectOrigin) {
         if (null == objectOrigin) {
