@@ -29,7 +29,7 @@ public enum FieldModel {
         this.regex = regex;
     }
 
-    public boolean valid(String content) {
+    public boolean match(String content) {
         if (null == content) {
             return false;
         }

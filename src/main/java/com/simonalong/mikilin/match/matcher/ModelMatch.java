@@ -17,7 +17,7 @@ public class ModelMatch extends AbstractBlackWhiteMatch implements Builder<Model
     @Override
     public boolean match(Object object, String nam, Object value) {
         if (value instanceof String) {
-            if (fieldModel.valid((String) value)) {
+            if (fieldModel.match((String) value)) {
                 setBlackMsg("属性 {0} 的值 {1} 命中不允许的类型 [FieldModel-{2}]", nam, value, fieldModel.getName());
                 return true;
             } else {
