@@ -30,7 +30,7 @@
 ```
 
 ## 使用 <a name="使用"></a>
-该框架使用极其简单，如下：给需要拦截的属性添加注解即可
+该框架使用极其简单（直接参考spring-validate框架用法即可），如下：给需要拦截的属性添加注解即可
 ```java
 @Data
 @Accessors(chain = true)
@@ -43,6 +43,7 @@ public class WhiteAEntity {
 }
 ```
 
+#### 硬编码
 在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
 ```java
 import lombok.SneakyThrows;
@@ -65,8 +66,309 @@ public void test1(){
     MkValidators.validate(whiteAEntity);
 }
 ```
+#### 自动核查
+版本：>= 1.6.0
+在1.6.0版本中添加`@AutoCheck`注解，修饰类和方法，会自动核查方法或者类的方法中的参数，不符合需求，则会上报异常`MkException`
+```java
+/**
+ * 自动核查注解
+ *
+ * <p> 针对修饰的类和方法中的参数进行核查
+ *     <ul>
+ *         <li>1.修饰类：则会核查类下面所有函数的所有参数</li>
+ *         <li>2.修饰函数：则会核查函数对应的所有参数</li>
+ *     </ul>
+ * @author shizi
+ * @since 2020/6/25 11:20 AM
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface AutoCheck {
 
-从上面用例可以看到该框架使用非常简单。不过框架的功能性却很强大，那么强大在哪，在于注解属性的多样性，后面一一介绍。对于属性这里的核查函数其实就是只有一个，不同的重载
+    /**
+     * 同{@link AutoCheck#group()}
+     * @return 分组
+     */
+    String value() default MkConstant.DEFAULT_GROUP;
+
+    /**
+     * 核查的分组
+     * @return 分组
+     */
+    String group() default MkConstant.DEFAULT_GROUP;
+}
+
+```
+用法
+```java
+@AutoCheck
+@RequestMapping("${api-prefix}/deploy")
+@RestController
+public class DeployController {
+
+    //...
+        
+    /**
+     * 启动构建
+     */
+    @AutoCheck("startBuild")
+    @PutMapping("startBuild")
+    public Integer startBuild(@RequestBody AppIdReq appIdReq) {
+        //...
+    }
+    //...
+}
+```
+# 二、常见场景用法
+以下场景均来自实际业务场景
+
+#### 1.字段不可为空
+用户id不可为空
+```java
+/**
+ * 被邀请的用户id
+ */
+@Matcher(notNull = "true")
+private Long userId;
+```
+
+#### 2.字符串属性不可为空
+用户名不可为空
+```java
+/**
+ * 用户名
+ */
+@Matcher(notBlank = "true")
+private String name;
+```
+
+#### 3.类型只可为0和1
+对应属性的类型，只可为两个值，或者多个值
+```java
+/**
+ * 是否必需，0：不必填，1：必填
+ */
+@Matcher(value = {"0", "1"})
+private Integer needKey;
+```
+
+#### 4.类型为多个固定的值
+对应属性的状态，只可为0、1、2、3、4、5、6、7中的一个
+```java
+/**
+ * 状态：0未构建，1编译中，2打包中，3部署中，4测试中，5测试完成，6发布中，7发布完成
+ */
+//@Matcher(value = {"0", "1", "2", "3", "4", "5", "6", "7"}) 也可以使用下面
+@Matcher(range = "[0, 8]") 
+private Integer deployStatus = 0;
+```
+
+#### 5.对应的值为邮箱
+字段为邮箱判断。除了邮箱之外，还有手机号、固定电话、身份证号和IP地址这么四个固定的类型判断。
+```java
+/**
+ * 邮箱
+ */
+@Matcher(notNull = "false", model = FieldModel.MAIL, errMsg = "邮箱：#current 不符合邮件要求")
+private String email;
+```
+
+#### 6.对应集合的长度
+前端上传的图片最多为三个
+```java
+/**
+ * 预览图最多为三个
+ */
+@Matcher(range = "(, 3]")
+private List<String> prePicUrlList;
+```
+
+#### 7.字符长度最长为128
+对前端传递过来的字符长度限制为128，因为数据库字段存储为最长128
+```java
+/**
+ * 地址长度
+ */
+@Matcher(range = "[0, 128]")
+private String nameStr;
+```
+
+#### 8.数据为空或者不空的话，长度不能超过200
+其中@Matcher内部多个属性之间的匹配是或的关系
+```java
+/**
+ * 项目描述，可以为空，但是最长不可超过200
+ */
+@Matcher(notBlank = "false", range = "[0, 200]", errMsg = "描述的值不可过长，最长为200")
+private String proDesc;
+```
+
+#### 9.前端传递过来的id必须在db中存在，而且数据不可为空
+@Matcher支持多个叠加形式，表示多个条件的与操作
+```java
+@Matcher(notNull = "true")
+@Matcher(customize = "com.xxx.yyy.ExistMatch#proIdExist", errMsg = "proId：#current在db中不存在")
+private Long projectId;
+```
+其中匹配的写法
+```java
+@Service
+public class ExistMatch {
+
+    @Autowired
+    private ProjectService projectService;
+
+    /**
+     * appId存在
+     */
+    public boolean proIdExist(Long proId) {
+        return projectService.exist(proId);
+    }
+}
+```
+
+#### 10.项目名不可为空，而且数据库中不能存在，如果存在则拒绝
+其中属性accept表示如果前面的条件匹配则拒绝，默认为true
+```java
+/**
+ * 项目名称
+ */
+@Matcher(notBlank = "true")
+@Matcher(customize = "com.isyscore.iop.panda.service.ProjectService#projectNameExist", accept = false, errMsg = "已经存在名字为 #current 的项目")
+private String proName;
+```
+
+#### 11.在某个配置项下对应的字段值
+业务场景：在字段为1的时候，另外一个对应的字段不可为空
+```java
+/**
+ * 处理类型：0，新增；1，编辑；2，搜索；3，表展示；4，表扩展
+ */
+@Matcher(range = "[0, 4]", errMsg = "不识别类型 #current")
+private Integer handleType;
+
+/**
+ * 在编辑模式下，禁用的表字段
+ */
+@Matcher(condition = "(#current == null && #root.handleType != 1) || (#current != null && !#current.isEmpty() && #root.handleType == 1)", errMsg = "cantEditColumnList 需要在handleType为1的时候才有值")
+private List<String> cantEditColumnList;
+```
+
+#### 12.时间必须是过去的时间
+```java
+/**
+ * 应用发布时间
+ */
+@Matcher(range = "past")
+@ApiModelProperty(value = "应用发布时间")
+private Date createTime;
+```
+
+#### 13.分页数据必须满足>0
+```java
+@Matcher(range = "[0, )", errMsg = "分页数据不满足")
+private Integer pageNo;
+@Matcher(range = "[0, )", errMsg = "pageSize数据不满足")
+private Integer pageSize;
+```
+
+#### 14.【复杂场景】应用id在不同的场景下处理方式不同
+
+1. 在启动构建时候，状态必须在“开始”阶段
+1. 在测试完成动作，状态必须在‘测试中’阶段
+1. 在启动发布动作，状态必须在“测试完成”阶段
+1. 在停止动作，状态必须在“部署”状态之前
+1. 退出动作，要保证应用在“部署”状态之前
+
+此外最基本的就是应用id不可为空，而且在db中必须存在。上面的几个动作都是不同的接口，但是所有的参数都相同，那么用group是最好的方式。其中group里面可以添加多个分组，其中group相同的，则表示两个@Mather之间是与的关系
+```java
+@Data
+public class AppIdReq {
+
+    @Matchers({
+        @Matcher(notNull = "true"),
+        @Matcher(group = {MkConstant.DEFAULT_GROUP, "startBuild", "finishTest", "startDeploy", "stop", "quite"}, customize = "com.xxx.yyy.ExistMatch#appIdExist", errMsg = "应用id: #current 不存在"),
+        // 启动构建 动作的状态核查
+        @Matcher(group = "startBuild", customize = "com.xxx.yyy.DeployStatusMatch#startBuild", errMsg = "应用id: #current 不在阶段'未编译'，请先退出"),
+        // 测试完成 动作的状态核查
+        @Matcher(group = "finishTest", customize = "com.xxx.yyy.DeployStatusMatch#finishTest", errMsg = "应用id: #current 不在阶段'测试中'"),
+        // 启动发布 动作的状态核查
+        @Matcher(group = "startDeploy", customize = "com.xxx.yyy.DeployStatusMatch#startDeploy", errMsg = "应用id: #current 不在阶段'测试完成'"),
+        // 停止 动作的状态核查
+        @Matcher(group = "stop", customize = "com.xxx.yyy.DeployStatusMatch#stopDeploy", errMsg = "停止的动作需要保证应用 #current 在部署状态之前"),
+        // 退出 动作的状态核查
+        @Matcher(group = "quite", customize = "com.xxx.yyy.DeployStatusMatch#stopDeploy", errMsg = "退出的动作需要保证应用 #current 在部署状态之前")
+    })
+    @ApiModelProperty(value = "应用id", example = "42342354")
+    private Long appId;
+}
+```
+对应的接口使用
+```java
+@AutoCheck
+@RequestMapping("${api-prefix}/deploy")
+@RestController
+public class DeployController {
+
+    ...
+        
+    /**
+     * 启动构建
+     */
+    @AutoCheck("startBuild")
+    @PutMapping("startBuild")
+    public Integer startBuild(@RequestBody AppIdReq appIdReq) {
+        Long appId = appIdReq.getAppId();
+        devopsService.startBuild(appId);
+        return 1;
+    }
+
+    /**
+     * 完成测试
+     */
+    @AutoCheck("finishTest")
+    @PutMapping("finishTest")
+    public Integer finishTest(@RequestBody AppIdReq appIdReq) {
+        Long appId = appIdReq.getAppId();
+        appService.chgDeployStatus(appId, DeployStatusEnum.TEST_FINISH);
+        return 1;
+    }
+
+    /**
+     * 启动发布
+     */
+    @AutoCheck("startDeploy")
+    @PutMapping("startDeploy")
+    public Integer startDeploy(@RequestBody AppIdReq appIdReq) {
+        Long appId = appIdReq.getAppId();
+        appService.startDeploy(appId, UserInfoContext.getUserContext().getUserId());
+        return 1;
+    }
+
+    /**
+     * 停止
+     * <p>只有在发布之前，停止按钮可见
+     */
+    @AutoCheck("stop")
+    @PutMapping("stop")
+    public Integer stop(@RequestBody AppIdReq appIdReq) {
+        appService.stopApp(appIdReq.getAppId());
+        return 1;
+    }
+
+    /**
+     * 退出
+     * <p>如果已经进行过“发布”，则不可退出，而且该退出按钮只有在停止后才能退出
+     */
+    @AutoCheck("quite")
+    @PutMapping("quite")
+    public Integer quite(@RequestBody AppIdReq appIdReq) {
+        appService.quite(appIdReq.getAppId());
+        return 1;
+    }
+}
+```
 
 ## 详细介绍 <a name="详细介绍"></a>
 对于详细内容介绍，请见文档[Mikilin说明文档](https://www.yuque.com/simonalong/mikilin)

@@ -109,6 +109,7 @@ class ConditionTest extends Specification {
         0    | null    | true
         0    | "a,b,c" | false
         1    | "a,b,c" | true
+        1    | null    | false
     }
 
     def "至少一个为非空"() {
