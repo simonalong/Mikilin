@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 final class CheckDelegate {
 
     private ThreadLocal<String> localGroup;
+
     private MkContext context;
 
     CheckDelegate(MkContext context) {

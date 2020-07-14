@@ -26,15 +26,19 @@ public final class MkValidators {
      * 对象属性值白名单：key为group名字，value为属性的匹配器
      */
     private Map<String, MatchManager> whiteGroupMap;
+
     /**
      * 对象属性值黑名单：key为group名字，value为属性的匹配器
      */
     private Map<String, MatchManager> blackGroupMap;
+
     /**
      * 对象属性核查映射：key为规范化的类名，value为属性名
      */
     private Map<String, Set<String>> objectFieldCheckMap;
+
     private CheckDelegate delegate;
+
     /**
      * 核查上下文
      */
