@@ -5,6 +5,7 @@ import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.MkValidators;
 import com.simonalong.mikilin.annotation.AutoCheck;
 import com.simonalong.mikilin.exception.MkException;
+import com.simonalong.mikilin.util.ExceptionUtil;
 import com.simonalong.mikilin.util.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -44,13 +45,10 @@ public class MkAop {
             result = pjp.proceed();
             MkValidators.validate(result);
         } catch (Throwable e) {
-            @SuppressWarnings("unchecked")
-            Maps<String, Object> outInfo = Maps.of();
-            outInfo.put("fun", funStr);
-            outInfo.put("parameters", getParameters(pjp));
-            outInfo.put("message", e.getMessage());
-            log.error("error：" + JSON.toJSONString(outInfo), e);
-            throw e;
+            MkException mkException = ExceptionUtil.getCause(e, MkException.class);
+            mkException.setFunStr(funStr);
+            mkException.setParameterList(getParameters(pjp));
+            throw mkException;
         }
         return result;
     }
