@@ -46,9 +46,13 @@ public class MkAop {
             MkValidators.validate(result);
         } catch (Throwable e) {
             MkException mkException = ExceptionUtil.getCause(e, MkException.class);
-            mkException.setFunStr(funStr);
-            mkException.setParameterList(getParameters(pjp));
-            throw mkException;
+            if (null != mkException) {
+                mkException.setFunStr(funStr);
+                mkException.setParameterList(getParameters(pjp));
+                throw mkException;
+            } else {
+                throw e;
+            }
         }
         return result;
     }
