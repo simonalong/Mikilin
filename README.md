@@ -13,7 +13,8 @@
 - 可扩展：针对一些不好核查的属性，可以通过自定义匹配器属性，也可以使用spring的Bean作为系统匹配器类
 
 ## 使用文档
-[Mikilin文档](https://persimon.gitbook.io/mikilin/)
+文档：[Mikilin文档](https://www.yuque.com/simonalong/mikilin)<br/>
+github: https://github.com/SimonAlong/Mikilin
 
 # 一、快速入门 
 本工具用法极其简单，可以说，只要会用一个注解`Matcher`和一个方法`MkValidators.check(Object obj)`即可。`Matcher`表示匹配器，内部根据accept区分白名单和黑名单，就是只要匹配到注解中的属性，则表示当前的值是可以通过的，否则函数`MkValidators.check(Object obj)`返回失败，并通过`MkValidators.getErrMsgChain`获取所有错误信息或者通过`MkValidators.getErrMsg`获取某一项错误信息。
