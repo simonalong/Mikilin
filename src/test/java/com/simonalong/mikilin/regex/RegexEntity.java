@@ -17,4 +17,7 @@ public class RegexEntity {
 
     @Matcher(regex = "^\\d+$", accept = false)
     private String regexInValid;
+
+    @Matcher(regex = "^.+\\..+\\..+$")
+    private String version;
 }
