@@ -122,7 +122,7 @@ public class FieldMatchManager {
             .addMatcher(MatcherFactory.build(RangeMatch.class, validCheck.range()))
             .addMatcher(ConditionMatch.build(field, validCheck.condition()))
             .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
-            .addMatcher(CustomizeMatch.build(validCheck.customize(), context))
+            .addMatcher(CustomizeMatch.build(field, validCheck.customize(), context))
             .addMatcher(NotBlankMatch.build(field, validCheck.notBlank()))
             .addMatcher(MatcherFactory.build(NotNullMatch.class, validCheck.notNull()))
             .setErrMsg(validCheck.errMsg())
