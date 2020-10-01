@@ -42,6 +42,27 @@ class EnumTypeTest extends Specification {
         null  | "c"  | "C5"       | false
     }
 
+    def "枚举类型下标测试"() {
+        given:
+        EnumTypeEntity1 judgeEntity = new EnumTypeEntity1()
+        judgeEntity.setIndex(index)
+
+        expect:
+        def act = MkValidators.check(judgeEntity, "index")
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        index | result
+        0     | true
+        1     | true
+        2     | true
+        3     | false
+        4     | false
+    }
+
     def "下标的Integer测试"(){
         given:
         EnumTypeEntity2 entity2 = new EnumTypeEntity2().setName(name)
