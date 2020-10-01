@@ -89,6 +89,18 @@ public class CustomizeCheck {
         return false;
     }
 
+    /**
+     * 三个函数2，参数顺序随意
+     */
+    private boolean threeParam2(MkContext context, String temK, CustomizeEntity customizeEntity) {
+        if (temK.equals("hello") || temK.equals("word")){
+            context.append("匹配上字段'hello'和'word'");
+            return true;
+        }
+        context.append("没有匹配上字段'hello'和'word'");
+        return false;
+    }
+
     private boolean fieldErrMsgMatch(String fieldErrMsg, MkContext mkContext) {
         if (fieldErrMsg.contains("mock")) {
             mkContext.setLastErrMsg("当前的值命中黑名单");
