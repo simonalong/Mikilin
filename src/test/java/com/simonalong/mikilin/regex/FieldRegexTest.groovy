@@ -14,7 +14,7 @@ class FieldRegexTest extends Specification {
         RegexEntity entity = new RegexEntity().setRegexValid(valid).setRegexInValid(invalid)
 
         expect:
-        boolean actResult = MkValidators.check(entity)
+        boolean actResult = MkValidators.check(entity, "regexValid", "regexInValid")
         if (!result) {
             println MkValidators.getErrMsgChain()
         }
