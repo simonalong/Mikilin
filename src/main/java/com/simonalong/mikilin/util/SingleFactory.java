@@ -23,12 +23,7 @@ public final class SingleFactory {
         }
 
         try {
-            T result = SpringBeanUtils.getBean(tClass);
-            if (null != result) {
-                return result;
-            }
-
-            result = MkSpringBeanContext.getBean(tClass);
+            T result = MkSpringBeanContext.getBean(tClass);
             if (null != result) {
                 return result;
             }
