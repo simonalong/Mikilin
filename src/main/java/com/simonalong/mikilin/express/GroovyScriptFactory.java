@@ -32,7 +32,7 @@ class GroovyScriptFactory {
 
     private Class<Script> getScript(String key) {
         // 压缩脚本节省空间
-        String encodeStr = EncryptUtil.SHA256(key);
+        String encodeStr = EncryptUtil.sha256(key);
         if (scriptCache.containsKey(encodeStr)) {
             return scriptCache.get(encodeStr);
         } else {
