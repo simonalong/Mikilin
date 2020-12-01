@@ -3,13 +3,11 @@ package com.simonalong.mikilin.spring;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
 
 /**
  * @author shizi
  * @since 2020/6/25 11:45 AM
  */
-@Service
 public class MkSpringBeanContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;

@@ -1,19 +1,16 @@
 package com.simonalong.mikilin.spring;
 
-import com.alibaba.fastjson.JSON;
 import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.MkValidators;
 import com.simonalong.mikilin.annotation.AutoCheck;
 import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.util.ExceptionUtil;
-import com.simonalong.mikilin.util.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
@@ -27,7 +24,6 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
-@Component
 public class MkAop {
 
     /**
