@@ -1,11 +1,13 @@
 package com.simonalong.mikilin.match;
 
 import com.simonalong.mikilin.annotation.Matcher;
+import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.match.matcher.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -61,7 +63,7 @@ public class FieldMatchManager {
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
-                    setLastErrMsg(context, m.getBlackMsg(), value);
+                    setLastErrMsg(object, context, m.getBlackMsg(), value);
                 } else {
                     context.clear();
                 }
@@ -69,7 +71,7 @@ public class FieldMatchManager {
             } else {
                 if(whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    setLastErrMsg(context, m.getWhiteMsg(), value);
+                    setLastErrMsg(object, context, m.getWhiteMsg(), value);
                 }
             }
         }
@@ -81,21 +83,48 @@ public class FieldMatchManager {
         return false;
     }
 
-    private void setLastErrMsg(MkContext context, String sysErrMsg, Object value) {
+    private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value) {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
                 if (null == context.getLastErrMsg()) {
-                    if(null != value) {
-                        context.setLastErrMsg(errMsg.replaceAll("#current", value.toString()));
-                    } else {
-                        context.setLastErrMsg(errMsg.replaceAll("#current", "null"));
-                    }
+                    context.setLastErrMsg(parseErrMsg(object, value));
                 }
             } else {
                 if (null == context.getLastErrMsg()) {
                     context.setLastErrMsg(sysErrMsg);
                 }
             }
+        }
+    }
+
+
+    @SuppressWarnings("all")
+    private String parseErrMsg(Object object, Object value) {
+        String result = "";
+        String regex = "(#root)\\.(\\w+)";
+        java.util.regex.Matcher m = Pattern.compile(regex).matcher(errMsg);
+        while (m.find()) {
+            String fieldName = m.group(2);
+            Object fieldValue = getFieldValue(fieldName, object);
+
+            result = errMsg.replaceAll("#root." + fieldName, fieldValue.toString());
+        }
+
+        if(null != value) {
+            result.replaceAll("#current", value.toString());
+        } else {
+            result.replaceAll("#current", "null");
+        }
+        return result;
+    }
+
+    private Object getFieldValue(String fieldName, Object object) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(object);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new MkException(e);
         }
     }
 

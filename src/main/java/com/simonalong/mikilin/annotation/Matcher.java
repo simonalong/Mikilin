@@ -146,7 +146,7 @@ public @interface Matcher {
     String customize() default "";
 
     /**
-     * 核查失败后的返回语句，其中提供 #current 替换符，在打印的时候会替换当前修饰的属性的值
+     * 核查失败后的返回语句，其中提供 #current和#root.xxx（xxx为对应属性所在对象的其他属性名） 替换符，在打印的时候会替换当前修饰的属性的值
      *
      * @return 核查失败后返回的语句
      */
