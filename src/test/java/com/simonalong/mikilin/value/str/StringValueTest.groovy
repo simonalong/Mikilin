@@ -220,6 +220,6 @@ class StringValueTest extends Specification {
         emptyStr | result
         "a"      | true
         "b"      | true
-        ""       | false
+        "c"      | false
     }
 }

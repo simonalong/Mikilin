@@ -16,7 +16,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ObjectUtil {
 
-    private static final String NULL_STR = "null";
+    private final String NULL_STR = "null";
 
     /**
      * 将对象的数据，按照cls类型进行转换
@@ -60,7 +60,7 @@ public class ObjectUtil {
             return null;
         }
         if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (!collection.isEmpty()) {
                 Iterator<?> iterator = collection.iterator();
                 if (iterator.hasNext()) {

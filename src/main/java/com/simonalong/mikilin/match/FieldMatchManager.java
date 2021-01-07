@@ -97,10 +97,8 @@ public class FieldMatchManager {
         }
     }
 
-
-    @SuppressWarnings("all")
     private String parseErrMsg(Object object, Object value) {
-        String result = "";
+        String result = errMsg;
         String regex = "(#root)\\.(\\w+)";
         java.util.regex.Matcher m = Pattern.compile(regex).matcher(errMsg);
         while (m.find()) {
@@ -111,9 +109,9 @@ public class FieldMatchManager {
         }
 
         if(null != value) {
-            result.replaceAll("#current", value.toString());
+            result = result.replaceAll("#current", value.toString());
         } else {
-            result.replaceAll("#current", "null");
+            result = result.replaceAll("#current", "null");
         }
         return result;
     }
