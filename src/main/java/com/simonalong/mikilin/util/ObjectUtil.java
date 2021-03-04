@@ -2,6 +2,8 @@ package com.simonalong.mikilin.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Iterator;
@@ -79,5 +81,24 @@ public class ObjectUtil {
             }
             return new AbstractMap.SimpleEntry<>(object, object.getClass());
         }
+    }
+
+    public boolean isEmpty(Object object) {
+        if (object instanceof String) {
+            String str = (String) object;
+            return "".equals(str) || "null".equals(str) || "undefined".equals(str);
+        } else if (object instanceof Map) {
+            Map<?,?> map = (Map<?,?>) object;
+            return CollectionUtil.isEmpty(map);
+        } else if (object instanceof Collection) {
+            Collection<?> collection = (Collection<?>) object;
+            return CollectionUtil.isEmpty(collection);
+        } else {
+            return object == null;
+        }
+    }
+
+    public String getMethodCanonicalName(Method method) {
+        return MessageFormat.format("{0}", method.toGenericString());
     }
 }

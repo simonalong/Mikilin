@@ -13,7 +13,7 @@ import java.lang.annotation.*;
  * @since 2019/3/7 下午9:47
  */
 @Repeatable(Matchers.class)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Matcher {
 

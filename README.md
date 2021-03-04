@@ -370,5 +370,31 @@ public class DeployController {
 }
 ```
 
+#### 15.核查参数
+version >= v1.6.3
+
+注解`@Matcher`和`@Matchers`除了可以修饰Field类型外，也可以修饰函数的入参
+如下示例
+```java
+@Slf4j
+@AutoCheck
+@RequestMapping("/api/test/mikilin")
+@RestController
+public class TestController {
+
+    @PostMapping("fun1")
+    public String fun1(
+        @Matcher(value = {"song", "zhou"}) String name,
+        @Matcher(range = "[0, 3]") Integer age
+    ) {
+        return name + "-" + age;
+    }
+}
+```
+
 ## 详细介绍 
 对于详细内容介绍，请见文档[Mikilin说明文档](https://www.yuque.com/simonalong/mikilin)
+
+## 技术咨询
+目前咨询人数不多，暂时没有建群，有需求请添加微信
+zhoumo187108

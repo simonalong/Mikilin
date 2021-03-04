@@ -23,7 +23,7 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
     /**
      * 表达式中的变量和实际的变量名字的对应
      */
-    private Map<String, String> fieldNameMap = new HashMap<>(6);
+    private final Map<String, String> fieldNameMap = new HashMap<>(6);
     /**
      * 判决对象
      */
@@ -36,7 +36,7 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
      * 表达式
      */
     private String express;
-    private Field currentField;
+    private String objectName;
 
     @Override
     public boolean match(Object object, String name, Object value) {
@@ -54,17 +54,17 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
         return null == predicate;
     }
 
-    public static ConditionMatch build(Field field, String obj) {
+    public static ConditionMatch build(String objectName, String obj) {
         if (null == obj || "".equals(obj)) {
             return null;
         }
 
         ConditionMatch matcher = new ConditionMatch();
         matcher.express = obj;
-        matcher.currentField = field;
+        matcher.objectName = objectName;
         matcher.parser = new ExpressParser();
         matcher.predicate = (root, current) -> {
-            matcher.parser.addBinding(matcher.parseConditionExpress(matcher.express, root, matcher.currentField, current));
+            matcher.parser.addBinding(matcher.parseConditionExpress(matcher.express, root, matcher.objectName, current));
             return matcher.parser.parse("import static java.lang.Math.*\n", matcher.rmvfix(matcher.express));
         };
         return matcher;
@@ -75,26 +75,28 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
      *
      * @param express 表达式
      * @param root 当前属性所在的对象
-     * @param currentField 当前属性
+     * @param objectName 当前对象名字
      * @param current 当前属性的值
      * @return 返回对应的替换的数据映射
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Maps parseConditionExpress(String express, Object root, Field currentField, Object current) {
+    private Maps parseConditionExpress(String express, Object root, String objectName, Object current) {
         Maps maps = Maps.of();
-        String regex = "(#root)\\.(\\w+)";
-        java.util.regex.Matcher m = Pattern.compile(regex).matcher(express);
-        while (m.find()) {
-            String fieldFullName = m.group();
-            Object fieldValue = getFieldValue(fieldFullName, root);
-            String rmvFieldName = rmvfix(fieldFullName);
-            maps.put(rmvFieldName, fieldValue);
-            fieldNameMap.put(fieldFullName, rmvFieldName);
+        if (null != root) {
+            String regex = "(#root)\\.(\\w+)";
+            java.util.regex.Matcher m = Pattern.compile(regex).matcher(express);
+            while (m.find()) {
+                String fieldFullName = m.group();
+                Object fieldValue = getFieldValue(fieldFullName, root);
+                String rmvFieldName = rmvfix(fieldFullName);
+                maps.put(rmvFieldName, fieldValue);
+                fieldNameMap.put(fieldFullName, rmvFieldName);
+            }
         }
 
         if (express.contains(CURRENT)) {
             maps.put(rmvfix(CURRENT), current);
-            fieldNameMap.put(CURRENT, currentField.getName());
+            fieldNameMap.put(CURRENT, objectName);
         }
 
         return maps;

@@ -3,6 +3,7 @@ package com.simonalong.mikilin.match.matcher;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.util.ObjectUtil;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,6 +52,23 @@ public class ValueMath extends AbstractBlackWhiteMatch {
         valueMath.setValues(Arrays.stream(values).map(i -> {
             if (null != i) {
                 return ObjectUtil.cast(field.getType(), i);
+            } else {
+                return null;
+            }
+        }).collect(Collectors.toSet()));
+
+        return valueMath;
+    }
+
+    public static ValueMath build(Parameter parameter, String[] values) {
+        if (null == values || 0 == values.length) {
+            return null;
+        }
+
+        ValueMath valueMath = new ValueMath();
+        valueMath.setValues(Arrays.stream(values).map(i -> {
+            if (null != i) {
+                return ObjectUtil.cast(parameter.getType(), i);
             } else {
                 return null;
             }
