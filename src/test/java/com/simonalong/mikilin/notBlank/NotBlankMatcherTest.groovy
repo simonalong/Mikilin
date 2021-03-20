@@ -28,7 +28,7 @@ class NotBlankMatcherTest extends Specification {
         "a"  | null | true
         null | null | false
         null | 5    | false
-        ""   | 3    | true
+        ""   | 3    | false
         "a"  | 3    | true
     }
 

@@ -64,7 +64,7 @@ public class FieldMatchManager {
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
-                    setLastErrMsg(object, context, m.getBlackMsg(), value);
+                    setLastErrMsg(object, context, m.getBlackMsg(), value, name);
                 } else {
                     context.clear();
                 }
@@ -72,7 +72,7 @@ public class FieldMatchManager {
             } else {
                 if(whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    setLastErrMsg(object, context, m.getWhiteMsg(), value);
+                    setLastErrMsg(object, context, m.getWhiteMsg(), value, name);
                 }
             }
         }
@@ -94,7 +94,7 @@ public class FieldMatchManager {
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
-                    setLastErrMsg(null, context, m.getBlackMsg(), value);
+                    setLastErrMsg(null, context, m.getBlackMsg(), value, name);
                 } else {
                     context.clear();
                 }
@@ -102,7 +102,7 @@ public class FieldMatchManager {
             } else {
                 if(whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    setLastErrMsg(null, context, m.getWhiteMsg(), value);
+                    setLastErrMsg(null, context, m.getWhiteMsg(), value, name);
                 }
             }
         }
@@ -114,15 +114,15 @@ public class FieldMatchManager {
         return false;
     }
 
-    private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value) {
+    private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value, String fieldName) {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
                 if (null == context.getLastErrMsg()) {
-                    context.setLastErrMsg(parseErrMsg(object, value));
+                    context.setLastErrMsg("属性(" + fieldName + ")核查失败：" + parseErrMsg(object, value));
                 }
             } else {
                 if (null == context.getLastErrMsg()) {
-                    context.setLastErrMsg(sysErrMsg);
+                    context.setLastErrMsg("属性(" + fieldName + ")核查失败：" + sysErrMsg);
                 }
             }
         }
