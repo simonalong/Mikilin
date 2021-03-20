@@ -3,8 +3,14 @@ package com.simonalong.mikilin.match.matcher;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.express.ExpressParser;
 import com.simonalong.mikilin.match.Builder;
+import com.simonalong.mikilin.util.LocalDateTimeUtil;
 import com.simonalong.mikilin.util.Maps;
+
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +18,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
 import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.syntax.Numbers;
@@ -53,11 +61,15 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 全是数字匹配（整数，浮点数，0，负数）
      */
-    private Pattern digitPattern = Pattern.compile("^(-?[1-9]\\d*)|0|(-?[1-9]\\d*.\\d*)|(0.\\d*[1-9]\\d*)|(0?.0+)$");
+    private Pattern digitPattern = Pattern.compile("^[-+]?([1-9]+\\d*|0\\.(\\d*)|[1-9]\\d*\\.(\\d*))$");
     /**
      * 时间或者数字范围匹配
      */
     private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.*),(\\s)*(.*)(\\)|\\]){1}$");
+    /**
+     * 时间的前后计算匹配：(-|+)yMd(h|H)msS
+     */
+    private Pattern timePlusPattern = Pattern.compile("^([-+])?(\\d*y)?(\\d*M)?(\\d*d)?(\\d*H|\\d*h)?(\\d*m)?(\\d*s)?$");
     /**
      * 判决对象
      */
@@ -87,13 +99,18 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     public boolean match(Object object, String name, Object value) {
         if (value instanceof Number) {
             if (dateFlag) {
-                try {
-                    value = new Date(Number.class.cast(value).longValue());
-                } catch (Exception ignore) {}
+                return match(name, value, RangeDataType.DATE_TYPE);
+            } else {
+                return match(name, value, RangeDataType.NUM_TYPE);
             }
-            return match(name, value, RangeDataType.NUM_TYPE);
         } else if (value instanceof Date) {
-            return match(name, value, RangeDataType.DATE_TYPE);
+            return match(name, ((Date) value).getTime(), RangeDataType.DATE_TYPE);
+        } else if (value instanceof LocalDateTime) {
+            return match(name, LocalDateTimeUtil.localDateTimeToLong((LocalDateTime)value), RangeDataType.DATE_TYPE);
+        } else if (value instanceof LocalDate) {
+            return match(name, LocalDateTimeUtil.localDateToLong((LocalDate) value), RangeDataType.DATE_TYPE);
+        } else if (value instanceof Timestamp) {
+            return match(name, LocalDateTimeUtil.timestampToLong((Timestamp) value), RangeDataType.DATE_TYPE);
         } else if (value instanceof Collection) {
             return match(name, Collection.class.cast(value).size(), RangeDataType.COLLECTION_TYPE);
         } else if (value instanceof CharSequence) {
@@ -115,21 +132,40 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         }
     }
 
-    private Object format(Object value, RangeDataType dataType){
-        switch (dataType){
-            case NUM_TYPE:{
+    private Object format(Object value, RangeDataType dataType) {
+        switch (dataType) {
+            case NUM_TYPE: {
                 return "值 " + value;
             }
-            case DATE_TYPE:{
-                return "时间对应的值 " + value;
+            case DATE_TYPE: {
+                String time = null;
+                if (value instanceof Date) {
+                    time = LocalDateTimeUtil.dateToString((Date) value);
+                } else if (value instanceof Timestamp) {
+                    time = LocalDateTimeUtil.timestampToString((Timestamp) value);
+                } else if (value instanceof LocalDateTime) {
+                    time = LocalDateTimeUtil.localDateTimeToString((LocalDateTime) value);
+                } else if (value instanceof LocalDate) {
+                    time = LocalDateTimeUtil.localDateToString((LocalDate) value);
+                } else if (value instanceof Long) {
+                    time = LocalDateTimeUtil.longToString((Long) value);
+                } else if (value instanceof LocalTime) {
+                    time = LocalDateTimeUtil.localTimeToString((LocalTime) value);
+                }
+
+                if (null != time) {
+                    return "时间对应的值 " + time;
+                }
+                return "";
             }
-            case COLLECTION_TYPE:{
+            case COLLECTION_TYPE: {
                 return "集合个数 " + value;
             }
-            case CHAR_SEQUENCE:{
+            case CHAR_SEQUENCE: {
                 return "字符个数 " + value;
             }
-            default:return "";
+            default:
+                return "";
         }
     }
 
@@ -165,8 +201,17 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
 
         predicate = o -> {
             parser.addBinding(Maps.of("o", o));
-            if (null == begin) {
-                if (null == end) {
+
+            Object beginFinal = begin;
+            Object endFinal = end;
+            if (rangeEntity.getDynamicTime()) {
+                beginFinal = rangeEntity.generateBegin();
+                endFinal = rangeEntity.generateEnd();
+                parser.addBinding(Maps.of("begin", beginFinal, "end", endFinal));
+            }
+
+            if (null == beginFinal) {
+                if (null == endFinal) {
                     return true;
                 } else {
                     if (RIGHT_BRACKET_EQUAL.equals(endAli)) {
@@ -176,7 +221,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                     }
                 }
             } else {
-                if (null == end) {
+                if (null == endFinal) {
                     if (LEFT_BRACKET_EQUAL.equals(beginAli)) {
                         return parser.parse("begin <= o");
                     } else if (LEFT_BRACKET.equals(beginAli)) {
@@ -224,20 +269,35 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
 
             // 如果是数字，则按照数字解析
             if (digitPattern.matcher(begin).matches() || digitPattern.matcher(end).matches()) {
-                return RangeEntity.build(beginAli, parseNum(begin), parseNum(end), endAli);
+                return RangeEntity.build(beginAli, parseNum(begin), parseNum(end), endAli, false);
+            } else if (timePlusPattern.matcher(begin).matches() || timePlusPattern.matcher(end).matches()) {
+                // 解析动态时间
+                DynamicTimeNum timeNumBegin = parseDynamicTime(begin);
+                DynamicTimeNum timeNumEnd = parseDynamicTime(end);
+
+                if (null != timeNumBegin && null != timeNumEnd && timeNumBegin.compareTo(timeNumEnd) > 0) {
+                    log.error("时间的动态时间不正确，动态起点时间不应该大于动态终点时间");
+                    return null;
+                }
+
+                if (null == timeNumBegin && null == timeNumEnd) {
+                    log.error("动态时间解析失败");
+                    return null;
+                }
+                return RangeEntity.build(beginAli, timeNumBegin, timeNumEnd, endAli);
             } else {
                 Date beginDate = parseDate(begin);
                 Date endDate = parseDate(end);
                 if (null != beginDate && null != endDate) {
-                    if(beginDate.compareTo(endDate) > 0){
+                    if (beginDate.compareTo(endDate) > 0) {
                         log.error("时间的范围起始点不正确，起点时间不应该大于终点时间");
                         return null;
                     }
-                    return RangeEntity.build(beginAli, beginDate, endDate, endAli);
-                } else if(null == beginDate && null == endDate){
+                    return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
+                } else if (null == beginDate && null == endDate) {
                     log.error("range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
                 } else {
-                    return RangeEntity.build(beginAli, beginDate, endDate, endAli);
+                    return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
                 }
                 return null;
             }
@@ -250,9 +310,26 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         return null;
     }
 
+    private DynamicTimeNum parseDynamicTime(String data) {
+        if (null == data || "".equals(data)) {
+            return null;
+        }
+        java.util.regex.Matcher matcher = timePlusPattern.matcher(data);
+        if (matcher.find()) {
+            return new DynamicTimeNum().setPlusOrMinus(matcher.group(1))
+                .setYears(matcher.group(2))
+                .setMonths(matcher.group(3))
+                .setDays(matcher.group(4))
+                .setHours(matcher.group(5))
+                .setMinutes(matcher.group(6))
+                .setSeconds(matcher.group(7));
+        }
+        return null;
+    }
+
     private Number parseNum(String data) {
         try {
-            if (data.equals(NULL_STR) || "".equals(data)){
+            if (data.equals(NULL_STR) || "".equals(data)) {
                 return null;
             }
             return Numbers.parseDecimal(data);
@@ -264,7 +341,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 解析时间
      * <p>
-     *     时间格式为如下
+     * 时间格式为如下
      * <ul>
      * <li>yyyy
      * <li>yyyy-MM
@@ -280,8 +357,8 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
      */
     private Date parseDate(String data) {
         data = data.trim();
-        data = data.replace('\'',' ').trim();
-        if (StringUtils.isEmpty(data) || NULL_STR.equals(data)){
+        data = data.replace('\'', ' ').trim();
+        if (StringUtils.isEmpty(data) || NULL_STR.equals(data)) {
             return null;
         }
         if (data.equals(NOW)) {
@@ -321,10 +398,10 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     private RangeEntity parseRangeDate(String data) {
         if (data.equals(PAST)) {
             // 过去，则范围为(null, now)
-            return RangeEntity.build(LEFT_BRACKET, null, new Date(), RIGHT_BRACKET);
+            return RangeEntity.build(LEFT_BRACKET, null, System.currentTimeMillis(), RIGHT_BRACKET, true);
         } else if (data.equals(FUTURE)) {
             // 未来，则范围为(now, null)
-            return RangeEntity.build(LEFT_BRACKET, new Date(), null, RIGHT_BRACKET);
+            return RangeEntity.build(LEFT_BRACKET, System.currentTimeMillis(), null, RIGHT_BRACKET, true);
         }
         return null;
     }
@@ -354,13 +431,119 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         Object end;
         String endAli = null;
         Boolean dateFlag = false;
+        Boolean dynamicTime = false;
 
-        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli) {
+        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli, Boolean dateFlag) {
             RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
-            if ((begin instanceof Date) || (end instanceof Date)){
-                result.setDateFlag(true);
-            }
+            result.setDateFlag(dateFlag);
             return result;
+        }
+
+        public static RangeEntity build(String beginAli, DynamicTimeNum begin, DynamicTimeNum end, String endAli) {
+            RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
+            return result.setDynamicTime(true);
+        }
+
+        public Object generateBegin() {
+            if (null != begin) {
+                DynamicTimeNum timeNum = DynamicTimeNum.class.cast(begin);
+                if (timeNum.plusOrMinus) {
+                    return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), timeNum.getYears(), timeNum.getMonths(), timeNum.getDays(), timeNum.getHours(),
+                        timeNum.getMinutes(), timeNum.getSeconds());
+                } else {
+                    return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), -timeNum.getYears(), -timeNum.getMonths(), -timeNum.getDays(), -timeNum.getHours(),
+                        -timeNum.getMinutes(), -timeNum.getSeconds());
+                }
+            }
+            return null;
+        }
+
+        public Object generateEnd() {
+            if (null != end) {
+                DynamicTimeNum timeNum = DynamicTimeNum.class.cast(end);
+                if (timeNum.plusOrMinus) {
+                    return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), timeNum.getYears(), timeNum.getMonths(), timeNum.getDays(), timeNum.getHours(),
+                        timeNum.getMinutes(), timeNum.getSeconds());
+                } else {
+                    return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), -timeNum.getYears(), -timeNum.getMonths(), -timeNum.getDays(), -timeNum.getHours(),
+                        -timeNum.getMinutes(), -timeNum.getSeconds());
+                }
+            }
+            return null;
+        }
+    }
+
+    @Getter
+    private static class DynamicTimeNum implements Comparable<DynamicTimeNum> {
+
+        /**
+         * 是增加（正数）还是减少（负数）：true-增加，false-减少
+         */
+        private Boolean plusOrMinus = true;
+        private Integer years;
+        private Integer months;
+        private Integer days;
+        private Integer hours;
+        private Integer minutes;
+        private Integer seconds;
+
+        public Long generateTimeMillis() {
+            if (plusOrMinus) {
+                return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), years, months, days, hours, minutes, seconds);
+            } else {
+                return LocalDateTimeUtil.plusTime(System.currentTimeMillis(), -years, -months, -days, -hours, -minutes, -seconds);
+            }
+        }
+
+        public DynamicTimeNum setPlusOrMinus(String plusOrMinusStr) {
+            if (null != plusOrMinusStr && !"".equals(plusOrMinusStr)) {
+                if ("-".equals(plusOrMinusStr)) {
+                    plusOrMinus = false;
+                }
+            }
+            return this;
+        }
+
+        public DynamicTimeNum setYears(String yearsStr) {
+            this.years = doGetNum(yearsStr);
+            return this;
+        }
+
+        public DynamicTimeNum setMonths(String monthsStr) {
+            this.months = doGetNum(monthsStr);
+            return this;
+        }
+
+        public DynamicTimeNum setDays(String daysStr) {
+            this.days = doGetNum(daysStr);
+            return this;
+        }
+
+        public DynamicTimeNum setHours(String hoursStr) {
+            this.hours = doGetNum(hoursStr);
+            return this;
+        }
+
+        public DynamicTimeNum setMinutes(String minutesStr) {
+            this.minutes = doGetNum(minutesStr);
+            return this;
+        }
+
+        public DynamicTimeNum setSeconds(String secondsStr) {
+            this.seconds = doGetNum(secondsStr);
+            return this;
+        }
+
+        private Integer doGetNum(String dataStr) {
+            if (null != dataStr && !"".equals(dataStr)) {
+                return Integer.valueOf(dataStr.substring(0, dataStr.length() - 1));
+            }
+            return 0;
+        }
+
+        @Override
+        public int compareTo(DynamicTimeNum o) {
+            return generateTimeMillis().compareTo(o.generateTimeMillis());
         }
     }
 

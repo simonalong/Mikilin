@@ -17,6 +17,9 @@ public class ModelMatch extends AbstractBlackWhiteMatch implements Builder<Model
 
     @Override
     public boolean match(Object object, String name, Object value) {
+        if (null == value) {
+            return false;
+        }
         if (!ClassUtil.isCheckedType(value.getClass())) {
             setWhiteMsg("属性 {0} 的值不是基本待核查类型", name);
             return false;

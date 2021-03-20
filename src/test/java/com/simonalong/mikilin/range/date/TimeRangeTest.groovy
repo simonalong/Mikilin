@@ -1,11 +1,13 @@
 package com.simonalong.mikilin.range.date
 
 import com.simonalong.mikilin.MkValidators
+import com.simonalong.mikilin.util.LocalDateTimeUtil
 import org.junit.Assert
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.regex.Pattern
 
 /**
  * @author zhouzhenyong
@@ -119,10 +121,10 @@ class TimeRangeTest extends Specification {
 
         where:
         time  | result
-        200   | true
-        100   | true
-        99    | false
-        30001 | false
+        200L   | true
+        100L   | true
+        99L    | false
+        30001L | false
     }
 
     /**
@@ -213,7 +215,150 @@ class TimeRangeTest extends Specification {
         getDate(2019, 8, 01, 00, 00, 00).getTime()  | true
     }
 
+    /**
+     * 测试时间计算的时间范围合法性 (-1d,)：过去一天内
+     * @return
+     */
+    def "测试时间变动test10"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
 
+        expect:
+        boolean actResult = MkValidators.check("test10", range)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                            | time                                      | result
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 1, 0, 0, 0)   | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, 1, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 0, -1, 0, 0)  | getDatePlus(0, 0, 0, -1, 0, 0).getTime()  | true
+        getDatePlus(0, 0, -1, -1, 0, 0) | getDatePlus(0, 0, 0, -1, 0, 0).getTime()  | false
+        getDatePlus(0, 0, 0, 0, 1, 0)   | getDatePlus(0, 0, 0, -1, 0, 0).getTime()  | true
+        getDatePlus(0, 0, 0, -1, 0, 0)  | getDatePlus(0, 0, -1, -1, 0, 0).getTime() | false
+        getDatePlus(0, 0, 0, -1, 0, 0)  | getDatePlus(0, 0, 0, 1, 0, 0).getTime()   | true
+    }
+
+    /**
+     * 测试时间计算的时间范围合法性(-2h, +4d)：过去2小时以及未来4天内，时间(-3d2h,)：过去3天2小时内
+     * @return
+     */
+    def "测试时间变动test11"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time)
+
+        expect:
+        boolean actResult = MkValidators.check("test11", range)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                            | time                                      | result
+        getDatePlus(0, 0, 0, 0, -1, 0)  | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 0, -3, 0, 0)  | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | false
+        getDatePlus(0, 0, 0, -2, -1, 0) | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | false
+        getDatePlus(0, 0, 0, -2, 1, 0)  | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 3, 0, 0, 0)   | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 5, 0, 0, 0)   | getDatePlus(0, 0, 0, 0, 0, 0).getTime()   | false
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, 1, 0, 0, 0).getTime()   | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, -1, 0, 0, 0).getTime()  | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, -3, -3, 0, 0).getTime() | false
+        getDatePlus(0, 0, 0, 0, 0, 0)   | getDatePlus(0, 0, -3, -1, 0, 0).getTime() | true
+    }
+
+    /**
+     * 测试时间计算的时间范围合法性(-4d, -2d)：过去4小时到过去两天内
+     * @return
+     */
+    def "测试时间变动test12"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date)
+
+        expect:
+        boolean actResult = MkValidators.check("test12", range)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                            | result
+        getDatePlus(0, 0, 0, 0, -1, 0)  | true
+        getDatePlus(0, 0, 0, -3, 0, 0)  | false
+        getDatePlus(0, 0, 0, -2, -1, 0) | false
+        getDatePlus(0, 0, 0, -2, 1, 0)  | true
+        getDatePlus(0, 0, 3, 0, 0, 0)   | true
+        getDatePlus(0, 0, 5, 0, 0, 0)   | false
+        getDatePlus(0, 0, 0, 0, 0, 0)   | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | true
+        getDatePlus(0, 0, 0, 0, 0, 0)   | true
+    }
+
+    /**
+     * 测试时间计算的时间范围合法性(-4d, -2d)：过去4小时到过去两天内
+     * @return
+     */
+    def "测试时间变动test13"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date)
+
+        expect:
+        boolean actResult = MkValidators.check("test13", range)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                            | result
+        getDatePlus(0, 0, 0, 0, 0, 0)   | false
+        getDatePlus(0, 0, -1, 0, 0, 0)  | false
+        getDatePlus(0, 0, -2, 1, 0, 0)  | false
+        getDatePlus(0, 0, -2, -1, 0, 0) | true
+        getDatePlus(0, 0, -3, 0, 0, 0)  | true
+        getDatePlus(0, 0, -4, 1, 0, 0)  | true
+        getDatePlus(0, 0, -4, -1, 0, 0) | false
+        getDatePlus(0, 0, -5, 0, 0, 0)  | false
+    }
+
+    /**
+     * 测试时间计算的时间范围合法性(-4y2M5d3h2m3s,)：过去4年2个月5天3小时2分钟3秒内
+     * @return
+     */
+    def "测试时间变动test14"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date)
+
+        expect:
+        boolean actResult = MkValidators.check("test14", range)
+        if (!actResult) {
+            println MkValidators.getErrMsg()
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                                | result
+        getDatePlus(0, 0, 0, 0, 0, 0)       | true
+        getDatePlus(-4, -2, -5, -3, -2, -2) | true
+        getDatePlus(-4, -2, -5, -3, -2, -3) | false
+        getDatePlus(-4, -2, -5, -3, -3, 0)  | false
+        getDatePlus(-5, 0, 0, 0, 0, 0)      | false
+    }
+
+    def getDatePlus(def years, def months, def days, def hours, def minutes, def seconds) {
+        return LocalDateTimeUtil.plusTime(new Date(), years, months, days, hours, minutes, seconds);
+    }
 
     def getDate(def year, def month, def day, def hour, def minute, def second) {
         return Date.from(LocalDateTime.of(year, month, day, hour, minute, second).atZone(ZoneId.systemDefault()).toInstant())
