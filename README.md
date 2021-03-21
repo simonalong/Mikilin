@@ -371,7 +371,7 @@ public class DeployController {
 ```
 
 #### 15.核查参数
-version >= v1.6.3
+version >= v1.6.1
 
 注解`@Matcher`和`@Matchers`除了可以修饰Field类型外，也可以修饰函数的入参
 如下示例
@@ -389,6 +389,23 @@ public class TestController {
     ) {
         return name + "-" + age;
     }
+}
+```
+
+#### 16.时间的计算
+version >= v1.6.1
+
+就是对range属性修饰的时间的扩充，比如匹配前3天2小时这种，就可以使用range="(-3d2h,)"，表示匹配当前时间往前推3天两个小时后的所有时间
+
+如下示例
+```java
+@Data
+@Accessors(chain = true)
+public class RangeTimeEntity1 {
+
+    // 过去四年2月5天3小时2分钟3秒
+    @Matcher(range = "(-4y2M5d3h2m3s,)")
+    private Date date;
 }
 ```
 

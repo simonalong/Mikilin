@@ -107,6 +107,18 @@ public @interface Matcher {
      * yyyy-MM-dd HH:mm:ss
      * yyyy-MM-dd HH:mm:ss.SSS
      * </li>
+     * <li>
+     * 时间范围类型计算，比如(-4y2M,)：表示4年2个月前之后的所有时间，其中支持的字段为
+     * <p>
+     * -/+：表示往前推还是往后推<br/>
+     * y：年<br/>
+     * M：月<br/>
+     * d：天<br/>
+     * H（h）：小时<br/>
+     * m：分钟<br/>
+     * s：秒<br/>
+     * </p>
+     * </li>
      * </ul>
      *
      * @return 返回的是范围的字符串，比如："[0,1]"。具体的请看上面说明
