@@ -12,6 +12,17 @@
 - 高性能：所有的核查均是内存直接调用，第一次构建匹配树后，后面就无须重建
 - 可扩展：针对一些不好核查的属性，可以通过自定义匹配器属性，也可以使用spring的Bean作为系统匹配器类
 
+## 版本依赖
+jdk：v1.8.0_101 <br/>
+序列化框架：fastjson：v1.2.46<br/>
+测试框架：spock：v1.2-groovy-2.4<br/>
+日志框架：slf4j：1.7.25<br/>
+脚本引擎：groovy：v2.4.8<br/>
+lombok（可选）：v1.18.0<br/>
+spring（可选）：v5.1.5.RELEASE<br/>
+切面框架（可选）：aspectj：v1.9.5<br/>
+javax扩展（可选）：tomcat-embed-core：v9.0.36<br/>
+
 ## 使用文档
 [Mikilin文档](https://persimon.gitbook.io/mikilin/)
 
@@ -30,7 +41,7 @@
 ```
 
 ## 使用 
-该框架使用极其简单（直接参考spring-validate框架用法即可），如下：给需要拦截的属性添加注解即可
+该框架使用极其简单（直接参考spring-validate框架用法即可），如下：给需要拦截的属性添加注解即可，所有的功能几乎都在注解`@Matcher`上
 ```java
 @Data
 @Accessors(chain = true)
@@ -43,83 +54,88 @@ public class WhiteAEntity {
 }
 ```
 
-#### 硬编码
-在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
-```java
-import lombok.SneakyThrows;
-
-@Test
-@SneakyThrows
-public void test1(){
-    WhiteAEntity whiteAEntity = new WhiteAEntity();
-    whiteAEntity.setName("d");
-
-    // 可以使用带有返回值的核查
-    if (!MkValidators.check(whiteAEntity)) {
-        // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
-        System.out.println(MkValidators.getErrMsgChain());
-        // 输出：输入的值不符合需求
-        System.out.println(MkValidators.getErrMsg());
-    }
-
-    // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式
-    MkValidators.validate(whiteAEntity);
-}
-```
-#### 自动核查
+#### springBoot项目使用
 版本：>= 1.6.0
-在1.6.0版本中添加`@AutoCheck`注解，修饰类和方法，会自动核查方法或者类的方法中的参数，不符合需求，则会上报异常`MkException`
+在1.6.0版本中添加`@EnableMikilin`和`@AutoCheck`注解，前者是启用核查框架，后者修饰类和方法，会自动核查方法或者类的方法中的参数，不符合需求，则会上报异常`MkException`
+典型用法如下
 ```java
-/**
- * 自动核查注解
- *
- * <p> 针对修饰的类和方法中的参数进行核查
- *     <ul>
- *         <li>1.修饰类：则会核查类下面所有函数的所有参数</li>
- *         <li>2.修饰函数：则会核查函数对应的所有参数</li>
- *     </ul>
- * @author shizi
- * @since 2020/6/25 11:20 AM
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface AutoCheck {
+import com.isyscore.isc.mikilin.annotation.EnableMikilin;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-    /**
-     * 同{@link AutoCheck#group()}
-     * @return 分组
-     */
-    String value() default MkConstant.DEFAULT_GROUP;
+// 添加启用注解
+@EnableMikilin
+@SpringBootApplication
+public class TestApplication {
 
-    /**
-     * 核查的分组
-     * @return 分组
-     */
-    String group() default MkConstant.DEFAULT_GROUP;
+    public static void main(String... args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
 }
 
 ```
-用法
+
+controller中使用
 ```java
+// 这里添加该注解
 @AutoCheck
 @RequestMapping("${api-prefix}/deploy")
 @RestController
-public class DeployController {
+public class TestController {
 
     //...
         
     /**
-     * 启动构建
+     * 测试
      */
-    @AutoCheck("startBuild")
-    @PutMapping("startBuild")
-    public Integer startBuild(@RequestBody AppIdReq appIdReq) {
+    @PutMapping("testFun")
+    public Integer testFun(@RequestBody TestReq testReq) {
         //...
     }
     //...
 }
 ```
+其中AppIdReq对应的类型中使用
+```java
+@Data
+public class TestReq {
+    
+    // 这里使用 @Matcher 注解进行匹配
+    @Matcher(range = "(0, 200)")
+    private String age;
+    
+    // 这里使用 @Matcher 注解进行匹配后拦截
+    @Matcher(value = {"zhou", "chen"}, accecpt=false)
+    private String name;
+}
+```
+
+#### 硬编码
+在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
+```java
+import lombok.SneakyThrows;
+class Test{
+
+    @Test
+    @SneakyThrows
+    public void test1(){
+        WhiteAEntity whiteAEntity = new WhiteAEntity();
+        whiteAEntity.setName("d");
+    
+        // 可以使用带有返回值的核查
+        if (!MkValidators.check(whiteAEntity)) {
+            // 输出：数据校验失败-->属性 name 的值 d 不在只可用列表 [null, a, b, c] 中-->类型 WhiteAEntity 核查失败
+            System.out.println(MkValidators.getErrMsgChain());
+            // 输出：输入的值不符合需求
+            System.out.println(MkValidators.getErrMsg());
+        }
+    
+        // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式
+        MkValidators.validate(whiteAEntity);
+    }
+}
+```
+
 # 二、常见场景用法
 以下场景均来自实际业务场景
 

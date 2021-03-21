@@ -7,7 +7,6 @@ import spock.lang.Specification
 
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.regex.Pattern
 
 /**
  * @author zhouzhenyong
