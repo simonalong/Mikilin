@@ -104,7 +104,7 @@ public class MkAop {
                     group = autoCheck.value();
                 }
 
-                // 如果是基本类型，则
+                // 如果是基本类型，则采用核查参数的方式
                 if (ClassUtil.isCheckedType(arg.getClass())) {
                     MkValidators.validate(group, currentMethod, parameters[index], arg);
                 } else {

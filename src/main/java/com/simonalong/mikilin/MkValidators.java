@@ -261,22 +261,22 @@ public final class MkValidators {
      * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
-        delegate.setGroup(group);
+        delegate.setParameter(group, object);
         try {
             return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } finally {
             // 防止threadLocal对应的group没有释放
-            delegate.clearGroup();
+            delegate.clear();
         }
     }
 
     private boolean check(String group, Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
-        delegate.setGroup(group);
+        delegate.setParameter(group, object);
         try {
             return delegate.available(object, method, parameter, whiteSet, blackSet);
         } finally {
             // 防止threadLocal对应的group没有释放
-            delegate.clearGroup();
+            delegate.clear();
         }
     }
 

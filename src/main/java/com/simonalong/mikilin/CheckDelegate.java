@@ -28,15 +28,16 @@ final class CheckDelegate {
         this.context = context;
     }
 
-    void setGroup(String group) {
+    void setParameter(String group, Object parameter) {
         context.clear();
+        context.setParameter(parameter);
         localGroup.set(group);
     }
 
     /**
      * 清理threadLocal保存的group
      */
-    void clearGroup() {
+    void clear() {
         localGroup.remove();
     }
 
