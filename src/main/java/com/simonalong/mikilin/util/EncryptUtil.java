@@ -17,7 +17,7 @@ public class EncryptUtil {
      * @param strText 待加密文本
      * @return 加密之后的文本
      */
-    public String SHA256(final String strText) {
+    public String sha256(final String strText) {
         return encrypt(strText, "SHA-256");
     }
 
@@ -26,7 +26,7 @@ public class EncryptUtil {
      * @param strText 待加密文本
      * @return 加密之后的文本
      */
-    public String SHA512(final String strText) {
+    public String sha512(final String strText) {
         return encrypt(strText, "SHA-512");
     }
 
@@ -35,7 +35,7 @@ public class EncryptUtil {
      * @param strText 待加密文本
      * @return 加密之后的文本
      */
-    public String MD5(final String strText){
+    public String md5(final String strText){
         return encrypt(strText, "MD5");
     }
 

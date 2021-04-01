@@ -18,7 +18,7 @@ public final class Maps<K, V> implements Serializable {
     private Maps() {}
 
     @Getter
-    private Map<K, V> dataMap = new HashMap<>();
+    private final Map<K, V> dataMap = new HashMap<>();
 
     /**
      * key-value-key-value...这种格式初始化map

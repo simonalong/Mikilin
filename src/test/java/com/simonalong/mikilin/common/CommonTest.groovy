@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/6/12 下午10:03
  */
-class CheckTest extends Specification {
+class CommonTest extends Specification {
 
     def "测试指定的属性name"() {
         given:

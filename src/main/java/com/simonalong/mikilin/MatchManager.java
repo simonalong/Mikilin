@@ -5,6 +5,7 @@ import com.simonalong.mikilin.match.FieldMatchManager;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.Maps;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +22,14 @@ final class MatchManager {
     /**
      * 存储对象和属性以及属性对应的匹配器的映射，key为类的全路径，二级key为类的属性名字，二级value为属性的多个判断核查器
      */
-    private Map<String, Map<String, List<FieldMatchManager>>> targetFieldMap;
+    private final Map<String, Map<String, List<FieldMatchManager>>> targetFieldMap;
 
     MatchManager() {
         targetFieldMap = new ConcurrentHashMap<>(16);
     }
 
     @SuppressWarnings("unchecked")
-    MatchManager addWhite(String clsCanonicalName, Field field, Matcher validValue, MkContext context) {
+    MatchManager addMatch(String clsCanonicalName, Field field, Matcher validValue, MkContext context) {
         targetFieldMap.compute(clsCanonicalName, (k, v) -> {
             if (null == v) {
                 List<FieldMatchManager> fieldMatchManagerList = new ArrayList<>();
@@ -42,6 +43,30 @@ final class MatchManager {
                         return fieldMatchManagerList;
                     } else {
                         v1.add(FieldMatchManager.buildFromValid(field, validValue, context));
+                        return v1;
+                    }
+                });
+                return v;
+            }
+        });
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    MatchManager addMatch(String clsCanonicalName, Parameter parameter, Matcher validValue, MkContext context) {
+        targetFieldMap.compute(clsCanonicalName, (k, v) -> {
+            if (null == v) {
+                List<FieldMatchManager> fieldMatchManagerList = new ArrayList<>();
+                fieldMatchManagerList.add(FieldMatchManager.buildFromValid(parameter, validValue, context));
+                return Maps.of(parameter.getName(), fieldMatchManagerList).build();
+            } else {
+                v.compute(parameter.getName(), (k1, v1) -> {
+                    if (null == v1) {
+                        List<FieldMatchManager> fieldMatchManagerList = new ArrayList<>();
+                        fieldMatchManagerList.add(FieldMatchManager.buildFromValid(parameter, validValue, context));
+                        return fieldMatchManagerList;
+                    } else {
+                        v1.add(FieldMatchManager.buildFromValid(parameter, validValue, context));
                         return v1;
                     }
                 });

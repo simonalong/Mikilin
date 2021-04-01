@@ -1,16 +1,20 @@
 package com.simonalong.mikilin.match.matcher;
 
+import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.JudgeException;
-import com.simonalong.mikilin.funcation.MultiPredicate;
 import com.simonalong.mikilin.match.MkContext;
 import com.simonalong.mikilin.util.SingleFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.*;
 import java.util.stream.Stream;
+
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,50 +26,60 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomizeMatch extends AbstractBlackWhiteMatch {
 
-    private Predicate<Object> valuePre = null;
-    private BiPredicate<Object, Object> objValuePre = null;
-    private BiPredicate<Object, Object> valueContextPre = null;
-    private MultiPredicate<Object, Object, MkContext> objValueContextPre = null;
+    @Setter
+    private Method targetMethod;
     private String judgeStr;
     private MkContext context;
 
+    /**
+     * 所属类的类型
+     */
+    @Setter
+    @Getter
+    private Class<?> belongToObjectClass;
+    /**
+     * 属性的类型
+     */
+    @Setter
+    @Getter
+    private Class<?> fieldClass;
+    @Setter
+    @Getter
+    private Object methodCallObject;
+
     @Override
     public boolean match(Object object, String name, Object value) {
-        if (null != valuePre) {
-            if (valuePre.test(value)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
-                return true;
-            } else {
-                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
-            }
-        } else if (null != valueContextPre) {
-            if (valueContextPre.test(value, context)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
-                return true;
-            } else {
-                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
-            }
-        } else if (null != objValuePre) {
-            if (objValuePre.test(object, value)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
-                return true;
-            } else {
-                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
-            }
-        } else if (null != objValueContextPre) {
-            if (objValueContextPre.test(object, value, context)) {
-                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
-                return true;
-            } else {
-                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
+        List<Object> parameterValueList = new ArrayList<>();
+        for (Class<?> parameterType : targetMethod.getParameterTypes()) {
+            if (MkContext.class.isAssignableFrom(parameterType)) {
+                parameterValueList.add(context);
+            } else if (null != belongToObjectClass && belongToObjectClass.isAssignableFrom(parameterType)) {
+                parameterValueList.add(object);
+            } else if (fieldClass.isAssignableFrom(parameterType)) {
+                parameterValueList.add(value);
             }
         }
+
+        try {
+            targetMethod.setAccessible(true);
+            Boolean result = (Boolean) targetMethod.invoke(methodCallObject, parameterValueList.toArray());
+            if (result) {
+                setBlackMsg("属性 {0} 的值 {1} 命中禁用条件回调 {2} ", name, value, judgeStr);
+            } else {
+                setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
+            }
+            return result;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error(MkConstant.LOG_PRE + "函数：{}执行失败", targetMethod.getName(), e);
+        }
+
+        setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
         return false;
     }
 
     @Override
     public boolean isEmpty() {
-        return null == valuePre && null == objValuePre && null == valueContextPre && null == objValueContextPre;
+        return null == targetMethod;
     }
 
     /**
@@ -74,108 +88,55 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
      * <p>
      * 过滤器可以有多种类型，根据参数的不同有不同的类型
      * <p>
-     * @param judge 回调判决，这里是类和对应的函数组成
+     *
+     * @param field   属性
+     * @param judge   回调判决，这里是类和对应的函数组成
      * @param context 上下文
      * @return 匹配器的判决器
      */
-    @SuppressWarnings("all")
-    public static CustomizeMatch build(String judge, MkContext context) {
+    public static CustomizeMatch build(Field field, String judge, MkContext context) {
         if (null == judge || judge.isEmpty() || !judge.contains("#")) {
             return null;
         }
 
-        CustomizeMatch customizeMatcher = new CustomizeMatch();
+        CustomizeMatch customizeMatch = new CustomizeMatch();
         int index = judge.indexOf("#");
         String classStr = judge.substring(0, index);
         String funStr = judge.substring(index + 1);
-        // 是否包含函数标志
-        AtomicReference<Boolean> containFlag = new AtomicReference<>(false);
 
         try {
             Class<?> cls = Class.forName(classStr);
+            customizeMatch.setBelongToObjectClass(field.getDeclaringClass());
+            customizeMatch.setFieldClass(field.getType());
+
             Object object = SingleFactory.getSingle(cls);
             String booleanStr = "boolean";
-            customizeMatcher.judgeStr = judge;
-            customizeMatcher.context = context;
+            customizeMatch.setMethodCallObject(object);
+            customizeMatch.judgeStr = judge;
+            customizeMatch.context = context;
 
-            // 这里对系统回调支持两种回调方式
-            Stream.of(cls.getDeclaredMethods()).filter(m -> m.getName().equals(funStr)).forEach(m -> {
-                containFlag.set(true);
-                Class<?> returnType = m.getReturnType();
-                if (returnType.getSimpleName().equals(Boolean.class.getSimpleName())
-                    || returnType.getSimpleName().equals(booleanStr)) {
-                    int paramsCnt = m.getParameterCount();
-                    // 一个参数，则该参数为属性的类型
-                    if (1 == paramsCnt) {
-                        customizeMatcher.valuePre = v -> {
-                            try {
-                                m.setAccessible(true);
-                                return (boolean) m.invoke(object, v);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                log.error(e.getMessage());
-                                throw new RuntimeException(e);
-                            }
-                        };
-                    } else if (2 == paramsCnt) {
-                        Class<?> p2Cls = m.getParameterTypes()[1];
-                        if (MkContext.class.isAssignableFrom(p2Cls)) {
-                            // 两个参数，则第一个为核查的对象，第二个为参数为属性的值
-                            customizeMatcher.valueContextPre = (v, c) -> {
-                                try {
-                                    m.setAccessible(true);
-                                    return (boolean) m.invoke(object, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    log.error(e.getMessage());
-                                    throw new RuntimeException(e);
-                                }
-                            };
-                        } else {
-                            // 两个参数，则第一个为待核查的属性的值，第二个为MkConstext
-                            customizeMatcher.objValuePre = (o, v) -> {
-                                try {
-                                    m.setAccessible(true);
-                                    return (boolean) m.invoke(object, o, v);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    log.error(e.getMessage());
-                                    throw new RuntimeException(e);
-                                }
-                            };
-                        }
-                    } else if (3 == paramsCnt) {
-                        Class<?> p3Cls = m.getParameterTypes()[2];
-                        // 三个参数，这个时候，第一个参数是核查的对象，第二个参数为属性的值，第三个参数为contexts
-                        if(MkContext.class.isAssignableFrom(p3Cls)) {
-                            customizeMatcher.objValueContextPre = (o, v, c) -> {
-                                try {
-                                    m.setAccessible(true);
-                                    return (boolean) m.invoke(object, o, v, c);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    log.error(e.getMessage());
-                                    throw new RuntimeException(e);
-                                }
-                            };
-                        } else {
-                            try {
-                                throw new JudgeException("函数"+funStr+"参数匹配失败，三个参数的时候，第三个参数需要为MkContext类型");
-                            } catch (JudgeException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    } else {
-                        try {
-                            throw new JudgeException("函数"+funStr+"的参数匹配失败，最多三个参数");
-                        } catch (JudgeException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } else {
-                    try {
-                        throw new JudgeException("函数"+funStr+"返回值不是boolean，添加匹配器失败");
-                    } catch (JudgeException e) {
-                        throw new RuntimeException(e);
-                    }
+            // 这里不支持函数重载，一个函数只限定使用一个最后一个包含对应三种类型的函数
+            Method method = Stream.of(cls.getDeclaredMethods()).filter(m -> {
+                // 过滤不是所需函数
+                if (!m.getName().equals(funStr)) {
+                    return false;
                 }
-            });
+
+                // 过滤返回值非boolean类型
+                Class<?> returnType = m.getReturnType();
+                if (!returnType.getSimpleName().equals(Boolean.class.getSimpleName()) && !returnType.getSimpleName().equals(booleanStr)) {
+                    return false;
+                }
+
+                // 过滤包含除了三类型之外其他类型的函数
+                return containTargetParameterType(m, customizeMatch.getBelongToObjectClass(), customizeMatch.getFieldClass(), false);
+            }).findFirst().orElse(null);
+
+            if (null == method) {
+                throw new JudgeException("没有找到函数为：" + funStr + "，返回值为boolean，包含三种类型（MkConstant或参数所属类型或参数类型）的函数");
+            }
+
+            customizeMatch.setTargetMethod(method);
         } catch (Exception e) {
             if (e instanceof ClassNotFoundException) {
                 log.error("类{}路径没有找到", classStr, e);
@@ -183,15 +144,100 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
                 throw new RuntimeException(e);
             }
         }
+        return customizeMatch;
+    }
 
-        if(!containFlag.get()){
-            try {
-                throw new JudgeException("类"+classStr+"不包含函数" + funStr);
-            } catch (JudgeException e) {
+    /**
+     * 将一个类中的函数转换为一个系统自定义的过滤匹配器
+     *
+     * @param parameter 修饰的参数
+     * @param judge   回调判决，这里是类和对应的函数组成
+     * @param context 上下文
+     * @return 匹配器的判决器
+     */
+    public static CustomizeMatch build(Parameter parameter, String judge, MkContext context) {
+        if (null == judge || judge.isEmpty() || !judge.contains("#")) {
+            return null;
+        }
+
+        CustomizeMatch customizeMatch = new CustomizeMatch();
+        int index = judge.indexOf("#");
+        String classStr = judge.substring(0, index);
+        String funStr = judge.substring(index + 1);
+
+        try {
+            Class<?> cls = Class.forName(classStr);
+            customizeMatch.setFieldClass(parameter.getType());
+
+            Object object = SingleFactory.getSingle(cls);
+            String booleanStr = "boolean";
+            customizeMatch.setMethodCallObject(object);
+            customizeMatch.judgeStr = judge;
+            customizeMatch.context = context;
+
+            // 这里不支持函数重载，一个函数只限定使用一个最后一个包含对应三种类型的函数
+            Method method = Stream.of(cls.getDeclaredMethods()).filter(m -> {
+                // 过滤不是所需函数
+                if (!m.getName().equals(funStr)) {
+                    return false;
+                }
+
+                // 过滤返回值非boolean类型
+                Class<?> returnType = m.getReturnType();
+                if (!returnType.getSimpleName().equals(Boolean.class.getSimpleName()) && !returnType.getSimpleName().equals(booleanStr)) {
+                    return false;
+                }
+
+                // 过滤包含除了三类型之外其他类型的函数
+                return containTargetParameterType(m, null, customizeMatch.getFieldClass(), true);
+            }).findFirst().orElse(null);
+
+            if (null == method) {
+                throw new JudgeException("没有找到函数为：" + funStr + "，返回值为boolean，包含三种类型（MkConstant或参数所属类型或参数类型）的函数");
+            }
+
+            customizeMatch.setTargetMethod(method);
+        } catch (Exception e) {
+            if (e instanceof ClassNotFoundException) {
+                log.error("类{}路径没有找到", classStr, e);
+            } else {
                 throw new RuntimeException(e);
             }
         }
+        return customizeMatch;
+    }
 
-        return customizeMatcher;
+    /**
+     * 函数是否只包含所需类型：一旦包含非所需类型，则返回false
+     *
+     * @param method             回调函数
+     * @param fieldBelongToClass 参数所属对象的类型
+     * @param fieldTypeClass     参数的类型
+     * @param checkBaseType      是否核查基本类型
+     * @return true: 只包含所需类型，false：包含非所需类型
+     */
+    private static boolean containTargetParameterType(Method method, Class<?> fieldBelongToClass, Class<?> fieldTypeClass, Boolean checkBaseType) {
+        if (method.getParameterTypes().length > 3) {
+            return false;
+        }
+        for (Class<?> parameterType : method.getParameterTypes()) {
+            // Object类，则认为不匹配，因为无法明确这个参数代表的是哪个类型
+            if (parameterType.equals(Object.class)) {
+                return false;
+            }
+
+            // 核查基本类型表示，核查为参数，参数的话没有所属类，则不需要核查所属类
+            if (checkBaseType) {
+                if (parameterType.isAssignableFrom(fieldTypeClass) || parameterType.isAssignableFrom(MkContext.class)) {
+                    continue;
+                }
+            } else {
+                if (parameterType.isAssignableFrom(fieldBelongToClass) || parameterType.isAssignableFrom(fieldTypeClass) || parameterType.isAssignableFrom(MkContext.class)) {
+                    continue;
+                }
+            }
+            return false;
+        }
+        return true;
     }
 }

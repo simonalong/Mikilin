@@ -1,23 +1,23 @@
 package com.simonalong.mikilin.spring;
 
-import com.alibaba.fastjson.JSON;
 import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.MkValidators;
 import com.simonalong.mikilin.annotation.AutoCheck;
 import com.simonalong.mikilin.exception.MkException;
-import com.simonalong.mikilin.util.Maps;
+import com.simonalong.mikilin.util.ClassUtil;
+import com.simonalong.mikilin.util.ExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,16 +26,15 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
-@Component
 public class MkAop {
 
     /**
      * 拦截添加注解的方法
-     * @param pjp 参数
-     * @return 执行的返回结果
-     * @throws Throwable 异常情况下返回
+     * @param pjp 切面对象
+     * @throws Throwable 所有类型异常
+     * @return 执行后对象
      */
-    @Around("@within(com.simonalong.mikilin.annotation.AutoCheck) || @annotation(com.simonalong.mikilin.annotation.AutoCheck)")
+    @Around("@within(com.isyscore.isc.mikilin.annotation.AutoCheck) || @annotation(com.isyscore.isc.mikilin.annotation.AutoCheck)")
     public Object aroundParameter(ProceedingJoinPoint pjp) throws Throwable {
         String funStr = pjp.getSignature().toLongString();
         Object result;
@@ -44,13 +43,14 @@ public class MkAop {
             result = pjp.proceed();
             MkValidators.validate(result);
         } catch (Throwable e) {
-            @SuppressWarnings("unchecked")
-            Maps<String, Object> outInfo = Maps.of();
-            outInfo.put("fun", funStr);
-            outInfo.put("parameters", getParameters(pjp));
-            outInfo.put("message", e.getMessage());
-            log.error("error：" + JSON.toJSONString(outInfo), e);
-            throw e;
+            MkException mkException = ExceptionUtil.getCause(e, MkException.class);
+            if (null != mkException) {
+                mkException.setFunStr(funStr);
+                mkException.setParameterList(getParameters(pjp));
+                throw mkException;
+            } else {
+                throw e;
+            }
         }
         return result;
     }
@@ -90,8 +90,10 @@ public class MkAop {
             autoCheck = currentMethod.getAnnotation(AutoCheck.class);
         }
 
+        Parameter[] parameters = currentMethod.getParameters();
         Object[] args = pjp.getArgs();
-        for (Object arg : args) {
+        for (int index = 0; index < args.length; index++) {
+            Object arg = args[index];
             if (arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
                 continue;
             }
@@ -101,7 +103,13 @@ public class MkAop {
                 if (group.equals(MkConstant.DEFAULT_GROUP)) {
                     group = autoCheck.value();
                 }
-                MkValidators.validate(group, arg);
+
+                // 如果是基本类型，则采用核查参数的方式
+                if (ClassUtil.isCheckedType(arg.getClass())) {
+                    MkValidators.validate(group, currentMethod, parameters[index], arg);
+                } else {
+                    MkValidators.validate(group, arg);
+                }
             }
         }
     }

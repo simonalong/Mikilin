@@ -11,17 +11,30 @@ import java.util.List;
 public class MkContext {
 
     /**
+     * 本次请求的函数的入参
+     */
+    private final ThreadLocal<Object> parameterReq;
+    /**
      * 错误信息链
      */
-    private ThreadLocal<StringBuilder> errMsgChain;
+    private final ThreadLocal<StringBuilder> errMsgChain;
     /**
      * 最后的那个错误信息
      */
-    private ThreadLocal<String> theLastErrMsg;
+    private final ThreadLocal<String> theLastErrMsg;
 
     public MkContext() {
+        parameterReq = new ThreadLocal<>();
         errMsgChain = new ThreadLocal<>();
         theLastErrMsg = new ThreadLocal<>();
+    }
+
+    public void setParameter(Object parameter) {
+        parameterReq.set(parameter);
+    }
+
+    public Object getParameter() {
+        return parameterReq.get();
     }
 
     public String getErrMsgChain() {
@@ -62,6 +75,7 @@ public class MkContext {
     }
 
     public void clear() {
+        parameterReq.remove();
         errMsgChain.remove();
         theLastErrMsg.remove();
         errMsgChain.set(new StringBuilder().append("数据校验失败："));

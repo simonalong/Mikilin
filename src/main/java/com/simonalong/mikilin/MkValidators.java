@@ -9,6 +9,8 @@ import com.simonalong.mikilin.util.ObjectUtil;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -74,6 +76,18 @@ public final class MkValidators {
     }
 
     /**
+     * 针对对象参数进行核查
+     *
+     * @param method   待核查参数所在的函数
+     * @param parameter 待核查参数
+     * @param baseValue 待核查参数対应的值
+     * @return true：核查成功不拦截，false：核查失败进行拦截
+     */
+    public boolean check(Method method, Parameter parameter, Object baseValue) {
+        return check(MkConstant.DEFAULT_GROUP, method, parameter, baseValue);
+    }
+
+    /**
      * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
      *
      * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
@@ -82,7 +96,7 @@ public final class MkValidators {
      */
     public boolean check(String group, Object object) {
         String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
-        if (delegate.isEmpty(object)) {
+        if (ObjectUtil.isEmpty(object)) {
             return true;
         }
 
@@ -95,6 +109,21 @@ public final class MkValidators {
     }
 
     /**
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
+     *
+     * @param group     分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param method    待核查参数所在函数
+     * @param parameter 待核查参数
+     * @param baseValue 待核查参数对应的值
+     * @return true：核查成功不拦截，false：核查失败进行拦截
+     */
+    public boolean check(String group, Method method, Parameter parameter, Object baseValue) {
+        String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
+        generateObjFieldMap(method, parameter);
+        return check(groupDelegate, baseValue, method, parameter, getWhiteMap(), getBlackMap());
+    }
+
+    /**
      * 针对对象的某些属性进行核查
      *
      * @param group    分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
@@ -104,7 +133,7 @@ public final class MkValidators {
      */
     public boolean check(String group, Object object, String... fieldSet) {
         String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
-        if (delegate.isEmpty(object)) {
+        if (ObjectUtil.isEmpty(object)) {
             return true;
         }
 
@@ -124,7 +153,7 @@ public final class MkValidators {
      *
      * @param object 待核查对象
      * @throws MkCheckException 核查失败异常
-     * @since 1.4.4
+     * @since 1.2.2
      */
     public void validate(Object object) throws MkCheckException {
         if (!check(object)) {
@@ -141,10 +170,16 @@ public final class MkValidators {
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @throws MkCheckException 核查失败异常
-     * @since 1.4.4
+     * @since 1.2.2
      */
     public void validate(Object object, String... fieldSet) throws MkCheckException {
         if (!check(object, fieldSet)) {
+            throw new MkCheckException(getErrMsg());
+        }
+    }
+
+    public void validate(Method method, Parameter parameter, Object baseValue) {
+        if (!check(method, parameter, baseValue)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -158,10 +193,29 @@ public final class MkValidators {
      * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
      * @param object 待核查对象
      * @throws MkCheckException 核查失败异常
-     * @since 1.4.4
+     * @since 1.2.2
      */
     public void validate(String group, Object object) throws MkCheckException {
         if (!check(group, object)) {
+            throw new MkCheckException(getErrMsg());
+        }
+    }
+
+    /**
+     * 核查参数为基本类型对应的值
+     *
+     * <p>
+     *     同{@link MkValidators#check(String, Method, Parameter, Object)}，只是该方式会抛出异常
+     *
+     * @param group  分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param method 待核查参数所在的函数
+     * @param parameter 待核查基本对象的参数类型
+     * @param baseValue 待核查基本对象对应的值
+     * @throws MkCheckException 核查失败异常
+     * @since 1.2.3
+     */
+    public void validate(String group, Method method, Parameter parameter, Object baseValue) {
+        if (!check(group, method, parameter, baseValue)) {
             throw new MkCheckException(getErrMsg());
         }
     }
@@ -176,7 +230,7 @@ public final class MkValidators {
      * @param object   待核查对象
      * @param fieldSet 待核查对象的多个属性名字
      * @throws MkCheckException 核查失败异常
-     * @since 1.4.4
+     * @since 1.2.2
      */
     public void validate(String group, Object object, String... fieldSet) throws MkCheckException {
         if (!check(group, object, fieldSet)) {
@@ -207,12 +261,22 @@ public final class MkValidators {
      * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
-        delegate.setGroup(group);
+        delegate.setParameter(group, object);
         try {
             return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } finally {
             // 防止threadLocal对应的group没有释放
-            delegate.clearGroup();
+            delegate.clear();
+        }
+    }
+
+    private boolean check(String group, Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        delegate.setParameter(group, object);
+        try {
+            return delegate.available(object, method, parameter, whiteSet, blackSet);
+        } finally {
+            // 防止threadLocal对应的group没有释放
+            delegate.clear();
         }
     }
 
@@ -250,6 +314,20 @@ public final class MkValidators {
         createObjectFieldMap(object);
 
         return objectFieldCheckMap;
+    }
+
+    private void generateObjFieldMap(Method method, Object object) {
+        if (null == object) {
+            return;
+        }
+
+        // 若对象已经创建属性索引树，则直接返回
+        if (objectFieldCheckMap.containsKey(ObjectUtil.getMethodCanonicalName(method))) {
+            return;
+        }
+
+        // 若当前对象没有对象属性索引树，则进行创建
+        createObjectFieldMapForParameter(method);
     }
 
     private Map<String, MatchManager> getWhiteMap() {
@@ -290,9 +368,9 @@ public final class MkValidators {
                     if (null != matcher && !matcher.disable()) {
                         addObjectFieldMap(clsCanonicalName, f.getName());
                         if (matcher.accept()) {
-                            addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, matcher);
+                            addValueMap(whiteGroupMap, clsCanonicalName, f, matcher);
                         } else {
-                            addWhiteValueMap(blackGroupMap, clsCanonicalName, f, matcher);
+                            addValueMap(blackGroupMap, clsCanonicalName, f, matcher);
                         }
                     }
                 }
@@ -302,9 +380,9 @@ public final class MkValidators {
                     Stream.of(matchers.value()).forEach(w -> {
                         addObjectFieldMap(clsCanonicalName, f.getName());
                         if (w.accept()) {
-                            addWhiteValueMap(whiteGroupMap, clsCanonicalName, f, w);
+                            addValueMap(whiteGroupMap, clsCanonicalName, f, w);
                         } else {
-                            addWhiteValueMap(blackGroupMap, clsCanonicalName, f, w);
+                            addValueMap(blackGroupMap, clsCanonicalName, f, w);
                         }
                     });
                 }
@@ -328,6 +406,41 @@ public final class MkValidators {
         }
     }
 
+    private void createObjectFieldMapForParameter(Method method) {
+        String clsCanonicalName = ObjectUtil.getMethodCanonicalName(method);
+        // 若已经解析，则不再解析
+        if (objectFieldCheckMap.containsKey(clsCanonicalName)) {
+            return;
+        }
+
+        Parameter[] parameters = method.getParameters();
+        for (Parameter parameter : parameters) {
+            List<Matcher> matcherList = Arrays.asList(parameter.getAnnotationsByType(Matcher.class));
+            for(Matcher matcher: matcherList) {
+                if (null != matcher && !matcher.disable()) {
+                    addObjectFieldMap(clsCanonicalName, parameter.getName());
+                    if (matcher.accept()) {
+                        addValueMap(whiteGroupMap, clsCanonicalName, parameter, matcher);
+                    } else {
+                        addValueMap(blackGroupMap, clsCanonicalName, parameter, matcher);
+                    }
+                }
+            }
+
+            Matchers matchers = parameter.getAnnotation(Matchers.class);
+            if (null != matchers) {
+                Stream.of(matchers.value()).forEach(w -> {
+                    addObjectFieldMap(clsCanonicalName, parameter.getName());
+                    if (w.accept()) {
+                        addValueMap(whiteGroupMap, clsCanonicalName, parameter, w);
+                    } else {
+                        addValueMap(blackGroupMap, clsCanonicalName, parameter, w);
+                    }
+                });
+            }
+        }
+    }
+
     private void addObjectFieldMap(String objectClsName, String fieldName) {
         objectFieldCheckMap.compute(objectClsName, (k, v) -> {
             if (null == v) {
@@ -341,12 +454,23 @@ public final class MkValidators {
         });
     }
 
-    private void addWhiteValueMap(Map<String, MatchManager> groupMather, String clsCanonicalName, Field field, Matcher matcher) {
+    private void addValueMap(Map<String, MatchManager> groupMather, String clsCanonicalName, Field field, Matcher matcher) {
         Arrays.asList(matcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
             if (null == v) {
-                return new MatchManager().addWhite(clsCanonicalName, field, matcher, context);
+                return new MatchManager().addMatch(clsCanonicalName, field, matcher, context);
             } else {
-                v.addWhite(clsCanonicalName, field, matcher, context);
+                v.addMatch(clsCanonicalName, field, matcher, context);
+                return v;
+            }
+        }));
+    }
+
+    private void addValueMap(Map<String, MatchManager> groupMather, String clsCanonicalName, Parameter parameter, Matcher matcher) {
+        Arrays.asList(matcher.group()).forEach(g -> groupMather.compute(g, (k, v) -> {
+            if (null == v) {
+                return new MatchManager().addMatch(clsCanonicalName, parameter, matcher, context);
+            } else {
+                v.addMatch(clsCanonicalName, parameter, matcher, context);
                 return v;
             }
         }));

@@ -113,6 +113,25 @@ class CustomizeTest extends Specification {
         "haode" | false
     }
 
+    def "测试上下文三个参数异常情况2"() {
+        given:
+        CustomizeEntity entity = new CustomizeEntity().setThreePa2(threePa)
+
+        expect:
+        boolean actResult = MkValidators.check(entity, "threePa2")
+        if (!actResult) {
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        threePa | result
+        "hello" | true
+        "word"  | true
+        "ok"    | false
+        "haode" | false
+    }
+
     def "不匹配情况下的错误日志"() {
         given:
         CustomizeEntity entity = new CustomizeEntity().setFieldErrMsg(fieldErrMsg)

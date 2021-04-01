@@ -13,7 +13,7 @@ import java.lang.annotation.*;
  * @since 2019/3/7 下午9:47
  */
 @Repeatable(Matchers.class)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Matcher {
 
@@ -107,8 +107,21 @@ public @interface Matcher {
      * yyyy-MM-dd HH:mm:ss
      * yyyy-MM-dd HH:mm:ss.SSS
      * </li>
-     * </ul>
-     *
+     * <li>
+     * 时间范围类型计算，比如(-4y2M,)：表示4年2个月前之后的所有时间，其中支持的字段为
+     * </li>
+     * <li>
+     *     <ul>
+     *         <li>-/+：表示往前推还是往后推</li>
+     *         <li>y：年</li>
+     *         <li>M：月</li>
+     *         <li>d：天</li>
+     *         <li>H（h）：小时</li>
+     *         <li>m：分钟</li>
+     *         <li>s：秒</li>
+     *     </ul>
+     * </li>
+     *</ul>
      * @return 返回的是范围的字符串，比如："[0,1]"。具体的请看上面说明
      */
     String range() default "";
@@ -146,7 +159,7 @@ public @interface Matcher {
     String customize() default "";
 
     /**
-     * 核查失败后的返回语句，其中提供 #current 替换符，在打印的时候会替换当前修饰的属性的值
+     * 核查失败后的返回语句，其中提供 #current和#root.xxx（xxx为对应属性所在对象的其他属性名） 替换符，在打印的时候会替换当前修饰的属性的值
      *
      * @return 核查失败后返回的语句
      */

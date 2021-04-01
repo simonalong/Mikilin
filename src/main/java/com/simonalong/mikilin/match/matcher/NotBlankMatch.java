@@ -15,7 +15,7 @@ public class NotBlankMatch extends AbstractBlackWhiteMatch {
 
     private Boolean notBlank;
 
-    public static NotBlankMatch build(Field field, String notBlankStr) {
+    public static NotBlankMatch build(Class<?> typeClass, String notBlankStr) {
         NotBlankMatch notBlankMatch = new NotBlankMatch();
         if (!"".equals(notBlankStr)) {
             notBlankMatch.notBlank = Boolean.parseBoolean(notBlankStr);
@@ -23,8 +23,8 @@ public class NotBlankMatch extends AbstractBlackWhiteMatch {
             return notBlankMatch;
         }
 
-        if (!CharSequence.class.isAssignableFrom(field.getType())) {
-            throw new MkException("类型不匹配：匹配器属性【notBlank】不能修饰类型" + field.getType().getCanonicalName());
+        if (!CharSequence.class.isAssignableFrom(typeClass)) {
+            throw new MkException("类型不匹配：匹配器属性【notBlank】不能修饰类型" + typeClass.getCanonicalName());
         }
 
         return notBlankMatch;
@@ -52,7 +52,7 @@ public class NotBlankMatch extends AbstractBlackWhiteMatch {
                 return true;
             } else {
                 setBlackMsg("属性 {0} 的值为空字符", name);
-                return true;
+                return false;
             }
         } else {
             if ("".equals(value)) {

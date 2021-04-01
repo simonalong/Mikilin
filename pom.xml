@@ -7,7 +7,7 @@
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
 
     <name>Mikilin</name>
     <url>https://github.com/SimonAlong/Mikilin</url>
@@ -25,7 +25,7 @@
             <name>zhouzhenyong</name>
             <email>simonalongs@126.com</email>
             <roles>
-                <role>developer</role>
+                <role>owner</role>
             </roles>
         </developer>
     </developers>
@@ -123,6 +123,14 @@
             <version>${tomcat.version}</version>
             <optional>true</optional>
         </dependency>
+
+        <!--JSR-303规范-->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -176,6 +184,7 @@
                         <include>**/*Spec.java</include>
                         <include>**/*Test.java</include>
                     </includes>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
 

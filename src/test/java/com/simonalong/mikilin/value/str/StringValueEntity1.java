@@ -15,6 +15,6 @@ public class StringValueEntity1 {
     /**
      * 只要空字符，则进行拒绝，其他的都不拦截
      */
-    @Matcher(value = "", accept = false, errMsg = "值#current是禁止的")
+    @Matcher(value = "c", accept = false, errMsg = "值#current是禁止的")
     private String emptyStr;
 }

@@ -6,9 +6,7 @@ package com.simonalong.mikilin.exception;
  */
 public class MkCheckException extends MkException {
 
-    private static final String PRE = "匹配失败:";
-
     public MkCheckException(String message) {
-        super(PRE + message);
+        super(message);
     }
 }

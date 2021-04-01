@@ -4,6 +4,7 @@ import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.MkException;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class TypeMatch extends AbstractBlackWhiteMatch {
 
-    private List<Class<?>> clsList = new ArrayList<>();
+    private final List<Class<?>> clsList = new ArrayList<>();
 
     public static TypeMatch build(Field field, Class<?>[] tClasses) {
         if (null == tClasses || Arrays.asList(tClasses).isEmpty()) {
@@ -28,6 +29,22 @@ public class TypeMatch extends AbstractBlackWhiteMatch {
         for (Class<?> tClass : tClasses) {
             if (!fieldType.isAssignableFrom(tClass)) {
                 throw new MkException("类型不匹配：Class：" + tClass + " 无法转换为 " + fieldType.getName());
+            }
+        }
+        matcher.clsList.addAll(Arrays.asList(tClasses));
+        return matcher;
+    }
+
+    public static TypeMatch build(Parameter parameter, Class<?>[] tClasses) {
+        if (null == tClasses || Arrays.asList(tClasses).isEmpty()) {
+            return null;
+        }
+        Class<?> parameterType = parameter.getType();
+        TypeMatch matcher = new TypeMatch();
+
+        for (Class<?> tClass : tClasses) {
+            if (!parameterType.isAssignableFrom(tClass)) {
+                throw new MkException("类型不匹配：Class：" + tClass + " 无法转换为 " + parameterType.getName());
             }
         }
         matcher.clsList.addAll(Arrays.asList(tClasses));

@@ -10,4 +10,8 @@ public interface MkConstant {
      * 默认的分组
      */
     String DEFAULT_GROUP = "_default_";
+    /**
+     * 日志前缀
+     */
+    String LOG_PRE = "[mikilin] ";
 }

@@ -35,18 +35,15 @@ public class ClassUtil {
      *
      * 注意: 其中void.class.isPrimitive() 返回true，我们这里不需要这种
      *
-     * @param cls 待校验的类
+     * @param tCls 待校验的类
      * @return true=要核查的类型，false=不用核查的类型
      */
-    public boolean isCheckedType(Class<?> cls) {
+    public boolean isCheckedType(Class<?> tCls) {
+        Class<?> cls = WrapperUtil.wrapperToPrimary(tCls);
         boolean baseFlag = (cls.isPrimitive() && !cls.equals(void.class));
         if (baseFlag) {
             return true;
         } else {
-            if (Void.class.isAssignableFrom(cls)) {
-                return false;
-            }
-
             if (cls.isEnum()) {
                 return false;
             }
@@ -81,6 +78,7 @@ public class ClassUtil {
      * @param object 待解析对象
      * @return 解析后的对象和对象的类型：key为解析后的对象值，value为key对应的类型
      */
+    @SuppressWarnings("rawtypes")
     public Class<?> peel(Object object) {
         if (null == object) {
             return null;

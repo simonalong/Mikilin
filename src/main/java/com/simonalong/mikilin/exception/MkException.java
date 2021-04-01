@@ -1,5 +1,10 @@
 package com.simonalong.mikilin.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
 /**
  * @author zhouzhenyong
  * @since 2019-08-12 22:09
@@ -7,6 +12,12 @@ package com.simonalong.mikilin.exception;
 public class MkException extends RuntimeException {
 
     private static final String PRE = "核查异常：";
+    @Setter
+    @Getter
+    private String funStr;
+    @Setter
+    @Getter
+    private List<Object> parameterList;
 
     public MkException(String message) {
         super(PRE + message);

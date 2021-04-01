@@ -78,9 +78,21 @@ public class CustomizeCheck {
     }
 
     /**
-     * 三个函数
+     * 三个函数，参数顺序随意
      */
-    private boolean threeParam(CustomizeEntity customizeEntity, String temK, MkContext context) {
+    private boolean threeParam(MkContext context, CustomizeEntity customizeEntity, String temK) {
+        if (temK.equals("hello") || temK.equals("word")){
+            context.append("匹配上字段'hello'和'word'");
+            return true;
+        }
+        context.append("没有匹配上字段'hello'和'word'");
+        return false;
+    }
+
+    /**
+     * 三个函数2，参数顺序随意
+     */
+    private boolean threeParam2(MkContext context, String temK, CustomizeEntity customizeEntity) {
         if (temK.equals("hello") || temK.equals("word")){
             context.append("匹配上字段'hello'和'word'");
             return true;

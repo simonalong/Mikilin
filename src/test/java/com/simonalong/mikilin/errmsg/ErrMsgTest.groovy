@@ -67,4 +67,24 @@ class ErrMsgTest extends Specification {
         "c"  | true
         "d"  | false
     }
+
+    def "提供占位符关联要求"() {
+        given:
+        ErrMsgEntity4 entity = new ErrMsgEntity4().setName(name).setAge(12)
+
+        expect:
+        def act = MkValidators.check(entity)
+        if (!act) {
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
+        }
+        Assert.assertEquals(result, act)
+
+        where:
+        name | result
+        "a"  | true
+        "b"  | true
+        "c"  | true
+        "d"  | false
+    }
 }

@@ -2,6 +2,8 @@ package com.simonalong.mikilin.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +18,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ObjectUtil {
 
-    private static final String NULL_STR = "null";
+    private final String NULL_STR = "null";
 
     /**
      * 将对象的数据，按照cls类型进行转换
@@ -60,7 +62,7 @@ public class ObjectUtil {
             return null;
         }
         if (object instanceof Collection) {
-            Collection collection = (Collection) object;
+            Collection<?> collection = (Collection<?>) object;
             if (!collection.isEmpty()) {
                 Iterator<?> iterator = collection.iterator();
                 if (iterator.hasNext()) {
@@ -79,5 +81,24 @@ public class ObjectUtil {
             }
             return new AbstractMap.SimpleEntry<>(object, object.getClass());
         }
+    }
+
+    public boolean isEmpty(Object object) {
+        if (object instanceof String) {
+            String str = (String) object;
+            return "".equals(str) || "null".equals(str) || "undefined".equals(str);
+        } else if (object instanceof Map) {
+            Map<?,?> map = (Map<?,?>) object;
+            return CollectionUtil.isEmpty(map);
+        } else if (object instanceof Collection) {
+            Collection<?> collection = (Collection<?>) object;
+            return CollectionUtil.isEmpty(collection);
+        } else {
+            return object == null;
+        }
+    }
+
+    public String getMethodCanonicalName(Method method) {
+        return MessageFormat.format("{0}", method.toGenericString());
     }
 }
