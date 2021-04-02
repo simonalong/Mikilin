@@ -70,7 +70,7 @@ public @interface Matcher {
     /**
      * 枚举类型的判断
      * <p>
-     * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的Names，Integer是枚举的下标
+     * 注意：该类型只用于修饰属性的值为String类型或者Integer类型的属性，String为枚举的 name() 方法，Integer是枚举的original() 方法
      *
      * @return 该属性为枚举对应的类，否则不生效
      */
