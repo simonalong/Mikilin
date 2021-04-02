@@ -42,20 +42,9 @@ github: https://github.com/SimonAlong/Mikilin
 ```
 
 ## 使用 
-该框架使用极其简单（直接参考spring-validate框架用法即可），如下：给需要拦截的属性添加注解即可，所有的功能几乎都在注解`@Matcher`上
-```java
-@Data
-@Accessors(chain = true)
-public class WhiteAEntity {
-    
-    // 修饰属性name，只允许对应的值为a，b,c和null
-    @Matcher(value = {"a","b","c","null"}, errMsg = "输入的值不符合需求")
-    private String name;
-    private String address;
-}
-```
+该框架使用极其简单（直接参考spring-validate框架用法即可）
 
-#### springBoot项目使用
+### springBoot项目使用
 版本：>= 1.6.0
 在1.6.0版本中添加`@EnableMikilin`和`@AutoCheck`注解，前者是启用核查框架，后者修饰类和方法，会自动核查方法或者类的方法中的参数，不符合需求，则会上报异常`MkException`
 典型用法如下
@@ -96,7 +85,7 @@ public class TestController {
     //...
 }
 ```
-其中AppIdReq对应的类型中使用
+其中AppIdReq对应的类型中使用，其中所有的功能都在`@Matcher`
 ```java
 @Data
 public class TestReq {
@@ -111,7 +100,7 @@ public class TestReq {
 }
 ```
 
-#### 硬编码
+### 硬编码
 在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
 ```java
 import lombok.SneakyThrows;
