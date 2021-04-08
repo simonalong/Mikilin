@@ -70,7 +70,7 @@ class ErrMsgTest extends Specification {
 
     def "提供占位符关联要求"() {
         given:
-        ErrMsgEntity4 entity = new ErrMsgEntity4().setName(name).setAge(12)
+        ErrMsgEntity4 entity = new ErrMsgEntity4().setName(name).setAge(12).setAge2(34)
 
         expect:
         def act = MkValidators.check(entity)

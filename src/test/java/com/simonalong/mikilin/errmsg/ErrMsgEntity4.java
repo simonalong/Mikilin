@@ -12,8 +12,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ErrMsgEntity4 {
 
+    private Integer age2;
+
     private Integer age;
 
-    @Matcher(value = {"a", "b", "c"}, errMsg = "值#current不符合要求, 值age=#root.age")
+    @Matcher(value = {"a", "b", "c"}, errMsg = "值#current不符合要求, 值age=#root.age，值age2=#root.age2")
     private String name;
 }

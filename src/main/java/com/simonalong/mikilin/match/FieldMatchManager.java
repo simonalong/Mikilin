@@ -128,21 +128,20 @@ public class FieldMatchManager {
         }
     }
 
-    private String parseErrMsg(Object object, Object value) {
+    private String parseErrMsg(Object object, Object current) {
         String result = errMsg;
         if (null != object) {
-            String regex = "(#root)\\.(\\w+)";
+            String regex = "(#root\\.(\\w+|\\d)*)+";
             java.util.regex.Matcher m = Pattern.compile(regex).matcher(errMsg);
             while (m.find()) {
                 String fieldName = m.group(2);
                 Object fieldValue = getFieldValue(fieldName, object);
-
-                result = errMsg.replaceAll("#root." + fieldName, fieldValue.toString());
+                result = result.replaceAll("#root." + fieldName, fieldValue.toString());
             }
         }
 
-        if(null != value) {
-            result = result.replaceAll("#current", value.toString());
+        if(null != current) {
+            result = result.replaceAll("#current", current.toString());
         } else {
             result = result.replaceAll("#current", "null");
         }
