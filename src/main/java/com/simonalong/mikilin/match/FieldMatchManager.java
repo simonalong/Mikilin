@@ -66,7 +66,7 @@ public class FieldMatchManager {
                     context.append(m.getBlackMsg());
                     setLastErrMsg(object, context, m.getBlackMsg(), value, name);
                 } else {
-                    context.clear();
+                    context.clearLog();
                 }
                 return true;
             } else {
@@ -96,7 +96,7 @@ public class FieldMatchManager {
                     context.append(m.getBlackMsg());
                     setLastErrMsg(null, context, m.getBlackMsg(), value, name);
                 } else {
-                    context.clear();
+                    context.clearLog();
                 }
                 return true;
             } else {

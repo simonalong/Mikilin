@@ -29,7 +29,7 @@ final class CheckDelegate {
     }
 
     void setParameter(String group, Object parameter) {
-        context.clear();
+        context.clearAll();
         context.setParameter(parameter);
         localGroup.set(group);
     }

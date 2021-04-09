@@ -73,11 +73,18 @@ public class MkContext {
     public String getLastErrMsg() {
         return theLastErrMsg.get();
     }
-
-    public void clear() {
+    public void clearParameter() {
         parameterReq.remove();
+    }
+
+    public void clearLog() {
         errMsgChain.remove();
         theLastErrMsg.remove();
         errMsgChain.set(new StringBuilder().append("数据校验失败："));
+    }
+
+    public void clearAll() {
+        clearParameter();
+        clearLog();
     }
 }
