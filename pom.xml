@@ -65,6 +65,24 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.simonalong</groupId>
+            <artifactId>Neo</artifactId>
+            <version>0.6.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+
         <!--spock测试框架-->
         <dependency>
             <groupId>org.spockframework</groupId>

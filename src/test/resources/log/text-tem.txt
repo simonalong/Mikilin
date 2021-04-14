@@ -1,0 +1,2 @@
+2021-04-14 03:23:07.437 ea6d147dc992 [isc-pivot-cockpit] [] [] [] INFO com.isyscore.os.pivot.cockpit.api.controller.BuriedController upload [http-nio-31120-exec-3@6] : [cockpit-upload]: data = {"deviceCode":"82ecd3732bed10685632f45560127ecb","metaList":[{"data":"{\"os\":\"iSysCore OS v2.6.1.20210406.beta\",\"deviceCode\":\"82ecd3732bed10685632f45560127ecb\",\"availableDays\":\"13\"}","time":1618329600000,"type":"2"}]}
+========
