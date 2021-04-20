@@ -94,7 +94,7 @@ public class MkAop {
         Object[] args = pjp.getArgs();
         for (int index = 0; index < args.length; index++) {
             Object arg = args[index];
-            if (arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
+            if (null == arg || arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
                 continue;
             }
 
