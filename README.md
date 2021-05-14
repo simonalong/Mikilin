@@ -85,7 +85,7 @@ public class TestController {
     //...
 }
 ```
-其中AppIdReq对应的类型中使用，其中所有的功能都在`@Matcher`
+其中AppIdReq对应的类型中使用，其中所有的功能都在`@Matcher`，该注解才是用的最多的
 ```java
 @Data
 public class TestReq {
@@ -101,7 +101,7 @@ public class TestReq {
 ```
 
 ### 硬编码
-在拦截的位置添加核查，这里是做一层核查，在业务代码中建议封装到aop中对业务使用方不可见即可实现拦截
+在一些普通的编码中，比如解析的数据内容为对应的结构后，对这个结构数据进行校验，这个时候需要硬编码，一个函数`check`或者`validate`，前者返回true和false，后者抛异常
 ```java
 import lombok.SneakyThrows;
 class Test{
@@ -217,6 +217,8 @@ private String proDesc;
 @Matcher(customize = "com.xxx.yyy.ExistMatch#proIdExist", errMsg = "proId：#current在db中不存在")
 private Long projectId;
 ```
+提示：
+其中在errMsg中，提供两个占位符，一个叫`#current`，表示当前属性（如上projectId）的值，一个叫`#root`，表示属性所在的对象的值，通常这么用`#root`.xxx，这个表示当前修饰的属性的相邻的其他属性，比如：`#root.age`，表示相邻属性`age`的值，下面有相关例子
 其中匹配的写法
 ```java
 @Service
