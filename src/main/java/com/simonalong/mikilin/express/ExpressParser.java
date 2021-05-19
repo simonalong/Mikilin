@@ -5,6 +5,8 @@ import groovy.lang.Binding;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
+
 /**
  * @author zhouzhenyong
  * @since 2019/4/14 上午10:23
@@ -51,7 +53,7 @@ public class ExpressParser {
             }
             return (Boolean) result;
         }catch (Exception e){
-            log.error("表达式执行失败", e);
+            log.error(MK_LOG_PRE + "表达式执行失败", e);
         }
         return null;
     }
