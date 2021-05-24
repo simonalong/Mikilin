@@ -84,18 +84,19 @@ public class FieldMatchManager {
             }
 
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     public Boolean match(Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
+        boolean notEmpty = false;
         for (Match m : matchList) {
             if (null == m || m.isEmpty()) {
                 continue;
             }
 
+            notEmpty = true;
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
@@ -112,11 +113,14 @@ public class FieldMatchManager {
             }
         }
 
-        if (whiteOrBlack) {
-            context.append(errMsgList);
-        }
+        if (notEmpty) {
+            if (whiteOrBlack) {
+                context.append(errMsgList);
+            }
 
-        return false;
+            return false;
+        }
+        return true;
     }
 
     private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value, String fieldName) {
