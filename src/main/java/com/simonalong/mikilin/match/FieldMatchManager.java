@@ -56,14 +56,15 @@ public class FieldMatchManager {
      */
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
-        boolean notEmpty = false;
+        boolean matcherEmpty = true;
         for (Match m : matchList) {
             if (null == m || m.isEmpty()) {
                 continue;
             }
-            notEmpty = true;
+            matcherEmpty = false;
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
+                    context.putKeyAndErrMsg(name, m.getBlackMsg());
                     context.append(m.getBlackMsg());
                     setLastErrMsg(object, context, m.getBlackMsg(), value, name);
                 } else {
@@ -71,16 +72,18 @@ public class FieldMatchManager {
                 }
                 return true;
             } else {
-                if(whiteOrBlack) {
+                if (whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
                     setLastErrMsg(object, context, m.getWhiteMsg(), value, name);
                 }
             }
         }
 
-        if (notEmpty) {
+        // 匹配器不空，但是没有匹配上，则返回false
+        if (!matcherEmpty) {
             if (whiteOrBlack) {
                 context.append(errMsgList);
+                context.putKeyAndErrMsg(name, String.join(";", errMsgList));
             }
 
             return false;
@@ -90,15 +93,16 @@ public class FieldMatchManager {
 
     public Boolean match(Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
-        boolean notEmpty = false;
+        boolean matcherEmpty = true;
         for (Match m : matchList) {
             if (null == m || m.isEmpty()) {
                 continue;
             }
 
-            notEmpty = true;
+            matcherEmpty = false;
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
+                    context.putKeyAndErrMsg(name, m.getBlackMsg());
                     context.append(m.getBlackMsg());
                     setLastErrMsg(null, context, m.getBlackMsg(), value, name);
                 } else {
@@ -113,9 +117,11 @@ public class FieldMatchManager {
             }
         }
 
-        if (notEmpty) {
+        // 匹配器不空，但是没有匹配上，则返回false
+        if (!matcherEmpty) {
             if (whiteOrBlack) {
                 context.append(errMsgList);
+                context.putKeyAndErrMsg(name, String.join(";", errMsgList));
             }
 
             return false;

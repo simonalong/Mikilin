@@ -14,6 +14,8 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.simonalong.mikilin.MkConstant.PARENT_KEY;
+
 /**
  * @author zhouzhenyong
  * @since 2018/12/24 下午10:31
@@ -44,6 +46,7 @@ final class CheckDelegate {
     /**
      * 判断自定义结构的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      *
+     * @param parentField 属性对应的结构（如果结构为顶级则会null）
      * @param object 为集合、Map和自定义结构，其中待核查类型，为另外一个重载函数
      * @param fieldSet 待核查的属性的集合
      * @param objectFieldMap 自定义对象属性的核查影射，key为类的名字，value为类中对应的属性名字
@@ -51,7 +54,7 @@ final class CheckDelegate {
      * @param blackSet 对象属性集合的不可用值列表
      * @return false：如果对象中有某个属性不可用 true：所有属性都可用
      */
-    boolean available(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean available(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             return true;
         }
@@ -62,16 +65,16 @@ final class CheckDelegate {
             return true;
         } else if (Collection.class.isAssignableFrom(cls)) {
             // 集合类型
-            return availableOfCollection(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+            return availableOfCollection(parentField, object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } else if (Map.class.isAssignableFrom(cls)) {
             // map类型
-            return availableOfMap(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+            return availableOfMap(parentField, object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } else if (cls.isArray()) {
             // 数组类型
-            return availableOfArray(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+            return availableOfArray(parentField, object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } else {
             // 自定义类型
-            return availableOfCustomize(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+            return availableOfCustomize(parentField, object, fieldSet, objectFieldMap, whiteSet, blackSet);
         }
     }
 
@@ -98,23 +101,41 @@ final class CheckDelegate {
         return true;
     }
 
-    private boolean availableOfCollection(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean available(Method method, Object[] parameterValues, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查自己的所有属性和继承的父类的public属性
+        Parameter[] parameters = method.getParameters();
+        context.beforeErrMsg();
+
+        for (int index = 0; index < parameters.length; index++) {
+            Parameter parameter = parameters[index];
+            Object parameterValue = parameterValues[index];
+            if (!available(parameterValue, method, parameter, whiteSet, blackSet)) {
+                context.append("函数 {0} 的参数 {1} 核查失败", method.getName(), parameter.getName());
+                context.flush(PARENT_KEY);
+                return false;
+            }
+        }
+        context.poll();
+        return true;
+    }
+
+    private boolean availableOfCollection(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         // 集合类型，则剥离集合，获取泛型的类型再进行判断
         Collection<?> collection = (Collection<?>) object;
         if (!CollectionUtil.isEmpty(collection)) {
-            return collection.stream().allMatch(c -> available(c, fieldSet, objectFieldMap, whiteSet, blackSet));
+            return collection.stream().allMatch(c -> available(parentField, c, fieldSet, objectFieldMap, whiteSet, blackSet));
         } else {
             // 为空则忽略
             return true;
         }
     }
 
-    private boolean availableOfMap(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfMap(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         // Map 结构中的数据的判断，目前只判断value中的值
         Map<?, ?> map = (Map<?, ?>) object;
         if (!CollectionUtil.isEmpty(map)) {
             // 检查所有不合法属性
-            boolean allMatch = map.values().stream().filter(Objects::nonNull).allMatch(v -> available(v, fieldSet, objectFieldMap, whiteSet, blackSet));
+            boolean allMatch = map.values().stream().filter(Objects::nonNull).allMatch(v -> available(parentField, v, fieldSet, objectFieldMap, whiteSet, blackSet));
             if (allMatch) {
                 return true;
             }
@@ -126,12 +147,12 @@ final class CheckDelegate {
         }
     }
 
-    private boolean availableOfArray(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfArray(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         // 数组类型处理
         boolean available = true;
         int arrayLength = Array.getLength(object);
         for (int index = 0; index < arrayLength; index++) {
-            if (!available(Array.get(object, index), fieldSet, objectFieldMap, whiteSet, blackSet)) {
+            if (!available(parentField, Array.get(object, index), fieldSet, objectFieldMap, whiteSet, blackSet)) {
                 available = false;
                 break;
             }
@@ -144,7 +165,7 @@ final class CheckDelegate {
         return true;
     }
 
-    private boolean availableOfCustomize(Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfCustomize(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         // 自定义类型的话，则需要核查当前属性是否需要核查，不需要核查则略过
         if (!objectNeedCheck(object, objectFieldMap)) {
             return true;
@@ -152,12 +173,24 @@ final class CheckDelegate {
 
         // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查自己的所有属性和继承的父类的public属性
         List<Field> fieldList = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains).collect(Collectors.toList());
+        if(null == parentField) {
+            context.beforeErrMsg();
+        } else {
+            context.beforeErrMsg();
+        }
+
         for (Field field : fieldList) {
             if (!available(object, field, objectFieldMap, whiteSet, blackSet)) {
                 context.append("类型 {0} 核查失败", object.getClass().getSimpleName());
+                if (null != parentField) {
+                    context.flush(parentField.getName());
+                } else {
+                    context.flush(PARENT_KEY);
+                }
                 return false;
             }
         }
+        context.poll();
         return true;
     }
 
@@ -172,9 +205,7 @@ final class CheckDelegate {
      * @return true 可用， false 不可用
      */
     private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
-        Class<?> cls = field.getType();
-
-        if (ClassUtil.isCheckedType(cls)) {
+        if (ClassUtil.isCheckedType(field.getType())) {
             // 待核查类型，则直接校验
             return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
         } else {
@@ -191,7 +222,7 @@ final class CheckDelegate {
             if (field.isAnnotationPresent(Check.class)) {
                 try {
                     field.setAccessible(true);
-                    result = available(field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
+                    result = doAvailable(field, field.get(object), objectFieldMap, whiteGroupMather, blackGroupMather);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -221,12 +252,12 @@ final class CheckDelegate {
         return !whiteEmpty || !blackEmpty;
     }
 
-    private boolean available(Object object, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean doAvailable(Field parentField, Object object, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         if (null == object) {
             return true;
         }
 
-        return available(object, ClassUtil.allFieldsOfClass(ClassUtil.peel(object)), objectFieldMap, whiteSet, blackSet);
+        return available(parentField, object, ClassUtil.allFieldsOfClass(ClassUtil.peel(object)), objectFieldMap, whiteSet, blackSet);
     }
 
     /**
@@ -422,10 +453,14 @@ final class CheckDelegate {
     }
 
     String getErrMsgChain() {
-        return context.getErrMsgChain();
+        return context.getErrMsgChainLocal();
     }
 
     String getErrMsg () {
         return context.getLastErrMsg();
+    }
+
+    Map<String, Object> getErrMsgMap () {
+        return context.getErrMsgMap();
     }
 }

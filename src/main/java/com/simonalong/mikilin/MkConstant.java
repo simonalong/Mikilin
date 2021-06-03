@@ -14,4 +14,8 @@ public interface MkConstant {
      * 日志前缀
      */
     String MK_LOG_PRE = "[mikilin] ";
+    /**
+     * 父节点前缀
+     */
+    String PARENT_KEY = "root";
 }

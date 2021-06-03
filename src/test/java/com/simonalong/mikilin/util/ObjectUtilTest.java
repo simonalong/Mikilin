@@ -76,7 +76,7 @@ public class ObjectUtilTest {
     @SneakyThrows
     public void parseObjectTest3() {
         // T
-        TypeVariableEntity typeEntity = new TypeVariableEntity();
+        TypeVariableEntity<DataEntity> typeEntity = new TypeVariableEntity<>();
         typeEntity.setData(new DataEntity().setName("a"));
         Field field = typeEntity.getClass().getDeclaredField("data");
         field.setAccessible(true);
@@ -87,7 +87,7 @@ public class ObjectUtilTest {
         List<DataEntity> dataEntityList = new ArrayList<>();
         dataEntityList.add(new DataEntity().setName("a"));
         dataEntityList.add(new DataEntity().setName("b"));
-        TypeVariableEntity typeEntity2 = new TypeVariableEntity();
+        TypeVariableEntity<DataEntity> typeEntity2 = new TypeVariableEntity<>();
         typeEntity2.setDataList(dataEntityList);
         Field field2 = typeEntity2.getClass().getDeclaredField("dataList");
         field2.setAccessible(true);
@@ -102,7 +102,7 @@ public class ObjectUtilTest {
         DataEntity[] dataEntities1 = new DataEntity[3];
         dataEntities1[0] = new DataEntity().setName("a");
         dataEntities1[1] = new DataEntity().setName("b");
-        GenericArrayTypeEntity genericEntity1 = new GenericArrayTypeEntity();
+        GenericArrayTypeEntity<DataEntity> genericEntity1 = new GenericArrayTypeEntity<>();
         genericEntity1.setDataArray(dataEntities1);
         Field field1 = genericEntity1.getClass().getDeclaredField("dataArray");
         field1.setAccessible(true);
@@ -110,7 +110,7 @@ public class ObjectUtilTest {
         System.out.println(ObjectUtil.parseObject(field1.get(genericEntity1)));
 
         // T[] 数据为空
-        GenericArrayTypeEntity genericEntity2 = new GenericArrayTypeEntity();
+        GenericArrayTypeEntity<DataEntity> genericEntity2 = new GenericArrayTypeEntity<>();
         Field field2 = genericEntity2.getClass().getDeclaredField("dataArray");
         field2.setAccessible(true);
         // null
@@ -125,7 +125,7 @@ public class ObjectUtilTest {
         DataEntity[][] dataEntities1 = new DataEntity[3][3];
         dataEntities1[0][0] = new DataEntity().setName("a");
         dataEntities1[0][1] = new DataEntity().setName("b");
-        GenericArrayTypeEntity genericEntity1 = new GenericArrayTypeEntity();
+        GenericArrayTypeEntity<DataEntity> genericEntity1 = new GenericArrayTypeEntity<>();
         genericEntity1.setDataArrays(dataEntities1);
         Field field1 = genericEntity1.getClass().getDeclaredField("dataArrays");
         field1.setAccessible(true);
@@ -133,7 +133,7 @@ public class ObjectUtilTest {
         System.out.println(ObjectUtil.parseObject(field1.get(genericEntity1)));
 
         // T[][] 但是数据为空
-        GenericArrayTypeEntity genericEntity2 = new GenericArrayTypeEntity();
+        GenericArrayTypeEntity<DataEntity> genericEntity2 = new GenericArrayTypeEntity<>();
         Field field2 = genericEntity2.getClass().getDeclaredField("dataArrays");
         field2.setAccessible(true);
         // null

@@ -16,6 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.simonalong.mikilin.MkConstant.DEFAULT_GROUP;
+import static com.simonalong.mikilin.MkConstant.PARENT_KEY;
+
 /**
  * @author shizi
  * @since 2020/3/3 上午12:16
@@ -61,7 +64,7 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(Object object) {
-        return check(MkConstant.DEFAULT_GROUP, object);
+        return check(DEFAULT_GROUP, object);
     }
 
     /**
@@ -72,8 +75,9 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(Object object, String... fieldSet) {
-        return check(MkConstant.DEFAULT_GROUP, object, fieldSet);
+        return check(DEFAULT_GROUP, object, fieldSet);
     }
+
 
     /**
      * 针对对象参数进行核查
@@ -95,7 +99,7 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object) {
-        String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
+        String groupDelegate = (null == group || "".equals(group)) ? DEFAULT_GROUP : group;
         if (ObjectUtil.isEmpty(object)) {
             return true;
         }
@@ -119,7 +123,7 @@ public final class MkValidators {
      */
     public boolean check(String group, Method method, Parameter parameter, Object baseValue) {
         String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
-        generateObjFieldMap(method, parameter);
+        generateObjFieldMap(method);
         return check(groupDelegate, baseValue, method, parameter, getWhiteMap(), getBlackMap());
     }
 
@@ -132,7 +136,7 @@ public final class MkValidators {
      * @return true：核查成功不拦截，false：核查失败进行拦截
      */
     public boolean check(String group, Object object, String... fieldSet) {
-        String groupDelegate = (null == group || "".equals(group)) ? MkConstant.DEFAULT_GROUP : group;
+        String groupDelegate = (null == group || "".equals(group)) ? DEFAULT_GROUP : group;
         if (ObjectUtil.isEmpty(object)) {
             return true;
         }
@@ -143,6 +147,31 @@ public final class MkValidators {
         } else {
             return check(groupDelegate, object, getFieldToCheck(ClassUtil.peel(object), new HashSet<>(Arrays.asList(fieldSet))), getObjFieldMap(object), getWhiteMap(), getBlackMap());
         }
+    }
+
+    /**
+     * 针对对象参数进行核查
+     *
+     * @param method   待核查参数所在的函数
+     * @param parameterValues 待核查参数对应的值
+     * @return true：核查成功不拦截，false：核查失败进行拦截
+     */
+    public boolean check(Method method, Object[] parameterValues) {
+        return check(DEFAULT_GROUP, method, parameterValues);
+    }
+
+    /**
+     * 自定义的复杂类型校验，待核查类型校验不校验，直接返回true
+     *
+     * @param group     分组，为空则采用默认，为"_default_"，详{@link MkConstant#DEFAULT_GROUP}
+     * @param method    待核查参数所在函数
+     * @param parameterValues 待核查参数对应的值
+     * @return true：核查成功不拦截，false：核查失败进行拦截
+     */
+    public boolean check(String group, Method method, Object[] parameterValues) {
+        String groupDelegate = (null == group || "".equals(group)) ? DEFAULT_GROUP : group;
+        generateObjFieldMap(method);
+        return check(groupDelegate, method, parameterValues, getWhiteMap(), getBlackMap());
     }
 
     /**
@@ -250,22 +279,21 @@ public final class MkValidators {
     }
 
     /**
-     * 用于索引列表和黑白名单列表核查
+     * 核查对象的对应属性
      *
      * @param group          分组
      * @param object         待核查的对象
      * @param fieldSet       待核查的属性
      * @param objectFieldMap 对象的属性映射表，key为类的canonicalName，value为当前类的属性的集合
-     * @param whiteSet       属性的白名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的可用值
-     * @param blackSet       属性的黑名单映射表，key为类的canonicalName，value为map，其中key为属性的名字，value为属性的禁用值
+     * @param whiteSet 参数的白名单映射表，key为group，value为白名单匹配管理器
+     * @param blackSet 参数的黑名单映射表，key为group，value为黑名单匹配管理器
      * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         delegate.setParameter(group, object);
         try {
-            return delegate.available(object, fieldSet, objectFieldMap, whiteSet, blackSet);
+            return delegate.available(null, object, fieldSet, objectFieldMap, whiteSet, blackSet);
         } finally {
-            // 防止threadLocal对应的group没有释放
             delegate.clear();
         }
     }
@@ -273,9 +301,30 @@ public final class MkValidators {
     private boolean check(String group, Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         delegate.setParameter(group, object);
         try {
+            context.beforeErrMsg();
             return delegate.available(object, method, parameter, whiteSet, blackSet);
         } finally {
+            context.poll();
             // 防止threadLocal对应的group没有释放
+            delegate.clear();
+        }
+    }
+
+    /**
+     * 核查函数的所有参数
+     *
+     * @param group           分组
+     * @param method          待核查的函数
+     * @param parameterValues 参数的值
+     * @param whiteSet        参数的白名单映射表，key为group，value为白名单匹配管理器
+     * @param blackSet        参数的黑名单映射表，key为group，value为黑名单匹配管理器
+     * @return
+     */
+    private boolean check(String group, Method method, Object[] parameterValues, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        delegate.setParameter(group, parameterValues);
+        try {
+            return delegate.available(method, parameterValues, whiteSet, blackSet);
+        } finally {
             delegate.clear();
         }
     }
@@ -289,6 +338,10 @@ public final class MkValidators {
      */
     public String getErrMsgChain() {
         return delegate.getErrMsgChain();
+    }
+
+    public Map<String, Object> getErrMsgMap() {
+        return delegate.getErrMsgMap();
     }
 
     /**
@@ -316,11 +369,7 @@ public final class MkValidators {
         return objectFieldCheckMap;
     }
 
-    private void generateObjFieldMap(Method method, Object object) {
-        if (null == object) {
-            return;
-        }
-
+    private void generateObjFieldMap(Method method) {
         // 若对象已经创建属性索引树，则直接返回
         if (objectFieldCheckMap.containsKey(ObjectUtil.getMethodCanonicalName(method))) {
             return;

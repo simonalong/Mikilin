@@ -5,7 +5,8 @@ import org.junit.Assert
 import spock.lang.Specification
 
 /**
- * @author shizi* @since 2021-03-31 16:17:53
+ * @author shizi
+ * @since 2021-03-31 16:17:53
  */
 class CheckTest extends Specification {
 

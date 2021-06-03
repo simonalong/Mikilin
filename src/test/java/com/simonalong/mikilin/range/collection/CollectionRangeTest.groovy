@@ -5,7 +5,8 @@ import org.junit.Assert
 import spock.lang.Specification
 
 /**
- * @author zhouzhenyong* @since 2019-09-15 21:29
+ * @author zhouzhenyong
+ * @since 2019-09-15 21:29
  */
 class CollectionRangeTest extends Specification {
 

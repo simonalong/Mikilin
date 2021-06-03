@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class MatchManager {
 
     /**
-     * 存储对象和属性以及属性对应的匹配器的映射，key为类的全路径，二级key为类的属性名字，二级value为属性的多个判断核查器
+     * 存储对象和属性以及属性对应的匹配器的映射，key为类的全路径（或者方法的全限定名），二级key为类的属性名字（或者参数的名字），二级value为属性的多个判断核查器
      */
     private final Map<String, Map<String, List<FieldMatchManager>>> targetFieldMap;
 

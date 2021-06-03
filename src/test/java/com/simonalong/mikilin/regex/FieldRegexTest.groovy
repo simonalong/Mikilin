@@ -5,7 +5,8 @@ import org.junit.Assert
 import spock.lang.Specification
 
 /**
- * @author zhouzhenyong* @since 2019/3/10 下午10:16
+ * @author zhouzhenyong
+ * @since 2019/3/10 下午10:16
  */
 class FieldRegexTest extends Specification {
 
