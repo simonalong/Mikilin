@@ -97,6 +97,7 @@ public class MkAop {
         Parameter[] parameters = currentMethod.getParameters();
         Object[] args = pjp.getArgs();
         boolean available = true;
+        String errMsg = "";
         Map<String, Object> errMsgMap = new ConcurrentHashMap<>();
         for (int index = 0; index < args.length; index++) {
             Object arg = args[index];
@@ -120,14 +121,17 @@ public class MkAop {
 
                 if (!innerAvailable) {
                     errMsgMap.putAll(MkValidators.getErrMsgMap());
+                    errMsg = MkValidators.getErrMsg();
                     available = false;
                 }
             }
         }
 
         if (!available) {
-            MkCheckException exception = new MkCheckException("");
-            exception.setErrMsgMap(errMsgMap);
+            MkCheckException exception = new MkCheckException(errMsg);
+            if (!errMsgMap.isEmpty()) {
+                exception.setErrMsgMap(errMsgMap);
+            }
             throw exception;
         }
     }
