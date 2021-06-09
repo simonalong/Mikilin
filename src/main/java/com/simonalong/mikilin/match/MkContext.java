@@ -73,20 +73,13 @@ public class MkContext {
         }
     }
 
-    public void putKeyAndErrMsg(String fieldName, String errMsg) {
+    protected void putKeyAndErrMsg(String fieldName, String errMsg) {
+        if (null == errMsg || "".equals(errMsg)) {
+            return;
+        }
         Map<String, Object> errMsgMap = errMsgDequeLocal.get().peek();
         if (null != errMsgMap) {
-            errMsgMap.compute(fieldName, (k, v) -> {
-                if (null == v) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(errMsg);
-                    return stringBuilder;
-                } else {
-                    StringBuilder stringBuilder = (StringBuilder) v;
-                    stringBuilder.append(errMsg);
-                    return stringBuilder;
-                }
-            });
+            errMsgMap.putIfAbsent(fieldName, errMsg);
         } else {
             errMsgMap = new ConcurrentHashMap<>();
             errMsgMap.put(fieldName, errMsg);

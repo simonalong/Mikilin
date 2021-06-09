@@ -64,7 +64,12 @@ public class FieldMatchManager {
             matcherEmpty = false;
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
-                    context.putKeyAndErrMsg(name, m.getBlackMsg());
+                    if(null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
+                        context.putKeyAndErrMsg(name, m.getBlackMsg());
+                    } else {
+                        context.putKeyAndErrMsg(name, context.getLastErrMsg());
+                    }
+
                     context.append(m.getBlackMsg());
                     setLastErrMsg(object, context, m.getBlackMsg(), value, name);
                 } else {
@@ -83,9 +88,13 @@ public class FieldMatchManager {
         if (!matcherEmpty) {
             if (whiteOrBlack) {
                 context.append(errMsgList);
-                context.putKeyAndErrMsg(name, String.join(";", errMsgList));
             }
 
+            if(null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
+                context.putKeyAndErrMsg(name, String.join(",", errMsgList));
+            } else {
+                context.putKeyAndErrMsg(name, context.getLastErrMsg());
+            }
             return false;
         }
         return true;
@@ -121,9 +130,9 @@ public class FieldMatchManager {
         if (!matcherEmpty) {
             if (whiteOrBlack) {
                 context.append(errMsgList);
-                context.putKeyAndErrMsg(name, String.join(";", errMsgList));
             }
 
+            context.putKeyAndErrMsg(name, context.getLastErrMsg());
             return false;
         }
         return true;
@@ -133,11 +142,11 @@ public class FieldMatchManager {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
                 if (null == context.getLastErrMsg()) {
-                    context.setLastErrMsg("属性(" + fieldName + ")核查失败：" + parseErrMsg(object, value));
+                    context.setLastErrMsg(parseErrMsg(object, value));
                 }
             } else {
                 if (null == context.getLastErrMsg()) {
-                    context.setLastErrMsg("属性(" + fieldName + ")核查失败：" + sysErrMsg);
+                    context.setLastErrMsg(sysErrMsg);
                 }
             }
         }

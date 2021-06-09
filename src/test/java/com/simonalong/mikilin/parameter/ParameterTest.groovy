@@ -3,7 +3,6 @@ package com.simonalong.mikilin.parameter
 import com.alibaba.fastjson.JSON
 import com.simonalong.mikilin.MkValidators
 import com.simonalong.mikilin.exception.MkCheckException
-import lombok.extern.slf4j.Slf4j
 import org.junit.Assert
 import spock.lang.Specification
 

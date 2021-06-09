@@ -1,5 +1,6 @@
 package com.simonalong.mikilin.customize
 
+import com.alibaba.fastjson.JSON
 import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
@@ -161,14 +162,15 @@ class CustomizeTest extends Specification {
         if (!actResult) {
             println MkValidators.getErrMsgChain()
             println MkValidators.getErrMsg()
+            Assert.assertEquals(errMsg, JSON.toJSONString(MkValidators.getErrMsgMap()))
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        fieldErrMsg | result
-        "mock1"     | true
-        "mock2"     | true
-        "mock3"     | true
-        "asdf"      | false
+        fieldErrMsg | result | errMsg
+        "mock1"     | true | ""
+        "mock2"     | true | ""
+        "mock3"     | true | ""
+        "asdf"      | false | "{\"fieldErrMsg2\":\"当前的值不符合需求\"}"
     }
 }
