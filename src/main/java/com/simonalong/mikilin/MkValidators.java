@@ -318,7 +318,7 @@ public final class MkValidators {
      * @param parameterValues 参数的值
      * @param whiteSet        参数的白名单映射表，key为group，value为白名单匹配管理器
      * @param blackSet        参数的黑名单映射表，key为group，value为黑名单匹配管理器
-     * @return
+     * @return 核查结果 true：核查成功；false：核查失败
      */
     private boolean check(String group, Method method, Object[] parameterValues, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         delegate.setParameter(group, parameterValues);
