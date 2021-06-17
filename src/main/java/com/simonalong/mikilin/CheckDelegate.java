@@ -101,6 +101,17 @@ final class CheckDelegate {
         return true;
     }
 
+    boolean doAvailable(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        context.beforeErrMsg();
+        if (!available(object, method, parameter, whiteSet, blackSet)) {
+            context.flush(PARENT_KEY);
+            return false;
+        }
+
+        context.poll();
+        return true;
+    }
+
     boolean available(Method method, Object[] parameterValues, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查自己的所有属性和继承的父类的public属性
         Parameter[] parameters = method.getParameters();
@@ -173,11 +184,7 @@ final class CheckDelegate {
 
         // 自定义类型，所有匹配成功才算成功，如果对象中任何一个属性不可用，则对象不可用，这里要核查自己的所有属性和继承的父类的public属性
         List<Field> fieldList = ClassUtil.allFieldsOfClass(object.getClass()).stream().filter(fieldSet::contains).collect(Collectors.toList());
-        if(null == parentField) {
-            context.beforeErrMsg();
-        } else {
-            context.beforeErrMsg();
-        }
+        context.beforeErrMsg();
 
         for (Field field : fieldList) {
             if (!available(object, field, objectFieldMap, whiteSet, blackSet)) {

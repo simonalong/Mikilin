@@ -302,9 +302,8 @@ public final class MkValidators {
         delegate.setParameter(group, object);
         try {
             context.beforeErrMsg();
-            return delegate.available(object, method, parameter, whiteSet, blackSet);
+            return delegate.doAvailable(object, method, parameter, whiteSet, blackSet);
         } finally {
-            context.poll();
             // 防止threadLocal对应的group没有释放
             delegate.clear();
         }

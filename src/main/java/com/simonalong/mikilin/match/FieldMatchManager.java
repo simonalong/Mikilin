@@ -65,7 +65,7 @@ public class FieldMatchManager {
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
-                    setLastErrMsg(object, context, m.getBlackMsg(), value, name);
+                    setLastErrMsg(object, context, m.getBlackMsg(), value);
                 } else {
                     context.clearLog();
                 }
@@ -73,7 +73,7 @@ public class FieldMatchManager {
             } else {
                 if (whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    setLastErrMsg(object, context, m.getWhiteMsg(), value, name);
+                    setLastErrMsg(object, context, m.getWhiteMsg(), value);
                 }
             }
         }
@@ -105,9 +105,8 @@ public class FieldMatchManager {
             matcherEmpty = false;
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
-                    context.putKeyAndErrMsg(name, m.getBlackMsg());
                     context.append(m.getBlackMsg());
-                    setLastErrMsg(null, context, m.getBlackMsg(), value, name);
+                    setLastErrMsg(null, context, m.getBlackMsg(), value);
                 } else {
                     context.clearLog();
                 }
@@ -115,7 +114,7 @@ public class FieldMatchManager {
             } else {
                 if(whiteOrBlack) {
                     errMsgList.add(m.getWhiteMsg());
-                    setLastErrMsg(null, context, m.getWhiteMsg(), value, name);
+                    setLastErrMsg(null, context, m.getWhiteMsg(), value);
                 }
             }
         }
@@ -126,13 +125,17 @@ public class FieldMatchManager {
                 context.append(errMsgList);
             }
 
-            context.putKeyAndErrMsg(name, context.getLastErrMsg());
+            if(null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
+                context.putKeyAndErrMsg(name, String.join(",", errMsgList));
+            } else {
+                context.putKeyAndErrMsg(name, context.getLastErrMsg());
+            }
             return false;
         }
         return true;
     }
 
-    private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value, String fieldName) {
+    private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value) {
         if (null != sysErrMsg) {
             if (!"".equals(errMsg)) {
                 if (null == context.getLastErrMsg()) {
