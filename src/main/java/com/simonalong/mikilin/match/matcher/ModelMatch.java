@@ -5,6 +5,8 @@ import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.match.FieldModel;
 import com.simonalong.mikilin.util.ClassUtil;
 
+import java.lang.reflect.Field;
+
 /**
  * 指定的类型判断，对应{@link Matcher#model()}
  *

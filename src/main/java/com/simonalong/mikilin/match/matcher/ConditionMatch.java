@@ -37,6 +37,11 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
      */
     private String express;
     private String objectName;
+    /**
+     * 当前的属性
+     */
+    // todo
+    private Field field;
 
     @Override
     public boolean match(Object object, String name, Object value) {

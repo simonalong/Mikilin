@@ -166,6 +166,13 @@ public @interface Matcher {
     String errMsg() default "";
 
     /**
+     * 匹配后转换为某个值
+     *
+     * @return 待转换的值
+     */
+    String matchChangeTo() default "";
+
+    /**
      * 过滤器模式
      * <p>
      * 其他的属性都是匹配，而该属性表示匹配之后对应的数据的处理，是接受放进来，还是只拒绝这样的数据
