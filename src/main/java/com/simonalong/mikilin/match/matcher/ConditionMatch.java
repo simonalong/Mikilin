@@ -40,13 +40,22 @@ public class ConditionMatch extends AbstractBlackWhiteMatch {
     /**
      * 当前的属性
      */
-    // todo
     private Field field;
+    /**
+     * 匹配上要转换为的值
+     */
+    private Object changeToValue;
 
     @Override
     public boolean match(Object object, String name, Object value) {
         if (predicate.test(object, value)) {
+            if (null != field && null != changeToValue) {
+                try {
+                    field.set(object, changeToValue);
+                } catch (IllegalAccessException ignore) {}
+            }
             setBlackMsg("属性 {0} 的值 {1} 命中禁用条件 {2} ", name, value, replaceSystem(express));
+
             return true;
         } else {
             setWhiteMsg("属性 {0} 的值 {1} 不符合条件 {2} ", name, value, replaceSystem(express));

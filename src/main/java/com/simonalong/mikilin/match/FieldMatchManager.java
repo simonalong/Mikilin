@@ -44,6 +44,10 @@ public class FieldMatchManager {
      * 属性核查禁用标示，对应{@link Matcher#disable()}
      */
     private Boolean disable;
+    /**
+     * 待转换的值
+     */
+    private Object toChangeValue;
 
     /**
      * 属性匹配匹配器
@@ -52,16 +56,11 @@ public class FieldMatchManager {
      * @param value 待校验的数据，就是属性的值
      * @param context 核查上下文
      * @param whiteOrBlack 黑白名单类型
-     * @return true：匹配任何一个匹配器返回true，或者匹配器为空，false：所有匹配器都没有匹配上
+     * @return true：匹配任何一个匹配器返回true，false：所有匹配器都没有匹配上
      */
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
-        boolean matcherEmpty = true;
         for (Match m : matchList) {
-            if (null == m || m.isEmpty()) {
-                continue;
-            }
-            matcherEmpty = false;
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
@@ -78,31 +77,21 @@ public class FieldMatchManager {
             }
         }
 
-        // 匹配器不空，但是没有匹配上，则返回false
-        if (!matcherEmpty) {
-            if (whiteOrBlack) {
-                context.append(errMsgList);
-            }
-
-            if(null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
-                context.putKeyAndErrMsg(name, String.join(",", errMsgList));
-            } else {
-                context.putKeyAndErrMsg(name, context.getLastErrMsg());
-            }
-            return false;
+        if (whiteOrBlack) {
+            context.append(errMsgList);
         }
-        return true;
+
+        if (null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
+            context.putKeyAndErrMsg(name, String.join(",", errMsgList));
+        } else {
+            context.putKeyAndErrMsg(name, context.getLastErrMsg());
+        }
+        return false;
     }
 
     public Boolean match(Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
-        boolean matcherEmpty = true;
         for (Match m : matchList) {
-            if (null == m || m.isEmpty()) {
-                continue;
-            }
-
-            matcherEmpty = false;
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
@@ -119,20 +108,16 @@ public class FieldMatchManager {
             }
         }
 
-        // 匹配器不空，但是没有匹配上，则返回false
-        if (!matcherEmpty) {
-            if (whiteOrBlack) {
-                context.append(errMsgList);
-            }
-
-            if(null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
-                context.putKeyAndErrMsg(name, String.join(",", errMsgList));
-            } else {
-                context.putKeyAndErrMsg(name, context.getLastErrMsg());
-            }
-            return false;
+        if (whiteOrBlack) {
+            context.append(errMsgList);
         }
-        return true;
+
+        if (null == context.getLastErrMsg() || "".equals(context.getLastErrMsg())) {
+            context.putKeyAndErrMsg(name, String.join(",", errMsgList));
+        } else {
+            context.putKeyAndErrMsg(name, context.getLastErrMsg());
+        }
+        return false;
     }
 
     private void setLastErrMsg(Object object, MkContext context, String sysErrMsg, Object value) {
@@ -184,7 +169,7 @@ public class FieldMatchManager {
     /**
      * 判断是否有匹配器不空，如果有任何一个匹配器不空，则可以启动属性判决
      *
-     * @return true：条件为空，false：条件不空
+     * @return true：匹配器全部为空，false：有匹配器不为空
      */
     public Boolean isEmpty() {
         if (disable) {
@@ -192,6 +177,19 @@ public class FieldMatchManager {
         }
 
         return matchList.stream().allMatch(Match::isEmpty);
+    }
+
+    /**
+     * 是否有匹配器不为空
+     *
+     * @return true：有匹配器不空，false：匹配器全部为空
+     */
+    public Boolean isUnEmpty() {
+        return !isEmpty();
+    }
+
+    public Boolean changeToValueIsEmpty() {
+        return "".equals(toChangeValue);
     }
 
     public static FieldMatchManager buildFromValid(Object value, Matcher validCheck, MkContext context) {
@@ -202,6 +200,7 @@ public class FieldMatchManager {
             .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
             .addMatcher(MatcherFactory.build(NotNullMatch.class, validCheck.notNull()))
             .setErrMsg(validCheck.errMsg())
+            .setToChangeValue(validCheck.matchChangeTo())
             .setDisable(validCheck.disable());
 
         if (value instanceof Field) {
