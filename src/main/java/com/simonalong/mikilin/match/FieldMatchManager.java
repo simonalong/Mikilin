@@ -47,7 +47,7 @@ public class FieldMatchManager {
     /**
      * 待转换的值
      */
-    private Object toChangeValue;
+    private String toChangeValue;
 
     /**
      * 属性匹配匹配器
@@ -61,6 +61,9 @@ public class FieldMatchManager {
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
         for (Match m : matchList) {
+            if (m.isEmpty()) {
+                continue;
+            }
             if (m.match(object, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());
@@ -92,6 +95,9 @@ public class FieldMatchManager {
     public Boolean match(Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();
         for (Match m : matchList) {
+            if (m.isEmpty()) {
+                continue;
+            }
             if (m.match(null, name, value)) {
                 if (!whiteOrBlack) {
                     context.append(m.getBlackMsg());

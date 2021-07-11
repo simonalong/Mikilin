@@ -167,6 +167,8 @@ public @interface Matcher {
 
     /**
      * 匹配后转换为某个值
+     * <p>
+     * 该值配置了，则不再进行匹配判断（即：accept不再使用）
      *
      * @return 待转换的值
      */

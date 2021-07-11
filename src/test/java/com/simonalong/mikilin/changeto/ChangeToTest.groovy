@@ -38,4 +38,50 @@ class ChangeToTest extends Specification {
         null    | "_default_"
         "hello" | "hello"
     }
+
+    def "测试属性匹配之后的转换3"() {
+        given:
+        ChangeEntity entity = new ChangeEntity().setAge2(age2)
+
+        expect:
+        MkValidators.check(entity, "age2");
+        Assert.assertEquals(ageAfter, entity.getAge2())
+
+        where:
+        age2 | ageAfter
+        12  | 30
+        12  | 30
+        23  | 30
+        25  | 25
+    }
+
+    def "测试属性匹配之后的转换4"() {
+        given:
+        ChangeEntity entity = new ChangeEntity().setAge3(age3)
+
+        expect:
+        MkValidators.check(entity, "age3")
+        Assert.assertEquals(ageAfter, entity.getAge3())
+
+        where:
+        age3 | ageAfter
+        12  | 30
+        16  | 30
+        25  | 25
+    }
+
+    def "测试属性匹配之后的转换5"() {
+        given:
+        ChangeEntity entity = new ChangeEntity().setAge4(age4)
+
+        expect:
+        MkValidators.check(entity, "age4");
+        Assert.assertEquals(ageAfter, entity.getAge4())
+
+        where:
+        age4 | ageAfter
+        12  | 30
+        12  | 30
+        25  | 25
+    }
 }

@@ -17,4 +17,13 @@ public class ChangeEntity {
 
     @Matcher(value = {"", "null"}, matchChangeTo = "_default_")
     private String name;
+
+    @Matcher(range = "[0, 20]", value = "23", matchChangeTo = "30")
+    private Integer age2;
+
+    @Matcher(range = "[0, 20]", matchChangeTo = "30", accept = false)
+    private Integer age3;
+
+    @Matcher(range = "[0, 20]", matchChangeTo = "30", accept = true)
+    private Integer age4;
 }

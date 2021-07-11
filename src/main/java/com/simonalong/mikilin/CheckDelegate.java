@@ -102,36 +102,7 @@ final class CheckDelegate {
         }
 
         return true;
-
-
-
-        boolean haveChangeTo = fieldChangeToIsEmpty(object, field, blackGroupMather);
-        boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
-        boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
-
-        // 有转换配置且为白名单
-        if (!haveChangeTo && whiteEmpty) {
-            fieldMatchAndChangeTo(object, field, whiteGroupMather);
-            return true;
-        }
-
-        // 黑白名单都有空，则不核查该参数，可用
-        if (whiteEmpty && blackEmpty) {
-            return true;
-        }
-
-        field.setAccessible(true);
-        // 黑名单不空，而且匹配到了，则不可用
-        if (!blackEmpty && fieldMatch(object, field, blackGroupMather, false)) {
-            return false;
-        }
-
-        // 白名单不空，而且该属性没有匹配到，则不可用
-        if (!whiteEmpty && !fieldMatch(object, field, whiteGroupMather, true)) {
-            return false;
-        }
-
-        return true;
+        // todo
     }
 
     boolean doAvailable(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
@@ -158,7 +129,8 @@ final class CheckDelegate {
             boolean haveChangeTo = fieldChangeToIsEmpty(method, parameter, whiteSet);
             // 有转换配置且为白名单
             if (!haveChangeTo && whiteEmpty) {
-                fieldMatchAndChangeTo(object, field, whiteGroupMather);
+                // todo
+//                fieldMatchAndChangeTo(object, field, whiteGroupMather);
                 return true;
             }
 
@@ -169,7 +141,7 @@ final class CheckDelegate {
             }
         }
 
-        method.invoke()
+//        method.invoke()
         context.poll();
         return true;
     }
@@ -322,13 +294,19 @@ final class CheckDelegate {
      */
     @SuppressWarnings("all")
     private boolean primaryFieldAvailable(Object object, Field field, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
-        boolean haveChangeTo = fieldChangeToIsEmpty(object, field, blackGroupMather);
-        boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
+        boolean changeToWhiteIsEmpty = fieldChangeToIsEmpty(object, field, whiteGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
 
         // 有转换配置且为白名单
-        if (!haveChangeTo && whiteEmpty) {
+        if (!changeToWhiteIsEmpty && !whiteEmpty) {
             fieldMatchAndChangeTo(object, field, whiteGroupMather);
+            return true;
+        }
+
+        boolean changeToBlackIsEmpty = fieldChangeToIsEmpty(object, field, blackGroupMather);
+        boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
+        if (!changeToBlackIsEmpty && !blackEmpty) {
+            fieldMatchAndChangeTo(object, field, blackGroupMather);
             return true;
         }
 
@@ -397,12 +375,12 @@ final class CheckDelegate {
         return true;
     }
 
-    private boolean fieldChangeToIsEmpty(Object object, Field field, Map<String, MatchManager> groupMather) {
-        if (checkAllMatcherDisable(object, field, groupMather)) {
+    private boolean fieldChangeToIsEmpty(Object object, Field field, Map<String, MatchManager> whiteGroupMatcher) {
+        if (checkAllMatcherDisable(object, field, whiteGroupMatcher)) {
             return true;
         }
 
-        Map<String, List<FieldMatchManager>> fieldValueSetMap = groupMather.get(localGroup.get()).getJudge(object.getClass().getCanonicalName());
+        Map<String, List<FieldMatchManager>> fieldValueSetMap = whiteGroupMatcher.get(localGroup.get()).getJudge(object.getClass().getCanonicalName());
         if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
             return fieldValueSetMap.get(field.getName()).stream().allMatch(FieldMatchManager::changeToValueIsEmpty);
         }
@@ -571,8 +549,8 @@ final class CheckDelegate {
                         field.setAccessible(true);
                         try {
                             // 有任何一个匹配器匹配上，则将该值进行转换
-                            if (fieldMatchManager.match(object, context, true)) {
-                                field.set(object, fieldMatchManager.getToChangeValue());
+                            if (fieldMatchManager.match(field.get(object), context, true)) {
+                                field.set(object, ObjectUtil.cast(field.getType(), fieldMatchManager.getToChangeValue()));
                                 log.debug("field属性 {} 满足匹配条件，对应的值转换为{}", field.getName(), fieldMatchManager.getToChangeValue());
                             }
                         } catch (IllegalAccessException ignore) {}
@@ -597,14 +575,15 @@ final class CheckDelegate {
                         if (fieldMatchManager.getDisable()) {
                             continue;
                         }
-
-                        try {
-                            // 有任何一个匹配器匹配上，则将该值进行转换
-                            if (fieldMatchManager.match(object, context, true)) {
-                                field.set(object, fieldMatchManager.getToChangeValue());
-                                log.debug("field属性 {} 满足匹配条件，对应的值转换为{}", field.getName(), fieldMatchManager.getToChangeValue());
-                            }
-                        } catch (IllegalAccessException ignore) {}
+//
+                         // todo
+//                        try {
+//                            // 有任何一个匹配器匹配上，则将该值进行转换
+//                            if (fieldMatchManager.match(object, context, true)) {
+////                                field.set(object, fieldMatchManager.getToChangeValue());
+////                                log.debug("field属性 {} 满足匹配条件，对应的值转换为{}", field.getName(), fieldMatchManager.getToChangeValue());
+//                            }
+//                        } catch (IllegalAccessException ignore) {}
                     }
                 }
             }
