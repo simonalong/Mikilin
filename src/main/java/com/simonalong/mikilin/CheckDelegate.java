@@ -48,15 +48,16 @@ final class CheckDelegate {
     /**
      * 判断自定义结构的数据值是否是可用的，这里判断逻辑是通过黑名单和白名单
      *
-     * @param parentField 属性对应的结构（如果结构为顶级则会null）
-     * @param object 为集合、Map和自定义结构，其中待核查类型，为另外一个重载函数
-     * @param fieldSet 待核查的属性的集合
+     * @param parentField    属性对应的结构（如果结构为顶级则会null）
+     * @param object         为集合、Map和自定义结构，其中待核查类型，为另外一个重载函数
+     * @param fieldSet       待核查的属性的集合
      * @param objectFieldMap 自定义对象属性的核查影射，key为类的名字，value为类中对应的属性名字
-     * @param whiteSet 对象属性集合的可用值列表
-     * @param blackSet 对象属性集合的不可用值列表
+     * @param whiteSet       对象属性集合的可用值列表
+     * @param blackSet       对象属性集合的不可用值列表
      * @return false：如果对象中有某个属性不可用 true：所有属性都可用
      */
-    boolean available(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean available(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         if (null == object) {
             return true;
         }
@@ -80,7 +81,8 @@ final class CheckDelegate {
         }
     }
 
-    boolean available(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean available(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         boolean changeToWhiteIsEmpty = fieldChangeToIsEmpty(method, parameter, whiteSet);
         boolean whiteEmpty = fieldCheckIsEmpty(method, parameter, whiteSet);
         Object parameterValue = parameterValues[parameterIndex];
@@ -148,7 +150,8 @@ final class CheckDelegate {
         return true;
     }
 
-    boolean doAvailable(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean doAvailable(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         context.beforeErrMsg();
         if (!available(method, parameter, parameterValues, parameterIndex, whiteSet, blackSet)) {
             context.flush(PARENT_KEY);
@@ -200,7 +203,8 @@ final class CheckDelegate {
         return true;
     }
 
-    private boolean availableOfCollection(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfCollection(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         // 集合类型，则剥离集合，获取泛型的类型再进行判断
         Collection<?> collection = (Collection<?>) object;
         if (!CollectionUtil.isEmpty(collection)) {
@@ -211,7 +215,8 @@ final class CheckDelegate {
         }
     }
 
-    private boolean availableOfMap(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfMap(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         // Map 结构中的数据的判断，目前只判断value中的值
         Map<?, ?> map = (Map<?, ?>) object;
         if (!CollectionUtil.isEmpty(map)) {
@@ -228,7 +233,8 @@ final class CheckDelegate {
         }
     }
 
-    private boolean availableOfArray(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfArray(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         // 数组类型处理
         boolean available = true;
         int arrayLength = Array.getLength(object);
@@ -246,7 +252,8 @@ final class CheckDelegate {
         return true;
     }
 
-    private boolean availableOfCustomize(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    private boolean availableOfCustomize(Field parentField, Object object, Set<Field> fieldSet, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteSet,
+        Map<String, MatchManager> blackSet) {
         // 自定义类型的话，则需要核查当前属性是否需要核查，不需要核查则略过
         if (!objectNeedCheck(object, objectFieldMap)) {
             return true;
@@ -274,14 +281,15 @@ final class CheckDelegate {
     /**
      * 根据属性的类型，判断属性的值是否在对应的值列表中
      *
-     * @param object 对象
-     * @param field 属性
+     * @param object           对象
+     * @param field            属性
      * @param whiteGroupMather 属性值可用值列表
      * @param blackGroupMather 属性值的不用值列表
-     * @param objectFieldMap 对象核查的属性映射
+     * @param objectFieldMap   对象核查的属性映射
      * @return true 可用， false 不可用
      */
-    private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
+    private boolean available(Object object, Field field, Map<String, Set<String>> objectFieldMap, Map<String, MatchManager> whiteGroupMather,
+        Map<String, MatchManager> blackGroupMather) {
         if (ClassUtil.isCheckedType(field.getType())) {
             // 待核查类型，则直接校验
             return primaryFieldAvailable(object, field, whiteGroupMather, blackGroupMather);
@@ -305,7 +313,7 @@ final class CheckDelegate {
                 }
             }
 
-            if(!result) {
+            if (!result) {
                 context.append("类型 {0} 的属性 {1} 核查失败", object.getClass().getSimpleName(), field.getName());
             }
             return result;
@@ -315,14 +323,13 @@ final class CheckDelegate {
     /**
      * 判断黑白名单是否都不包含该属性
      *
-     * @param object 对象
-     * @param field 属性
+     * @param object           对象
+     * @param field            属性
      * @param whiteGroupMather 属性值可用值列表
      * @param blackGroupMather 属性值的不用值列表
      * @return true：都不包含该属性，false：有包含该属性
      */
-    private boolean matcherContainField(Object object, Field field, Map<String, MatchManager> whiteGroupMather,
-        Map<String, MatchManager> blackGroupMather){
+    private boolean matcherContainField(Object object, Field field, Map<String, MatchManager> whiteGroupMather, Map<String, MatchManager> blackGroupMather) {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         boolean whiteEmpty = fieldCheckIsEmpty(object, field, whiteGroupMather);
         // 黑白名单有任何一个不空，则可以进行匹配
@@ -340,8 +347,8 @@ final class CheckDelegate {
     /**
      * 判断对象的一个基本属性是否可用
      *
-     * @param object 属性的对象
-     * @param field 属性
+     * @param object           属性的对象
+     * @param field            属性
      * @param whiteGroupMather 属性的可用值列表
      * @param blackGroupMather 属性的不可用值列表
      * @return true：可用，false：不可用
@@ -386,7 +393,7 @@ final class CheckDelegate {
     /**
      * 判断对象是否需要继续核查
      *
-     * @param object 待判决对象
+     * @param object         待判决对象
      * @param objectFieldMap 对象和属性的映射map
      * @return true 对象需要继续核查 false 对象不需要通过黑白名单核查
      */
@@ -400,8 +407,8 @@ final class CheckDelegate {
     /**
      * 对象的所有判断是否都为空
      *
-     * @param object 对象
-     * @param field 对象的属性
+     * @param object      对象
+     * @param field       对象的属性
      * @param groupMather 可用或者不可用的分组匹配器
      * @return true:所有为空，false属性都有
      */
@@ -457,8 +464,8 @@ final class CheckDelegate {
     /**
      * 返回当前属性的所有匹配器是否都禁用
      *
-     * @param object 待核查对象
-     * @param field 对象的属性
+     * @param object      待核查对象
+     * @param field       对象的属性
      * @param groupMather 组匹配器
      * @return true 都禁用，false 有可用的
      */
@@ -503,9 +510,9 @@ final class CheckDelegate {
     /**
      * 对象的某个属性进行匹配
      *
-     * @param object 对象
-     * @param field 对象的属性
-     * @param groupMather 可用或者不可用数据
+     * @param object       对象
+     * @param field        对象的属性
+     * @param groupMather  可用或者不可用数据
      * @param whiteOrBlack 黑白名单标示
      * @return true：有匹配器匹配上（匹配器内部任何一个匹配项匹配上就叫匹配上）则返回true，false：所有匹配器都没有匹配上（匹配器内部的所有匹配项都没有匹配上）则返回false
      */
@@ -645,11 +652,11 @@ final class CheckDelegate {
         return context.getErrMsgChainLocal();
     }
 
-    String getErrMsg () {
+    String getErrMsg() {
         return context.getLastErrMsg();
     }
 
-    Map<String, Object> getErrMsgMap () {
+    Map<String, Object> getErrMsgMap() {
         return context.getErrMsgMap();
     }
 }
