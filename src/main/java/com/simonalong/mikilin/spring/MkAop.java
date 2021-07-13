@@ -13,10 +13,13 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class MkAop {
      * @return 执行后对象
      * @throws Throwable 所有类型异常
      */
-    @Around("@within(com.isyscore.isc.mikilin.annotation.AutoCheck) || @annotation(com.isyscore.isc.mikilin.annotation.AutoCheck)")
+    @Around("@within(com.simonalong.mikilin.annotation.AutoCheck) || @annotation(com.simonalong.mikilin.annotation.AutoCheck)")
     public Object aroundParameter(ProceedingJoinPoint pjp) throws Throwable {
         String funStr = pjp.getSignature().toLongString();
         Object result;
@@ -114,7 +117,7 @@ public class MkAop {
                 boolean innerAvailable;
                 // 如果是基本类型，则采用核查参数的方式
                 if (ClassUtil.isCheckedType(arg.getClass())) {
-                    innerAvailable = MkValidators.check(group, currentMethod, parameters[index], arg);
+                    innerAvailable = MkValidators.check(group, currentMethod, parameters[index], args, index);
                 } else {
                     innerAvailable = MkValidators.check(group, arg);
                 }
@@ -124,6 +127,19 @@ public class MkAop {
                     errMsg = MkValidators.getErrMsg();
                     available = false;
                 }
+            }
+        }
+
+        // 将参数修改
+        if (pjp instanceof MethodInvocationProceedingJoinPoint) {
+            Field methodInvocationField;
+            try {
+                methodInvocationField = pjp.getClass().getDeclaredField("methodInvocation");
+                methodInvocationField.setAccessible(true);
+                ProxyMethodInvocation methodInvocation = (ProxyMethodInvocation) methodInvocationField.get(pjp);
+                methodInvocation.setArguments(args);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
 

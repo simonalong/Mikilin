@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class ParameterEntity {
+public class ParameterFunService {
 
     public String funValue(
         @Matcher(value = {"zhou", "song"}) String name,

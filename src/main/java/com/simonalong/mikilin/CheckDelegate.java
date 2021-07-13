@@ -80,9 +80,53 @@ final class CheckDelegate {
         }
     }
 
-    boolean available(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
-        boolean blackEmpty = fieldCheckIsEmpty(method, parameter, blackSet);
+    boolean available(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        boolean changeToWhiteIsEmpty = fieldChangeToIsEmpty(method, parameter, whiteSet);
         boolean whiteEmpty = fieldCheckIsEmpty(method, parameter, whiteSet);
+        Object parameterValue = parameterValues[parameterIndex];
+
+        // 有转换配置且为白名单
+        if (!changeToWhiteIsEmpty && !whiteEmpty) {
+            String changeToValue = fieldMatchAndChangeTo(parameterValue, method, parameter, whiteSet);
+            if (null != changeToValue && !"".equals(changeToValue)) {
+                parameterValues[parameterIndex] = ObjectUtil.cast(parameter.getType(), changeToValue);
+            }
+            return true;
+        }
+
+        boolean changeToBlackIsEmpty = fieldChangeToIsEmpty(method, parameter, blackSet);
+        boolean blackEmpty = fieldCheckIsEmpty(method, parameter, blackSet);
+        if (!changeToBlackIsEmpty && !blackEmpty) {
+            String changeToValue = fieldMatchAndChangeTo(parameterValue, method, parameter, blackSet);
+            if (null != changeToValue && !"".equals(changeToValue)) {
+                parameterValues[parameterIndex] = ObjectUtil.cast(parameter.getType(), changeToValue);
+            }
+            return true;
+        }
+
+        // 黑白名单都有空，则不核查该参数，可用
+        if (whiteEmpty && blackEmpty) {
+            return true;
+        }
+
+        // 黑名单不空，而且匹配到了，则不可用
+        if (!blackEmpty && fieldMatch(parameterValue, method, parameter, blackSet, false)) {
+            context.append("参数 {0} 核查失败", parameter.getName());
+            return false;
+        }
+
+        // 白名单不空，而且该属性没有匹配到，则不可用
+        if (!whiteEmpty && !fieldMatch(parameterValue, method, parameter, whiteSet, true)) {
+            context.append("参数 {0} 核查失败", parameter.getName());
+            return false;
+        }
+
+        return true;
+    }
+
+    boolean available(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+        boolean whiteEmpty = fieldCheckIsEmpty(method, parameter, whiteSet);
+        boolean blackEmpty = fieldCheckIsEmpty(method, parameter, blackSet);
 
         // 黑白名单都有空，则不核查该参数，可用
         if (whiteEmpty && blackEmpty) {
@@ -102,12 +146,11 @@ final class CheckDelegate {
         }
 
         return true;
-        // todo
     }
 
-    boolean doAvailable(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
+    boolean doAvailable(Method method, Parameter parameter, Object[] parameterValues, Integer parameterIndex, Map<String, MatchManager> whiteSet, Map<String, MatchManager> blackSet) {
         context.beforeErrMsg();
-        if (!available(object, method, parameter, whiteSet, blackSet)) {
+        if (!available(method, parameter, parameterValues, parameterIndex, whiteSet, blackSet)) {
             context.flush(PARENT_KEY);
             return false;
         }
@@ -124,14 +167,26 @@ final class CheckDelegate {
         for (int index = 0; index < parameters.length; index++) {
             Parameter parameter = parameters[index];
             Object parameterValue = parameterValues[index];
-
+            boolean changeToWhiteIsEmpty = fieldChangeToIsEmpty(method, parameter, whiteSet);
             boolean whiteEmpty = fieldCheckIsEmpty(method, parameter, whiteSet);
-            boolean haveChangeTo = fieldChangeToIsEmpty(method, parameter, whiteSet);
+
             // 有转换配置且为白名单
-            if (!haveChangeTo && whiteEmpty) {
-                // todo
-//                fieldMatchAndChangeTo(object, field, whiteGroupMather);
-                return true;
+            if (!changeToWhiteIsEmpty && !whiteEmpty) {
+                String changeToValue = fieldMatchAndChangeTo(parameterValue, method, parameter, whiteSet);
+                if (null != changeToValue && !"".equals(changeToValue)) {
+                    parameterValues[index] = ObjectUtil.cast(parameter.getType(), changeToValue);
+                }
+                continue;
+            }
+
+            boolean changeToBlackIsEmpty = fieldChangeToIsEmpty(method, parameter, blackSet);
+            boolean blackEmpty = fieldCheckIsEmpty(method, parameter, blackSet);
+            if (!changeToBlackIsEmpty && !blackEmpty) {
+                String changeToValue = fieldMatchAndChangeTo(parameterValue, method, parameter, blackSet);
+                if (null != changeToValue && !"".equals(changeToValue)) {
+                    parameterValues[index] = ObjectUtil.cast(parameter.getType(), changeToValue);
+                }
+                continue;
             }
 
             if (!available(parameterValue, method, parameter, whiteSet, blackSet)) {
@@ -141,7 +196,6 @@ final class CheckDelegate {
             }
         }
 
-//        method.invoke()
         context.poll();
         return true;
     }
@@ -560,14 +614,14 @@ final class CheckDelegate {
         }
     }
 
-    private void fieldMatchAndChangeTo(Object object, Method method, Parameter parameter, Map<String, MatchManager> whiteGroupMather) {
-        if (checkAllMatcherDisable(method, parameter, whiteGroupMather)) {
-            return;
+    private String fieldMatchAndChangeTo(Object object, Method method, Parameter parameter, Map<String, MatchManager> whitGroupMatcher) {
+        if (checkAllMatcherDisable(method, parameter, whitGroupMatcher)) {
+            return null;
         }
 
         String group = localGroup.get();
-        if (whiteGroupMather.containsKey(group)) {
-            Map<String, List<FieldMatchManager>> fieldValueSetMap = whiteGroupMather.get(group).getJudge(ObjectUtil.getMethodCanonicalName(method));
+        if (whitGroupMatcher.containsKey(group)) {
+            Map<String, List<FieldMatchManager>> fieldValueSetMap = whitGroupMatcher.get(group).getJudge(ObjectUtil.getMethodCanonicalName(method));
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
                 List<FieldMatchManager> fieldMatchManagerList = fieldValueSetMap.get(parameter.getName());
                 if (null != fieldMatchManagerList) {
@@ -575,20 +629,16 @@ final class CheckDelegate {
                         if (fieldMatchManager.getDisable()) {
                             continue;
                         }
-//
-                         // todo
-//                        try {
-//                            // 有任何一个匹配器匹配上，则将该值进行转换
-//                            if (fieldMatchManager.match(object, context, true)) {
-////                                field.set(object, fieldMatchManager.getToChangeValue());
-////                                log.debug("field属性 {} 满足匹配条件，对应的值转换为{}", field.getName(), fieldMatchManager.getToChangeValue());
-//                            }
-//                        } catch (IllegalAccessException ignore) {}
+                        // 有任何一个匹配器匹配上，则将该值进行转换
+                        if (fieldMatchManager.match(object, context, true)) {
+                            log.debug("参数 {} 满足匹配条件，对应的值转换为{}", parameter.getName(), fieldMatchManager.getToChangeValue());
+                            return fieldMatchManager.getToChangeValue();
+                        }
                     }
                 }
             }
         }
-        return;
+        return null;
     }
 
     String getErrMsgChain() {

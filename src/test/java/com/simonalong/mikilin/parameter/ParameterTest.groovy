@@ -11,39 +11,46 @@ import java.lang.reflect.Parameter
 
 /**
  * 测试修饰参数
- * @author shizi
- * @since 2021-03-04 21:15:42
+ * @author shizi* @since 2021-03-04 21:15:42
  */
 class ParameterTest extends Specification {
 
     def "参数校验：value"() {
         given:
-        Method currentMethod = ParameterEntity.class.getMethod("funValue", String.class, Integer.class)
+        Method currentMethod = ParameterFunService.class.getMethod("funValue", String.class, Integer.class)
         Parameter[] parameters = currentMethod.getParameters();
 
         when:
         Exception ex = null
         try {
-            MkValidators.validate(currentMethod, parameters[index], value)
+            Object[] values = [name, age]
+            MkValidators.validate(currentMethod, parameters[0], values, 0)
+            MkValidators.validate(currentMethod, parameters[1], values, 1)
         } catch (Exception e) {
             ex = e
         }
 
         then:
-        ex instanceof MkCheckException
+        if (null == result) {
+            ex instanceof MkCheckException
+        } else {
+            Assert.assertEquals(null, ex)
+        }
 
         where:
-        value  | index
-        "chen" | 0
-        3      | 1
+        name   | age | result
+        "chen" | 3   | null
+        "chen" | 1   | null
+        "zhou" | 3   | null
+        "zhou" | 1   | 1
     }
 
     def "参数校验：value——异常map"() {
         given:
-        Method currentMethod = ParameterEntity.class.getMethod("funValue", String.class, Integer.class)
+        Method currentMethod = ParameterFunService.class.getMethod("funValue", String.class, Integer.class)
 
         expect:
-        Object[] values = ["chen", 3]
+        Object[] values = [name, age]
         def actResult = MkValidators.check(currentMethod, values)
         if (!actResult) {
             println JSON.toJSONString(MkValidators.errMsgMap)
@@ -51,214 +58,103 @@ class ParameterTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        value  | index | result
-        "chen" | 0     | false
-        3      | 1     | false
+        name   | age | result
+        "chen" | 3   | false
+        "zhou" | 3   | false
+        "zhou" | 2   | true
     }
 
     def "参数校验：groupValue"() {
         given:
-        Method currentMethod = ParameterEntity.class.getMethod("funGroupValue", String.class, Integer.class)
+        Method currentMethod = ParameterFunService.class.getMethod("funGroupValue", String.class, Integer.class)
         Parameter[] parameters = currentMethod.getParameters();
 
         when:
         Exception ex = null
         try {
-            MkValidators.validate("g1", currentMethod, parameters[index], value)
+            Object[] values = [name, age]
+            MkValidators.validate("g1", currentMethod, parameters[0], values, 0)
+            MkValidators.validate("g1", currentMethod, parameters[1], values, 1)
         } catch (Exception e) {
             ex = e
         }
 
         then:
-        ex instanceof MkCheckException
+        if ("error" == result) {
+            ex instanceof MkCheckException
+        } else {
+            Assert.assertEquals(null, ex)
+        }
 
         where:
-        value  | index
-        "chen" | 0
-        3      | 1
+        name   | age | result
+        "chen" | 3   | "error"
+        "chen" | 1   | "error"
+        "zhou" | 3   | "error"
+        "zhou" | 1   | "ok"
     }
 
     def "参数校验：GroupsValue"() {
         given:
-        Method currentMethod = ParameterEntity.class.getMethod("funGroupsValue", String.class, Integer.class)
+        Method currentMethod = ParameterFunService.class.getMethod("funGroupsValue", String.class, Integer.class)
         Parameter[] parameters = currentMethod.getParameters();
 
         when:
         Exception ex = null
         try {
-            MkValidators.validate(group, currentMethod, parameters[index], value)
+            Object[] values = [name, age]
+            if (group == "g1") {
+                MkValidators.validate(group, currentMethod, parameters[0], values, 0)
+                MkValidators.validate(group, currentMethod, parameters[1], values, 1)
+            } else {
+                MkValidators.validate(group, currentMethod, parameters[1], values, 1)
+            }
+
         } catch (Exception e) {
             ex = e
         }
 
         then:
-        ex instanceof MkCheckException
-
-        where:
-        group | value  | index
-        "g1"  | "chen" | 0
-        "g1"  | 3      | 1
-        "g2"  | "zhou" | 0
-    }
-
-    def "参数校验：NotNull"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funNotNull", String.class, Integer.class)
-        Parameter[] parameters = currentMethod.getParameters();
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
+        if ("error" == result) {
+            ex instanceof MkCheckException
+        } else {
+            Assert.assertEquals(null, ex)
         }
 
-        then:
-        ex instanceof MkCheckException
-
         where:
-        value | index
-        null  | 0
-        null  | 1
-    }
-
-    def "参数校验：NotBlank"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funNotBlank", String.class)
-        Parameter[] parameters = currentMethod.getParameters()
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
-        }
-
-        then:
-        ex instanceof MkCheckException
-
-        where:
-        value | index
-        null  | 0
-        ""    | 0
-        ''    | 0
-    }
-
-    def "参数校验：Model"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funModel", String.class)
-        Parameter[] parameters = currentMethod.getParameters()
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
-        }
-
-        then:
-        ex instanceof MkCheckException
-
-        where:
-        value        | index
-        157098043716 | 0
-    }
-
-    def "参数校验：range"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funRange", String.class, Integer.class)
-        Parameter[] parameters = currentMethod.getParameters()
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
-        }
-
-        then:
-        ex instanceof MkCheckException
-
-        where:
-        value   | index
-        ""      | 0
-        "a"     | 0
-        "abcde" | 0
-        8       | 1
-        9       | 1
-        21      | 1
-    }
-
-    def "参数校验：condition"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funCondition", Integer.class)
-        Parameter[] parameters = currentMethod.getParameters()
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
-        }
-
-        then:
-        ex instanceof MkCheckException
-
-        where:
-        value | index
-        13    | 0
-        14    | 0
-        21    | 0
-    }
-
-    def "参数校验：regex"() {
-        given:
-        Method currentMethod = ParameterEntity.class.getMethod("funRegex", String.class)
-        Parameter[] parameters = currentMethod.getParameters()
-
-        when:
-        Exception ex = null
-        try {
-            MkValidators.validate(currentMethod, parameters[index], value)
-        } catch (Exception e) {
-            ex = e
-        }
-
-        then:
-        ex instanceof MkCheckException
-
-        where:
-        value   | index
-        "1.2."  | 0
-        "1.b.d" | 0
-        "1.x.3" | 0
+        group | name   | age | result
+        "g1"  | "chen" | 1   | "error"
+        "g1"  | "zhou" | 1   | "ok"
+        "g1"  | "zhou" | 3   | "error"
+        "g2"  | "chen" | 1   | "ok"
+        "g2"  | "huo"  | 1   | "ok"
+        "g2"  | "huo"  | 3   | "ok"
     }
 
     def "参数校验：customize"() {
         given:
-        Method currentMethod = ParameterEntity.class.getMethod("funCustomize", Integer.class)
+        Method currentMethod = ParameterFunService.class.getMethod("funCustomize", Integer.class)
         Parameter[] parameters = currentMethod.getParameters()
 
         when:
         Exception ex = null
         try {
-            MkValidators.validate(currentMethod, parameters[index], value)
+            Object[] values = [age]
+            MkValidators.validate(currentMethod, parameters[0], values, 0)
         } catch (Exception e) {
             ex = e
         }
 
         then:
-        ex instanceof MkCheckException
+        if ("error" == result) {
+            ex instanceof MkCheckException
+        } else {
+            Assert.assertEquals(null, ex)
+        }
 
         where:
-        value | index
-        13    | 0
-        14    | 0
-        21    | 0
+        age | result
+        13  | "error"
+        10  | "ok"
     }
 }
