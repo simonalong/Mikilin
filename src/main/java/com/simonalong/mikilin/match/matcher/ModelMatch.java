@@ -4,8 +4,7 @@ import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.match.Builder;
 import com.simonalong.mikilin.match.FieldModel;
 import com.simonalong.mikilin.util.ClassUtil;
-
-import java.lang.reflect.Field;
+import com.simonalong.mikilin.util.IdCardValidate;
 
 /**
  * 指定的类型判断，对应{@link Matcher#model()}

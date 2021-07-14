@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.match.matcher;
+package com.simonalong.mikilin.util;
 
 import lombok.experimental.UtilityClass;
 
