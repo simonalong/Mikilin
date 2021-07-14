@@ -19,19 +19,31 @@ public class ModelMatch extends AbstractBlackWhiteMatch implements Builder<Model
 
     @Override
     public boolean match(Object object, String name, Object value) {
-        if (null == value) {
+        if (null == value || "".equals(value)) {
             return false;
         }
         if (!ClassUtil.isCheckedType(value.getClass())) {
             setWhiteMsg("属性 {0} 的值不是基本待核查类型", name);
             return false;
         }
-        if (fieldModel.match(String.valueOf(value))) {
-            setBlackMsg("属性 {0} 的值 {1} 命中不允许的类型 [FieldModel-{2}]", name, value, fieldModel.getName());
-            return true;
+
+        // 身份证号单独处理
+        if (fieldModel.equals(FieldModel.ID_CARD)) {
+            if(IdCardValidate.isValidate(String.valueOf(value))) {
+                setBlackMsg("属性 {0} 的值 {1} 符合身份证要求", name, value, fieldModel.getName());
+                return true;
+            } else {
+                setWhiteMsg("属性 {0} 的值 {1} 不符合身份证要求", name, value, fieldModel.name());
+                return false;
+            }
         } else {
-            setWhiteMsg("属性 {0} 的值 {1} 没有命中只允许类型 [FieldModel-{2}]", name, value, fieldModel.name());
-            return false;
+            if (fieldModel.match(String.valueOf(value))) {
+                setBlackMsg("属性 {0} 的值 {1} 命中不允许的类型 [FieldModel-{2}]", name, value, fieldModel.getName());
+                return true;
+            } else {
+                setWhiteMsg("属性 {0} 的值 {1} 没有命中只允许类型 [FieldModel-{2}]", name, value, fieldModel.name());
+                return false;
+            }
         }
     }
 
