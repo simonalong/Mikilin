@@ -205,6 +205,7 @@ public class FieldMatchManager {
             .addMatcher(MatcherFactory.build(RangeMatch.class, validCheck.range()))
             .addMatcher(MatcherFactory.build(RegexMatch.class, validCheck.regex()))
             .addMatcher(MatcherFactory.build(NotNullMatch.class, validCheck.notNull()))
+            .addMatcher(MatcherFactory.build(IsNullMatch.class, validCheck.isNull()))
             .setErrMsg(validCheck.errMsg())
             .setToChangeValue(validCheck.matchChangeTo())
             .setDisable(validCheck.disable());
@@ -216,7 +217,8 @@ public class FieldMatchManager {
                 .addMatcher(ValueMath.build(field, validCheck.value()))
                 .addMatcher(ConditionMatch.build(field.getName(), validCheck.condition()))
                 .addMatcher(CustomizeMatch.build(field, validCheck.customize(), context))
-                .addMatcher(NotBlankMatch.build(field.getType(), validCheck.notBlank()));
+                .addMatcher(NotBlankMatch.build(field.getType(), validCheck.notBlank()))
+                .addMatcher(IsBlankMatch.build(field.getType(), validCheck.isBlank()));
         } else if (value instanceof Parameter) {
             Parameter parameter = (Parameter) value;
             return matchManager.setName(parameter.getName())
@@ -224,7 +226,8 @@ public class FieldMatchManager {
                 .addMatcher(ValueMath.build(parameter, validCheck.value()))
                 .addMatcher(ConditionMatch.build(parameter.getName(), validCheck.condition()))
                 .addMatcher(CustomizeMatch.build(parameter, validCheck.customize(), context))
-                .addMatcher(NotBlankMatch.build(parameter.getType(), validCheck.notBlank()));
+                .addMatcher(NotBlankMatch.build(parameter.getType(), validCheck.notBlank()))
+                .addMatcher(IsBlankMatch.build(parameter.getType(), validCheck.isBlank()));
         } else {
             return matchManager;
         }

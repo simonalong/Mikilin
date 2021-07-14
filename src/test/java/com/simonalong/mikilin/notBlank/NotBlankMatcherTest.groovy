@@ -34,7 +34,7 @@ class NotBlankMatcherTest extends Specification {
 
     def "notBlank修饰非String异常"() {
         given:
-        NotBlankEntity2 entity = new NotBlankEntity2().setName("asdf").setAge(123)
+        NotBlankEntity2 entity = new NotBlankEntity2().setName("").setAge(123)
 
         when:
         MkValidators.check(entity)

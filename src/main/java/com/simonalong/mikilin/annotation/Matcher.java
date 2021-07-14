@@ -45,9 +45,11 @@ public @interface Matcher {
     /**
      * 为'true'：则修饰的字符串不可为null
      * 为'false'（或者其他）：则修饰的字符串只可为null
+     * <p>废弃，替换为isNull
      *
      * @return 匹配的值是否为空
      */
+    @Deprecated
     String notNull() default "";
 
     /**
@@ -55,10 +57,28 @@ public @interface Matcher {
      * 为'false'（或者其他）：则修饰的字符串只可为null或者空字符
      *
      * <p>只有修饰类型为{@link CharSequence}的类及子类才会生效，否则抛出异常{@link com.simonalong.mikilin.exception.MkException}
-     *
+     * <p>废弃，替换为isNull
      * @return 匹配的值是否为空字符
      */
+    @Deprecated
     String notBlank() default "";
+
+    /**
+     * 为'true'：数据为null则匹配上
+     * 为'false'（或者其他）：数据不为null则匹配上
+     *
+     * @return 匹配的值是否为空
+     */
+    String isNull() default "";
+
+    /**
+     * 为'true'：数据为null或者空字符，则匹配上
+     * 为'false'（或者其他）：数据不为null，而且也不是空字符，则匹配上
+     *
+     * <p>只有修饰类型为{@link CharSequence}的类及子类才会生效，否则抛出异常{@link com.simonalong.mikilin.exception.MkException}
+     * @return 匹配的值是否为空字符
+     */
+    String isBlank() default "";
 
     /**
      * 可用的值对应的类型

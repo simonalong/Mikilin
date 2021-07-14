@@ -1,4 +1,4 @@
-package com.simonalong.mikilin.notBlank;
+package com.simonalong.mikilin.isBlank;
 
 import com.simonalong.mikilin.annotation.Matcher;
 import lombok.Data;
@@ -10,11 +10,11 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class NotBlankEntity2 {
+public class IsBlankEntity2 {
 
     /**
      * 有异常
      */
-    @Matcher(notBlank = "true")
+    @Matcher(isBlank = "true")
     private Integer age;
 }
