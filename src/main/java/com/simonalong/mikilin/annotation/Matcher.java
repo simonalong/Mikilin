@@ -179,6 +179,13 @@ public @interface Matcher {
     String customize() default "";
 
     /**
+     * 核查失败后的返回语句，其中提供 #current和#root.xxx（xxx为对应属性所在对象的其他属性名） 替换符，在打印的时候会替换当前修饰的属性的值
+     *
+     * @return 核查失败后返回的语句
+     */
+    String errMsg() default "";
+
+    /**
      * 匹配后转换为某个值
      * <p>
      * 该值配置了，则不再进行匹配判断（即：accept() 和 errMsg() 不再使用）
@@ -186,13 +193,6 @@ public @interface Matcher {
      * @return 待转换的值
      */
     String matchChangeTo() default "";
-
-    /**
-     * 核查失败后的返回语句，其中提供 #current和#root.xxx（xxx为对应属性所在对象的其他属性名） 替换符，在打印的时候会替换当前修饰的属性的值
-     *
-     * @return 核查失败后返回的语句
-     */
-    String errMsg() default "";
 
     /**
      * 过滤器模式
