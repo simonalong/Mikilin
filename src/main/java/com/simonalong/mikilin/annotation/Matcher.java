@@ -1,6 +1,7 @@
 package com.simonalong.mikilin.annotation;
 
 import com.simonalong.mikilin.MkConstant;
+import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.match.FieldModel;
 
 import java.lang.annotation.*;
@@ -193,6 +194,14 @@ public @interface Matcher {
      * @return 待转换的值
      */
     String matchChangeTo() default "";
+
+    /**
+     * 匹配后抛出的异常
+     * <p>
+     *     注意：自定义异常类型必须是有无参构造函数，否则
+     * @return 异常值
+     */
+    Class<? extends RuntimeException> throwable() default MkException.class;
 
     /**
      * 过滤器模式

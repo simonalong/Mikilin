@@ -5,6 +5,7 @@ import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.match.matcher.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,10 @@ public class FieldMatchManager {
      * 待转换的值
      */
     private String toChangeValue;
+    /**
+     * 匹配后抛出的异常
+     */
+    private RuntimeException checkException;
 
     /**
      * 属性匹配匹配器
@@ -198,6 +203,10 @@ public class FieldMatchManager {
         return "".equals(toChangeValue);
     }
 
+    public Boolean checkExceptionIsEmpty() {
+        return null == checkException;
+    }
+
     public static FieldMatchManager buildFromValid(Object value, Matcher validCheck, MkContext context) {
         FieldMatchManager matchManager = new FieldMatchManager()
             .addMatcher(MatcherFactory.build(ModelMatch.class, validCheck.model()))
@@ -207,6 +216,7 @@ public class FieldMatchManager {
             .addMatcher(MatcherFactory.build(NotNullMatch.class, validCheck.notNull()))
             .addMatcher(MatcherFactory.build(IsNullMatch.class, validCheck.isNull()))
             .setErrMsg(validCheck.errMsg())
+            .setThrowable(validCheck.throwable())
             .setToChangeValue(validCheck.matchChangeTo())
             .setDisable(validCheck.disable());
 
@@ -231,6 +241,20 @@ public class FieldMatchManager {
         } else {
             return matchManager;
         }
+    }
+
+    public FieldMatchManager setThrowable(Class<? extends RuntimeException> aClass) {
+        if (aClass == MkException.class) {
+            return this;
+        }
+        try {
+            this.checkException = aClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {}
+        return this;
+    }
+
+    public RuntimeException getThrowable() {
+        return this.checkException;
     }
 
     private FieldMatchManager addMatcher(Match match) {

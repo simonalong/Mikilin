@@ -31,6 +31,8 @@ public class IdCardValidate {
 
     /**
      * 验证身份证号是否合法
+     * @param idCard 身份证号
+     * @return true: 合法，false：不合法
      */
     public boolean isValidate(String idCard) {
         if (null == idCard || "".equals(idCard)) {

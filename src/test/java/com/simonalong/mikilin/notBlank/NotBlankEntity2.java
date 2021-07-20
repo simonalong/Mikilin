@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class NotBlankEntity2 {
 
+    @Matcher(notBlank = "true")
+    private String name;
     /**
      * 有异常
      */
