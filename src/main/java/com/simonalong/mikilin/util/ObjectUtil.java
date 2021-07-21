@@ -38,7 +38,7 @@ public class ObjectUtil {
             return data.toCharArray();
         } else {
             try {
-                if (NULL_STR.equals(data)) {
+                if (NULL_STR.equals(data) || "".equals(data) || null == data) {
                     return null;
                 }
                 return cls.getMethod("valueOf", String.class).invoke(null, data);

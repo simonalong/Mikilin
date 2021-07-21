@@ -390,7 +390,7 @@ final class CheckDelegate {
         // 有转换配置且为白名单
         if (!whiteEmpty) {
             if (!changeToWhiteIsEmpty) {
-                fieldMatchAndChangeTo(object, field, whiteGroupMather);
+                fieldMatchAndChange(object, field, whiteGroupMather);
                 return true;
             }
 
@@ -404,7 +404,7 @@ final class CheckDelegate {
         boolean blackEmpty = fieldCheckIsEmpty(object, field, blackGroupMather);
         if (!blackEmpty) {
             if (!changeToBlackIsEmpty) {
-                fieldMatchAndChangeTo(object, field, blackGroupMather);
+                fieldMatchAndChange(object, field, blackGroupMather);
                 return true;
             }
 
@@ -658,7 +658,7 @@ final class CheckDelegate {
      * @param field            属性
      * @param groupMatcher     组匹配器
      */
-    private void fieldMatchAndChangeTo(Object object, Field field, Map<String, MatchManager> groupMatcher) {
+    private void fieldMatchAndChange(Object object, Field field, Map<String, MatchManager> groupMatcher) {
         if (checkAllMatcherDisable(object, field, groupMatcher)) {
             return;
         }
@@ -669,19 +669,29 @@ final class CheckDelegate {
             if (!CollectionUtil.isEmpty(fieldValueSetMap)) {
                 List<FieldMatchManager> fieldMatchManagerList = fieldValueSetMap.get(field.getName());
                 if (null != fieldMatchManagerList) {
-                    for (FieldMatchManager fieldMatchManager : fieldMatchManagerList) {
-                        if (fieldMatchManager.getDisable()) {
-                            continue;
-                        }
+                    FieldMatchManager finalFieldMatchManager = null;
+                    try {
                         field.setAccessible(true);
-                        try {
-                            // 有任何一个匹配器匹配上，则将该值进行转换
-                            if (fieldMatchManager.match(field.get(object), context, true)) {
-                                field.set(object, ObjectUtil.cast(field.getType(), fieldMatchManager.getToChangeValue()));
-                                log.debug("field属性 {} 满足匹配条件，对应的值转换为{}", field.getName(), fieldMatchManager.getToChangeValue());
+                        Object value = field.get(object);
+                        for (FieldMatchManager fieldMatchManager : fieldMatchManagerList) {
+                            if (fieldMatchManager.getDisable()) {
+                                continue;
                             }
-                        } catch (IllegalAccessException ignore) {}
-                    }
+
+                            if (!fieldMatchManager.match(value, context, true)) {
+                                return;
+                            }
+
+                            if (!fieldMatchManager.changeToValueIsEmpty()) {
+                                finalFieldMatchManager = fieldMatchManager;
+                            }
+                        }
+
+                        if (null != finalFieldMatchManager) {
+                            field.set(object, ObjectUtil.cast(field.getType(), finalFieldMatchManager.getToChangeValue()));
+                            log.debug("field属性 {} 的值 {} 满足匹配条件，对应的值转换为{}", field.getName(), value, finalFieldMatchManager.getToChangeValue());
+                        }
+                    } catch (IllegalAccessException ignore) {}
                 }
             }
         }
@@ -746,9 +756,9 @@ final class CheckDelegate {
         return null;
     }
 
-    private String fieldMatchAndThrowException(Object object, Method method, Parameter parameter, Map<String, MatchManager> groupMatcher) {
+    private void fieldMatchAndThrowException(Object object, Method method, Parameter parameter, Map<String, MatchManager> groupMatcher) {
         if (checkAllMatcherDisable(method, parameter, groupMatcher)) {
-            return null;
+            return;
         }
 
         String group = localGroup.get();
@@ -770,7 +780,6 @@ final class CheckDelegate {
                 }
             }
         }
-        return null;
     }
 
     String getErrMsgChain() {
