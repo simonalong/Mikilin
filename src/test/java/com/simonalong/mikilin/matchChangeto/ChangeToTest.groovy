@@ -15,7 +15,7 @@ class ChangeToTest extends Specification {
         ChangeEntity entity = new ChangeEntity().setAge(age)
 
         expect:
-        MkValidators.check(entity, "age");
+        MkValidators.check(entity, "age")
         Assert.assertEquals(ageAfter, entity.getAge())
 
         where:
@@ -30,7 +30,7 @@ class ChangeToTest extends Specification {
         ChangeEntity entity = new ChangeEntity().setName(name)
 
         expect:
-        MkValidators.check(entity, "name");
+        MkValidators.check(entity, "name")
         Assert.assertEquals(ageAfter, entity.getName())
 
         where:
@@ -45,7 +45,7 @@ class ChangeToTest extends Specification {
         ChangeEntity entity = new ChangeEntity().setAge2(age2)
 
         expect:
-        MkValidators.check(entity, "age2");
+        MkValidators.check(entity, "age2")
         Assert.assertEquals(ageAfter, entity.getAge2())
 
         where:
@@ -76,7 +76,7 @@ class ChangeToTest extends Specification {
         ChangeEntity entity = new ChangeEntity().setAge4(age4)
 
         expect:
-        MkValidators.check(entity, "age4");
+        MkValidators.check(entity, "age4")
         Assert.assertEquals(ageAfter, entity.getAge4())
 
         where:
@@ -91,7 +91,7 @@ class ChangeToTest extends Specification {
         MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge(age)
 
         expect:
-        MkValidators.check(entity, "age");
+        MkValidators.check(entity, "age")
         Assert.assertEquals(ageAfter, entity.getAge())
 
         where:
@@ -107,7 +107,7 @@ class ChangeToTest extends Specification {
         MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge1(age1)
 
         expect:
-        MkValidators.check(entity, "age1");
+        MkValidators.check(entity, "age1")
         Assert.assertEquals(ageAfter, entity.getAge1())
 
         where:
@@ -126,7 +126,7 @@ class ChangeToTest extends Specification {
         MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge2(age2)
 
         expect:
-        MkValidators.check(entity, "age2");
+        MkValidators.check(entity, "age2")
         Assert.assertEquals(ageAfter, entity.getAge2())
 
         where:
@@ -146,7 +146,7 @@ class ChangeToTest extends Specification {
         MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge3(age3)
 
         expect:
-        MkValidators.check(entity, "age3");
+        MkValidators.check(entity, "age3")
         Assert.assertEquals(ageAfter, entity.getAge3())
 
         where:

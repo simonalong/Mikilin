@@ -74,12 +74,12 @@ class ErrMsgMapTest extends Specification {
 
     def "测试异常map的返回——多层泛型结构"() {
         given:
-        ErrMsgMapEntity4 entity = new ErrMsgMapEntity4().setName(name);
-        List<ErrMsgMapInnerEntityB> errMsgMapInnerEntityBList = new ArrayList<>();
+        ErrMsgMapEntity4 entity = new ErrMsgMapEntity4().setName(name)
+        List<ErrMsgMapInnerEntityB> errMsgMapInnerEntityBList = new ArrayList<>()
         errMsgMapInnerEntityBList.add(new ErrMsgMapInnerEntityB().setInnerEntityA(new ErrMsgMapInnerEntityA().setAge(age1).setLength(length1)))
         errMsgMapInnerEntityBList.add(new ErrMsgMapInnerEntityB().setInnerEntityA(new ErrMsgMapInnerEntityA().setAge(age2).setLength(length2)))
 
-        entity.setInnerEntityBList(errMsgMapInnerEntityBList);
+        entity.setInnerEntityBList(errMsgMapInnerEntityBList)
 
         expect:
         def act = MkValidators.check(entity)

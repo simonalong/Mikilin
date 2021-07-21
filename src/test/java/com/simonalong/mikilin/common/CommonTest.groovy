@@ -15,7 +15,7 @@ class CommonTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age)
 
         expect:
-        def act = MkValidators.check(entity, "name", "age");
+        def act = MkValidators.check(entity, "name", "age")
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -36,7 +36,7 @@ class CommonTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age)
 
         expect:
-        def act = MkValidators.check(entity, "age");
+        def act = MkValidators.check(entity, "age")
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -56,7 +56,7 @@ class CommonTest extends Specification {
         TestEntity entity = new TestEntity().setName(name).setAge(age).setAddress(address)
 
         expect:
-        def act = MkValidators.check(entity, "address");
+        def act = MkValidators.check(entity, "address")
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain

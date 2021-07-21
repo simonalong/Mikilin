@@ -11,14 +11,15 @@ import java.lang.reflect.Parameter
 
 /**
  * 测试修饰参数
- * @author shizi* @since 2021-03-04 21:15:42
+ * @author shizi
+ * @since 2021-03-04 21:15:42
  */
 class ParameterTest extends Specification {
 
     def "参数校验：value"() {
         given:
         Method currentMethod = ParameterFunService.class.getMethod("funValue", String.class, Integer.class)
-        Parameter[] parameters = currentMethod.getParameters();
+        Parameter[] parameters = currentMethod.getParameters()
 
         when:
         Exception ex = null
@@ -67,7 +68,7 @@ class ParameterTest extends Specification {
     def "参数校验：groupValue"() {
         given:
         Method currentMethod = ParameterFunService.class.getMethod("funGroupValue", String.class, Integer.class)
-        Parameter[] parameters = currentMethod.getParameters();
+        Parameter[] parameters = currentMethod.getParameters()
 
         when:
         Exception ex = null
@@ -97,7 +98,7 @@ class ParameterTest extends Specification {
     def "参数校验：GroupsValue"() {
         given:
         Method currentMethod = ParameterFunService.class.getMethod("funGroupsValue", String.class, Integer.class)
-        Parameter[] parameters = currentMethod.getParameters();
+        Parameter[] parameters = currentMethod.getParameters()
 
         when:
         Exception ex = null

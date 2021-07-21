@@ -15,7 +15,7 @@ class AcceptOrDenyTest extends Specification {
         AcceptEntity entity = new AcceptEntity().setName(name).setAge(age)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -35,7 +35,7 @@ class AcceptOrDenyTest extends Specification {
         DenyEntity entity = new DenyEntity().setName(name).setAge(age)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain

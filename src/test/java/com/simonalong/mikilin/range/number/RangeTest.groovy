@@ -35,7 +35,7 @@ class RangeTest extends Specification {
 
     def "范围的边界测试"() {
         given:
-        RangeEntity2 range = new RangeEntity2();
+        RangeEntity2 range = new RangeEntity2()
         range.setAge3(age3)
         range.setAge4(age4)
         range.setAge5(age5)

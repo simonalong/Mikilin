@@ -208,7 +208,7 @@ class StringValueTest extends Specification {
     def "字符为空进行拒绝"() {
         given:
         StringValueEntity1 entity = new StringValueEntity1().setEmptyStr(emptyStr)
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.getErrMsg()

@@ -14,7 +14,7 @@ class CollectionRangeTest extends Specification {
         given:
         CollectionSizeEntityB b1 = new CollectionSizeEntityB().setBField(b11)
         CollectionSizeEntityB b2 = new CollectionSizeEntityB().setBField(b12)
-        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2);
+        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2)
         CollectionSizeEntityA range = new CollectionSizeEntityA().setBList(bList)
 
         expect:
@@ -38,7 +38,7 @@ class CollectionRangeTest extends Specification {
         CollectionSizeEntityB b1 = new CollectionSizeEntityB().setBField(b11)
         CollectionSizeEntityB b2 = new CollectionSizeEntityB().setBField(b12)
         CollectionSizeEntityB b3 = new CollectionSizeEntityB().setBField(b13)
-        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2, b3);
+        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2, b3)
         CollectionSizeEntityA range = new CollectionSizeEntityA().setBList(bList)
 
         expect:
@@ -58,7 +58,7 @@ class CollectionRangeTest extends Specification {
         given:
         CollectionSizeEntityB b1 = new CollectionSizeEntityB().setBField(b11)
         CollectionSizeEntityB b2 = new CollectionSizeEntityB().setBField(b12)
-        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2);
+        List<CollectionSizeEntityB> bList = Arrays.asList(b1, b2)
         CollectionSizeEntityA range = new CollectionSizeEntityA().setBList(bList)
 
         expect:
