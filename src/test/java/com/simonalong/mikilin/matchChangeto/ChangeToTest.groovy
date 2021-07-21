@@ -120,4 +120,44 @@ class ChangeToTest extends Specification {
         13   | 13
         14   | 200
     }
+
+    def "多重匹配转换3"() {
+        given:
+        MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge2(age2)
+
+        expect:
+        MkValidators.check(entity, "age2");
+        Assert.assertEquals(ageAfter, entity.getAge2())
+
+        where:
+        age2 | ageAfter
+        11   | 11
+        12   | 12
+        13   | 13
+        14   | 14
+        21   | 21
+        22   | 302
+        23   | 23
+        24   | 302
+    }
+
+    def "多重匹配转换4"() {
+        given:
+        MultiMatcherChangeEntity entity = new MultiMatcherChangeEntity().setAge3(age3)
+
+        expect:
+        MkValidators.check(entity, "age3");
+        Assert.assertEquals(ageAfter, entity.getAge3())
+
+        where:
+        age3 | ageAfter
+        11   | 11
+        12   | 12
+        13   | 13
+        14   | 14
+        21   | 21
+        22   | 301
+        23   | 23
+        24   | 301
+    }
 }

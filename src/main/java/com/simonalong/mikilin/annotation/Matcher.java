@@ -190,6 +190,7 @@ public @interface Matcher {
      * 匹配后转换为某个值
      * <p>
      * 该值配置了，则不再进行匹配判断（即：accept() 和 errMsg() 不再使用）
+     * 对于有多个{@link Matcher}修饰的表示的"与"的情况，则只有最下面的生效
      *
      * @return 待转换的值
      */
