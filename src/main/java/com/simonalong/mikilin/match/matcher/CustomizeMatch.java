@@ -1,6 +1,5 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.JudgeException;
 import com.simonalong.mikilin.match.MkContext;

@@ -15,6 +15,6 @@ public class ErrMsgMapInnerEntityA {
     @Matcher(range = "[0, 12]")
     private Integer age;
 
-    @Matcher(range = "[100, 120]", notNull = "false")
+    @Matcher(range = "[100, 120]", isNull = "true")
     private Integer length;
 }

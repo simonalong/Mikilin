@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/4/14 上午11:01
  */
-class RangeTest extends Specification {
+class RangeNumberTest extends Specification {
 
     def "范围的内部空格测试"() {
         given:

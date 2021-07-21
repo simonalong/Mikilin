@@ -41,6 +41,7 @@ public class MkAop {
      * @return 执行后对象
      * @throws Throwable 所有类型异常
      */
+    @SuppressWarnings("unused")
     @Around("@within(com.simonalong.mikilin.annotation.AutoCheck) || @annotation(com.simonalong.mikilin.annotation.AutoCheck)")
     public Object aroundParameter(ProceedingJoinPoint pjp) throws Throwable {
         String funStr = pjp.getSignature().toLongString();

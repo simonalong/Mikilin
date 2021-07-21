@@ -12,7 +12,7 @@ import java.time.ZoneId
  * @author zhouzhenyong
  * @since 2019/8/3 下午5:52
  */
-class TimeRangeTest extends Specification {
+class RangeTimeTest extends Specification {
 
     def "测试时间范围test1"() {
         given:

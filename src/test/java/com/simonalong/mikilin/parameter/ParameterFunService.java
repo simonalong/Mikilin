@@ -39,14 +39,14 @@ public class ParameterFunService {
     }
 
     public String funNotNull(
-        @Matcher(notNull = "true") String name,
-        @Matcher(notNull = "true") Integer age
+        @Matcher(isNull = "false") String name,
+        @Matcher(isNull = "false") Integer age
     ) {
         return "ok";
     }
 
     public String funNotBlank(
-        @Matcher(notBlank = "true") String name
+        @Matcher(isBlank = "false") String name
     ) {
         return "ok";
     }

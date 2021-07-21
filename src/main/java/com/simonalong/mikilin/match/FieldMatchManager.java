@@ -190,15 +190,6 @@ public class FieldMatchManager {
         return matchList.stream().allMatch(Match::isEmpty);
     }
 
-    /**
-     * 是否有匹配器不为空
-     *
-     * @return true：有匹配器不空，false：匹配器全部为空
-     */
-    public Boolean isUnEmpty() {
-        return !isEmpty();
-    }
-
     public Boolean changeToValueIsEmpty() {
         return "".equals(toChangeValue);
     }

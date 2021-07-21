@@ -21,7 +21,7 @@ public enum FieldModel {
     IP_ADDRESS("IP地址", "^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),;
 
     @Getter
-    private String name;
+    private final String name;
     private String regex;
 
     FieldModel(String name) {

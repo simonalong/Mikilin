@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author shizi
  * @since 2020/6/25 11:45 AM
  */
+@SuppressWarnings("unused")
 public class MkSpringBeanContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;

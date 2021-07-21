@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019-09-15 21:29
  */
-class CollectionRangeTest extends Specification {
+class RangeCollectionTest extends Specification {
 
     def "集合类型的启动"() {
         given:

@@ -67,7 +67,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 时间或者数字范围匹配
      */
-    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.*),(\\s)*(.*)(\\)|\\]){1}$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[)(.*),(\\s)*(.*)(\\)|\\])$");
     /**
      * 时间的前后计算匹配：(-|+)yMd(h|H)msS
      */

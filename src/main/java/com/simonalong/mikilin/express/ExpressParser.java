@@ -15,7 +15,7 @@ import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
 @Accessors(chain = true)
 public class ExpressParser {
 
-    private GroovyScriptFactory groovy = GroovyScriptFactory.getInstance();
+    private final GroovyScriptFactory groovy = GroovyScriptFactory.getInstance();
 
     private Binding binding;
 
@@ -24,10 +24,6 @@ public class ExpressParser {
     }
 
     public ExpressParser(Maps<?, ?> maps){
-        binding = new Binding(maps.build());
-    }
-
-    public void setBinding(Maps<?, ?> maps){
         binding = new Binding(maps.build());
     }
 
