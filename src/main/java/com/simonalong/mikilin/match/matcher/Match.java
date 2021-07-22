@@ -26,13 +26,6 @@ public interface Match {
     boolean isEmpty();
 
     /**
-     * 判断当前匹配器是否为空
-     *
-     * @return true=非空，false=空
-     */
-    boolean isNotEmpty();
-
-    /**
      * 白名单匹配不上的信息
      *
      * @return 没有匹配上的信息

@@ -31,9 +31,9 @@ class ObjectTest extends Specification {
 
     def "集合类型测试"() {
         given:
-        List<ObjectEntity> entityList = new ArrayList<>();
-        entityList.add(new ObjectEntity().setName(name1));
-        entityList.add(new ObjectEntity().setName(name2));
+        List<ObjectEntity> entityList = new ArrayList<>()
+        entityList.add(new ObjectEntity().setName(name1))
+        entityList.add(new ObjectEntity().setName(name2))
 
         expect:
         boolean actResult = MkValidators.check(entityList)
@@ -76,8 +76,8 @@ class ObjectTest extends Specification {
     def "数组类型测试"() {
         given:
         ObjectEntity[] entities = new ObjectEntity[2]
-        entities[0]=new ObjectEntity().setName(name1);
-        entities[1]=new ObjectEntity().setName(name2);
+        entities[0]=new ObjectEntity().setName(name1)
+        entities[1]=new ObjectEntity().setName(name2)
 
         expect:
         boolean actResult = MkValidators.check(entities)
@@ -98,8 +98,8 @@ class ObjectTest extends Specification {
     def "多维数组类型测试"() {
         given:
         ObjectEntity[][] entities = new ObjectEntity[2][2]
-        entities[0][0]=new ObjectEntity().setName(name1);
-        entities[0][1]=new ObjectEntity().setName(name2);
+        entities[0][0]=new ObjectEntity().setName(name1)
+        entities[0][1]=new ObjectEntity().setName(name2)
 
         expect:
         boolean actResult = MkValidators.check(entities)

@@ -17,7 +17,7 @@ class ParentTest extends Specification {
      */
     def "继承关系"() {
         given:
-        ChildEntity entity = new ChildEntity().setSelf(self).setAge1(age1).setAge2(age2).setAge3(age3).setName(name)
+        ChildEntity entity = new ChildEntity().setSelf(self).setAge1(age1).setAge2(age2).setAge3(age3).setName(name) as ChildEntity
 
         expect:
         boolean actResult = MkValidators.check(entity)

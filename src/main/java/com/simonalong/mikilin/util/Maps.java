@@ -7,6 +7,8 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
+
 /**
  * @author zhouzhenyong
  * @since 2018/12/22 下午10:16
@@ -29,14 +31,14 @@ public final class Maps<K, V> implements Serializable {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static Maps of(Object... kvs) {
         if (kvs.length % KV_NUM != 0) {
-            log.error("Maps.of的参数需要是key-value-key-value...这种格式");
+            log.error(MK_LOG_PRE + "Maps.of的参数需要是key-value-key-value...这种格式");
             return new Maps();
         }
 
         Maps maps = new Maps();
         for (int i = 0; i < kvs.length; i += KV_NUM) {
             if (null == kvs[i]) {
-                log.error("map的key不可以为null");
+                log.error(MK_LOG_PRE + "map的key不可以为null");
                 return maps;
             }
             maps.put(kvs[i], kvs[i + 1]);

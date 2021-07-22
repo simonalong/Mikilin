@@ -3,14 +3,13 @@ package com.simonalong.mikilin.match.matcher;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.MkException;
 
-import java.lang.reflect.Field;
-
 /**
  * 拦截null和空字符，指定的类型判断，对应{@link Matcher#notBlank()}
  *
  * @author shizi
  * @since 2020/6/18 12:20 PM
  */
+@Deprecated
 public class NotBlankMatch extends AbstractBlackWhiteMatch {
 
     private Boolean notBlank;

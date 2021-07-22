@@ -16,7 +16,7 @@ class ConditionTest extends Specification {
         ConditionEntity1 entity = new ConditionEntity1().setNum1(num1).setNum2(num2).setNum3(num3)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -35,7 +35,7 @@ class ConditionTest extends Specification {
         ConditionEntity2 entity = new ConditionEntity2().setAge(age).setJudge(judge)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -52,7 +52,7 @@ class ConditionTest extends Specification {
         ConditionEntity3 entity = new ConditionEntity3().setNum1(num1).setNum2(num2).setNum3(num3)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -71,7 +71,7 @@ class ConditionTest extends Specification {
         ConditionEntity4 entity = new ConditionEntity4().setType(type).setName(name)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain
@@ -92,12 +92,12 @@ class ConditionTest extends Specification {
         given:
         def nameList
         if(null != names){
-            nameList = Arrays.asList(names.split(","));
+            nameList = Arrays.asList(names.split(","))
         }
         ConditionEntity5 entity = new ConditionEntity5().setHandleType(type).setNameList(nameList)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsg
@@ -117,7 +117,7 @@ class ConditionTest extends Specification {
         ConditionEntity6 entity = new ConditionEntity6().setF1(f1).setF2(f2).setF3(f3)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsg

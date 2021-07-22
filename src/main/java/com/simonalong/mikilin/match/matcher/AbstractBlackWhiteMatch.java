@@ -20,11 +20,6 @@ public abstract class AbstractBlackWhiteMatch implements Match {
     }
 
     @Override
-    public boolean isNotEmpty(){
-        return !isEmpty();
-    }
-
-    @Override
     public String getBlackMsg(){
         return blackMsg;
     }

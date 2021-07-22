@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class ParameterEntity {
+public class ParameterFunService {
 
     public String funValue(
         @Matcher(value = {"zhou", "song"}) String name,
@@ -39,14 +39,14 @@ public class ParameterEntity {
     }
 
     public String funNotNull(
-        @Matcher(notNull = "true") String name,
-        @Matcher(notNull = "true") Integer age
+        @Matcher(isNull = "false") String name,
+        @Matcher(isNull = "false") Integer age
     ) {
         return "ok";
     }
 
     public String funNotBlank(
-        @Matcher(notBlank = "true") String name
+        @Matcher(isBlank = "false") String name
     ) {
         return "ok";
     }

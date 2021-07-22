@@ -12,11 +12,11 @@ import java.time.ZoneId
  * @author zhouzhenyong
  * @since 2019/8/3 下午5:52
  */
-class TimeRangeTest extends Specification {
+class RangeTimeTest extends Specification {
 
     def "测试时间范围test1"() {
         given:
-        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time).setLength(length);
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date).setTime(time).setLength(length)
 
         expect:
         boolean actResult = MkValidators.check("test1", range)
@@ -356,7 +356,7 @@ class TimeRangeTest extends Specification {
     }
 
     def getDatePlus(def years, def months, def days, def hours, def minutes, def seconds) {
-        return LocalDateTimeUtil.plusTime(new Date(), years, months, days, hours, minutes, seconds);
+        return LocalDateTimeUtil.plusTime(new Date(), years, months, days, hours, minutes, seconds)
     }
 
     def getDate(def year, def month, def day, def hour, def minute, def second) {

@@ -3,6 +3,7 @@ package com.simonalong.mikilin.spring;
 import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.MkValidators;
 import com.simonalong.mikilin.annotation.AutoCheck;
+import com.simonalong.mikilin.exception.MkCheckException;
 import com.simonalong.mikilin.exception.MkException;
 import com.simonalong.mikilin.util.ClassUtil;
 import com.simonalong.mikilin.util.ExceptionUtil;
@@ -12,14 +13,19 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author robot
@@ -30,11 +36,13 @@ public class MkAop {
 
     /**
      * 拦截添加注解的方法
+     *
      * @param pjp 切面对象
-     * @throws Throwable 所有类型异常
      * @return 执行后对象
+     * @throws Throwable 所有类型异常
      */
-    @Around("@within(com.isyscore.isc.mikilin.annotation.AutoCheck) || @annotation(com.isyscore.isc.mikilin.annotation.AutoCheck)")
+    @SuppressWarnings("unused")
+    @Around("@within(com.simonalong.mikilin.annotation.AutoCheck) || @annotation(com.simonalong.mikilin.annotation.AutoCheck)")
     public Object aroundParameter(ProceedingJoinPoint pjp) throws Throwable {
         String funStr = pjp.getSignature().toLongString();
         Object result;
@@ -43,7 +51,7 @@ public class MkAop {
             result = pjp.proceed();
             MkValidators.validate(result);
         } catch (Throwable e) {
-            MkException mkException = ExceptionUtil.getCause(e, MkException.class);
+            MkCheckException mkException = ExceptionUtil.getCause(e, MkCheckException.class);
             if (null != mkException) {
                 mkException.setFunStr(funStr);
                 mkException.setParameterList(getParameters(pjp));
@@ -92,9 +100,12 @@ public class MkAop {
 
         Parameter[] parameters = currentMethod.getParameters();
         Object[] args = pjp.getArgs();
+        boolean available = true;
+        String errMsg = "";
+        Map<String, Object> errMsgMap = new ConcurrentHashMap<>();
         for (int index = 0; index < args.length; index++) {
             Object arg = args[index];
-            if (arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
+            if (null == arg || arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
                 continue;
             }
 
@@ -104,13 +115,41 @@ public class MkAop {
                     group = autoCheck.value();
                 }
 
+                boolean innerAvailable;
                 // 如果是基本类型，则采用核查参数的方式
                 if (ClassUtil.isCheckedType(arg.getClass())) {
-                    MkValidators.validate(group, currentMethod, parameters[index], arg);
+                    innerAvailable = MkValidators.check(group, currentMethod, parameters[index], args, index);
                 } else {
-                    MkValidators.validate(group, arg);
+                    innerAvailable = MkValidators.check(group, arg);
+                }
+
+                if (!innerAvailable) {
+                    errMsgMap.putAll(MkValidators.getErrMsgMap());
+                    errMsg = MkValidators.getErrMsg();
+                    available = false;
                 }
             }
+        }
+
+        // 将参数修改
+        if (pjp instanceof MethodInvocationProceedingJoinPoint) {
+            Field methodInvocationField;
+            try {
+                methodInvocationField = pjp.getClass().getDeclaredField("methodInvocation");
+                methodInvocationField.setAccessible(true);
+                ProxyMethodInvocation methodInvocation = (ProxyMethodInvocation) methodInvocationField.get(pjp);
+                methodInvocation.setArguments(args);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!available) {
+            MkCheckException exception = new MkCheckException(errMsg);
+            if (!errMsgMap.isEmpty()) {
+                exception.setErrMsgMap(errMsgMap);
+            }
+            throw exception;
         }
     }
 }

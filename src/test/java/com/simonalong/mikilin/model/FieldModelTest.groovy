@@ -12,7 +12,7 @@ class FieldModelTest extends Specification {
 
     def "身份证测试"() {
         given:
-        IdCardEntity entity = new IdCardEntity().setIdCardValid(valid).setIdCardInValid(invalid)
+        IdCardEntity entity = new IdCardEntity().setIdCardValid(valid)
 
         expect:
         boolean actResult = MkValidators.check(entity)
@@ -23,12 +23,11 @@ class FieldModelTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        valid                | invalid              | result
-        "28712381"           | "411928199102226311" | false
-        "28712381"           | "28712381"           | false
-        "411928199102226311" | "28712381"           | true
-        "411928199102226311" | "411928199102226311" | false
-        null | "411928199102226311" | false
+        valid                | result
+        "28712381"           | false
+        "28712381"           | false
+        "412927199102226411" | false
+        null                 | false
     }
 
     def "手机号测试"() {

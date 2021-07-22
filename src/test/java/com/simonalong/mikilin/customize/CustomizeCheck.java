@@ -120,4 +120,8 @@ public class CustomizeCheck {
             return false;
         }
     }
+
+    private boolean fieldErrMsgMatch3(String fieldErrMsg, MkContext mkContext) {
+        return fieldErrMsg.contains("mock");
+    }
 }

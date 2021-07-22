@@ -49,7 +49,7 @@ github: https://github.com/SimonAlong/Mikilin
 在1.6.0版本中添加`@EnableMikilin`和`@AutoCheck`注解，前者是启用核查框架，后者修饰类和方法，会自动核查方法或者类的方法中的参数，不符合需求，则会上报异常`MkException`
 典型用法如下
 ```java
-import com.isyscore.isc.mikilin.annotation.EnableMikilin;
+import com.simonalong.mikilin.annotation.EnableMikilin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -118,6 +118,8 @@ class Test{
             System.out.println(MkValidators.getErrMsgChain());
             // 输出：输入的值不符合需求
             System.out.println(MkValidators.getErrMsg());
+            // 输出：核查失败的key-value对应的map结构
+            System.out.println(MkValidators.getErrMsgMap());
         }
     
         // 或者 可以采用抛异常的核查，该api为 MkValidators.check 的带有异常的检测方式

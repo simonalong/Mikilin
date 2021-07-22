@@ -5,19 +5,20 @@ import org.junit.Assert
 import spock.lang.Specification
 
 /**
- * @author shizi* @since 2021-03-31 16:17:53
+ * @author shizi
+ * @since 2021-03-31 16:17:53
  */
 class CheckTest extends Specification {
 
     def "@Check和@Matcher一起核查"() {
         given:
-        List<CheckInnerEntity> list = new ArrayList<>();
+        List<CheckInnerEntity> list = new ArrayList<>()
         list.add(new CheckInnerEntity(age1, name1))
         list.add(new CheckInnerEntity(age2, name2))
         CheckEntity entity = new CheckEntity().setAddress(address).setInnerEntityList(list)
 
         expect:
-        def act = MkValidators.check(entity);
+        def act = MkValidators.check(entity)
         Assert.assertEquals(result, act)
         if (!act) {
             println MkValidators.errMsgChain

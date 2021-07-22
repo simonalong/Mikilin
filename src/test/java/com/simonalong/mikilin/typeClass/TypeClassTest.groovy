@@ -14,8 +14,8 @@ class TypeClassTest extends Specification {
 
     def "泛型类型（字符类型）测试"() {
         given:
-        DataEntity dataEntity = new DataEntity().setName(name);
-        TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setPageSize(pageSize).setData(dataEntity);
+        DataEntity dataEntity = new DataEntity().setName(name)
+        TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setPageSize(pageSize).setData(dataEntity)
 
         expect:
         boolean actResult = MkValidators.check(entity)
@@ -40,7 +40,7 @@ class TypeClassTest extends Specification {
         dataEntityList.add(new DataEntity().setName(name1))
         dataEntityList.add(new DataEntity().setName(name2))
 
-        TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setDataList(dataEntityList);
+        TypeVariableEntity<DataEntity> entity = new TypeVariableEntity().setDataList(dataEntityList)
 
         expect:
         boolean actResult = MkValidators.check(entity)
@@ -62,9 +62,9 @@ class TypeClassTest extends Specification {
 
     def "<>符号测试"() {
         given:
-        Map<String, DataEntity> dataEntityMap = new HashMap<>();
-        dataEntityMap.put("a", new DataEntity().setName(name));
-        ParameterizedTypeEntity entity = new ParameterizedTypeEntity().setDataEntityMap(dataEntityMap);
+        Map<String, DataEntity> dataEntityMap = new HashMap<>()
+        dataEntityMap.put("a", new DataEntity().setName(name))
+        ParameterizedTypeEntity entity = new ParameterizedTypeEntity().setDataEntityMap(dataEntityMap)
 
         expect:
         boolean actResult = MkValidators.check(entity)

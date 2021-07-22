@@ -1,5 +1,6 @@
 package com.simonalong.mikilin.customize
 
+import com.alibaba.fastjson.JSON
 import com.simonalong.mikilin.MkValidators
 import org.junit.Assert
 import spock.lang.Specification
@@ -161,14 +162,36 @@ class CustomizeTest extends Specification {
         if (!actResult) {
             println MkValidators.getErrMsgChain()
             println MkValidators.getErrMsg()
+            Assert.assertEquals(errMsg, JSON.toJSONString(MkValidators.getErrMsgMap()))
         }
         Assert.assertEquals(result, actResult)
 
         where:
-        fieldErrMsg | result
-        "mock1"     | true
-        "mock2"     | true
-        "mock3"     | true
-        "asdf"      | false
+        fieldErrMsg | result | errMsg
+        "mock1"     | true   | ""
+        "mock2"     | true   | ""
+        "mock3"     | true   | ""
+        "asdf"      | false  | "{\"fieldErrMsg2\":\"当前的值不符合需求\"}"
+    }
+
+    def "不匹配情况下的错误日志3"() {
+        given:
+        CustomizeEntity entity = new CustomizeEntity().setFieldErrMsg3(fieldErrMsg)
+
+        expect:
+        boolean actResult = MkValidators.check(entity, "fieldErrMsg3")
+        if (!actResult) {
+            println MkValidators.getErrMsgChain()
+            println MkValidators.getErrMsg()
+            Assert.assertEquals(errMsg, JSON.toJSONString(MkValidators.getErrMsgMap()))
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        fieldErrMsg | result | errMsg
+        "mock1"     | false  | "{\"fieldErrMsg3\":\"mock1 数据不符合\"}"
+        "mock2"     | false  | "{\"fieldErrMsg3\":\"mock2 数据不符合\"}"
+        "mock3"     | false  | "{\"fieldErrMsg3\":\"mock3 数据不符合\"}"
+        "asdf"      | true   | ""
     }
 }

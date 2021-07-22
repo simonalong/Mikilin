@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.syntax.Numbers;
 import org.springframework.util.StringUtils;
 
+import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
+
 /**
  * 范围匹配，对应{@link Matcher#range()}
  *
@@ -61,11 +63,11 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 全是数字匹配（整数，浮点数，0，负数）
      */
-    private Pattern digitPattern = Pattern.compile("^[-+]?([1-9]+\\d*|0\\.(\\d*)|[1-9]\\d*\\.(\\d*))$");
+    private Pattern digitPattern = Pattern.compile("^[-+]?(0)|([1-9]+\\d*|0\\.(\\d*)|[1-9]\\d*\\.(\\d*))$");
     /**
      * 时间或者数字范围匹配
      */
-    private Pattern rangePattern = Pattern.compile("^(\\(|\\[){1}(.*),(\\s)*(.*)(\\)|\\]){1}$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[)(.*),(\\s)*(.*)(\\)|\\])$");
     /**
      * 时间的前后计算匹配：(-|+)yMd(h|H)msS
      */
@@ -260,11 +262,11 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
             String endAli = matcher.group(5);
 
             if ((begin.equals(NULL_STR) || "".equals(begin)) && (end.equals(NULL_STR) || "".equals(end))) {
-                log.error("range匹配器格式输入错误，start和end不可都为null或者空字符, input={}", input);
+                log.error(MK_LOG_PRE + "range匹配器格式输入错误，start和end不可都为null或者空字符, input={}", input);
             } else if (begin.equals(PAST) || begin.equals(FUTURE)) {
-                log.error("range匹配器格式输入错误, start不可含有past或者future, input={}", input);
+                log.error(MK_LOG_PRE + "range匹配器格式输入错误, start不可含有past或者future, input={}", input);
             } else if (end.equals(PAST) || end.equals(FUTURE)) {
-                log.error("range匹配器格式输入错误, end不可含有past或者future, input={}", input);
+                log.error(MK_LOG_PRE + "range匹配器格式输入错误, end不可含有past或者future, input={}", input);
             }
 
             // 如果是数字，则按照数字解析
@@ -276,12 +278,12 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                 DynamicTimeNum timeNumEnd = parseDynamicTime(end);
 
                 if (null != timeNumBegin && null != timeNumEnd && timeNumBegin.compareTo(timeNumEnd) > 0) {
-                    log.error("时间的动态时间不正确，动态起点时间不应该大于动态终点时间");
+                    log.error(MK_LOG_PRE + "时间的动态时间不正确，动态起点时间不应该大于动态终点时间");
                     return null;
                 }
 
                 if (null == timeNumBegin && null == timeNumEnd) {
-                    log.error("动态时间解析失败");
+                    log.error(MK_LOG_PRE + "动态时间解析失败");
                     return null;
                 }
                 return RangeEntity.build(beginAli, timeNumBegin, timeNumEnd, endAli);
@@ -290,12 +292,12 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                 Date endDate = parseDate(end);
                 if (null != beginDate && null != endDate) {
                     if (beginDate.compareTo(endDate) > 0) {
-                        log.error("时间的范围起始点不正确，起点时间不应该大于终点时间");
+                        log.error(MK_LOG_PRE + "时间的范围起始点不正确，起点时间不应该大于终点时间");
                         return null;
                     }
                     return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
                 } else if (null == beginDate && null == endDate) {
-                    log.error("range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
+                    log.error(MK_LOG_PRE + "range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
                 } else {
                     return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
                 }
@@ -382,9 +384,9 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
             } else if (ymdhmssPattern.matcher(data).matches()) {
                 return ymdhmssFormat.parse(data);
             }
-            log.error("解析时间错误, data={}", data);
+            log.error(MK_LOG_PRE + "解析时间错误, data={}", data);
         } catch (Exception e) {
-            log.error("解析时间错误, data={}, e={}", data, e);
+            log.error(MK_LOG_PRE + "解析时间错误, data={}, e={}", data, e);
         }
         return null;
     }

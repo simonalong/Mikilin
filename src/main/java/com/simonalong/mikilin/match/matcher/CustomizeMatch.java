@@ -1,6 +1,5 @@
 package com.simonalong.mikilin.match.matcher;
 
-import com.simonalong.mikilin.MkConstant;
 import com.simonalong.mikilin.annotation.Matcher;
 import com.simonalong.mikilin.exception.JudgeException;
 import com.simonalong.mikilin.match.MkContext;
@@ -16,6 +15,8 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
 
 /**
  * 系统自行判断，对应{@link Matcher#customize()}
@@ -70,7 +71,7 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
             }
             return result;
         } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error(MkConstant.LOG_PRE + "函数：{}执行失败", targetMethod.getName(), e);
+            log.error(MK_LOG_PRE + "函数：{}执行失败", targetMethod.getName(), e);
         }
 
         setWhiteMsg("属性 {0} 的值 {1} 没命中只允许条件回调 {2} ", name, value, judgeStr);
@@ -139,7 +140,7 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
             customizeMatch.setTargetMethod(method);
         } catch (Exception e) {
             if (e instanceof ClassNotFoundException) {
-                log.error("类{}路径没有找到", classStr, e);
+                log.error(MK_LOG_PRE + "类{}路径没有找到", classStr, e);
             } else {
                 throw new RuntimeException(e);
             }
@@ -199,7 +200,7 @@ public class CustomizeMatch extends AbstractBlackWhiteMatch {
             customizeMatch.setTargetMethod(method);
         } catch (Exception e) {
             if (e instanceof ClassNotFoundException) {
-                log.error("类{}路径没有找到", classStr, e);
+                log.error(MK_LOG_PRE + "类{}路径没有找到", classStr, e);
             } else {
                 throw new RuntimeException(e);
             }

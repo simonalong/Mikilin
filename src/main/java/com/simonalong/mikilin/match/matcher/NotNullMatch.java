@@ -9,6 +9,7 @@ import com.simonalong.mikilin.match.Builder;
  * @author shizi
  * @since 2020/6/18 11:52 AM
  */
+@Deprecated
 public class NotNullMatch extends AbstractBlackWhiteMatch implements Builder<NotNullMatch, String> {
 
     private Boolean notNull;

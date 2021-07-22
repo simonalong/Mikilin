@@ -8,7 +8,7 @@ import spock.lang.Specification
  * @author zhouzhenyong
  * @since 2019/4/14 上午11:01
  */
-class RangeTest extends Specification {
+class RangeNumberTest extends Specification {
 
     def "范围的内部空格测试"() {
         given:
@@ -35,7 +35,7 @@ class RangeTest extends Specification {
 
     def "范围的边界测试"() {
         given:
-        RangeEntity2 range = new RangeEntity2();
+        RangeEntity2 range = new RangeEntity2()
         range.setAge3(age3)
         range.setAge4(age4)
         range.setAge5(age5)
