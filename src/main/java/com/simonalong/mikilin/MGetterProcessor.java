@@ -47,108 +47,69 @@ public class MGetterProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        StringBuilder builder = new StringBuilder()
-            .append("package com.eog.api.impl.generated;\n\n")
-            .append("public class GeneratedClass {\n\n") // open class
-            .append("\tpublic String getMessage() {\n") // open method
-            .append("\t\treturn \"");
+        //        StringBuilder codeBuilder = new StringBuilder();
+        //        // package
+        //        codeBuilder.append("package com.eog.api.impl;");
+        //
+        //        // import
+        //        codeBuilder.append("package com.eog.api.impl;");
+        //
+        //        // public class
+        //        codeBuilder.append("public class GenerateClass{}");
+        //
+        //
+        //        try {
+        //            JavaFileObject source = processingEnv.getFiler().createClassFile("com.eog.api.impl.GenerateClass");
+        //            Writer writer = source.openWriter();
+        //            writer.write(codeBuilder.toString());
+        //            writer.flush();
+        //            writer.close();
+        //        } catch (IOException e) {
+        //            e.printStackTrace();
+        //        }
 
+        Set<? extends Element> set = roundEnv.getElementsAnnotatedWith(AutoCheck.class);
+        set.forEach(element -> {
+            JCTree jcTree = trees.getTree(element);
+            jcTree.accept(new TreeTranslator() {
+                @Override
+                public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
+                    List<JCTree.JCMethodDecl> jcVariableDeclList = List.nil();
 
-        // for each javax.lang.model.element.Element annotated with the CustomAnnotation
-        for (Element element : roundEnv.getElementsAnnotatedWith(AutoCheck.class)) {
-            String objectType = element.getSimpleName().toString();
+                    for (JCTree tree : jcClassDecl.defs) {
+                        if (tree.getKind().equals(Tree.Kind.METHOD)) {
+                            JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) tree;
+                            for (JCTree.JCVariableDecl parameter : jcMethodDecl.getParameters()) {
+                                System.out.println(parameter.pos);
+                                // JCModifiers mods,
+                                //Name name,
+                                //List<JCTypeParameter> typarams,
+                                //JCTree extending,
+                                //List<JCExpression> implementing,
+                                //List<JCTree> defs)
+                                //                                jcClassDecl.defs = jcClassDecl.defs.prepend(treeMaker.ClassDef(treeMaker.Modifiers(Flags.PUBLIC), names.fromString("GenerateEntity"), List.nil(), parameter.vartype, List.nil(), List.nil()));
 
+                                ListBuffer<JCTree.JCStatement> statements = new ListBuffer<>();
+                                statements.append(treeMaker.Return(treeMaker.Select(treeMaker.Ident(names.fromString("this")), parameter.getName())));
+                                JCTree.JCBlock body = treeMaker.Block(0, statements.toList());
 
-            // this is appending to the return statement
-            builder.append(objectType).append(" says hello!\\n");
-        }
+                                JCTree.JCMethodDecl methodDecl = treeMaker.MethodDef(treeMaker.Modifiers(Flags.PUBLIC), names.fromString("getTTT"), parameter.vartype, List.nil(), List.nil(), List.nil(), body, null);
+                                jcClassDecl.defs = jcClassDecl.defs.prepend(methodDecl);
+                            }
+                            jcVariableDeclList = jcVariableDeclList.append(jcMethodDecl);
+                        }
+                    }
 
-
-        builder.append("\";\n") // end return
-            .append("\t}\n") // close method
-            .append("}\n"); // close class
-
-
-        try { // write the file
-            JavaFileObject source = processingEnv.getFiler().createSourceFile("com.eog.api.impl.generated.GeneratedClass");
-
-
-            Writer writer = source.openWriter();
-            writer.write(builder.toString());
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            // Note: calling e.printStackTrace() will print IO errors
-            // that occur from the file already existing after its first run, this is normal
-        }
-
+                    //                    jcVariableDeclList.forEach(jcVariableDecl -> {
+                    //                        messager.printMessage(Diagnostic.Kind.NOTE, jcVariableDecl.getName() + " has been processed");
+                    //                        jcClassDecl.defs = jcClassDecl.defs.prepend(makeGetterMethodDecl(jcVariableDecl));
+                    //                    });
+                    super.visitClassDef(jcClassDecl);
+                }
+            });
+        });
 
         return true;
-
-//        StringBuilder codeBuilder = new StringBuilder();
-//        // package
-//        codeBuilder.append("package com.eog.api.impl;");
-//
-//        // import
-//        codeBuilder.append("package com.eog.api.impl;");
-//
-//        // public class
-//        codeBuilder.append("public class GenerateClass{}");
-//
-//
-//        try {
-//            JavaFileObject source = processingEnv.getFiler().createClassFile("com.eog.api.impl.GenerateClass");
-//            Writer writer = source.openWriter();
-//            writer.write(codeBuilder.toString());
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
-        //        Set<? extends Element> set = roundEnv.getElementsAnnotatedWith(AutoCheck.class);
-//        set.forEach(element -> {
-//            JCTree jcTree = trees.getTree(element);
-//            jcTree.accept(new TreeTranslator() {
-//                @Override
-//                public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
-//                    List<JCTree.JCMethodDecl> jcVariableDeclList = List.nil();
-//
-//                    for (JCTree tree : jcClassDecl.defs) {
-//                        if (tree.getKind().equals(Tree.Kind.METHOD)) {
-//                            JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) tree;
-//                            for (JCTree.JCVariableDecl parameter : jcMethodDecl.getParameters()) {
-//                                System.out.println(parameter.pos);
-//                                // JCModifiers mods,
-//                                //Name name,
-//                                //List<JCTypeParameter> typarams,
-//                                //JCTree extending,
-//                                //List<JCExpression> implementing,
-//                                //List<JCTree> defs)
-////                                jcClassDecl.defs = jcClassDecl.defs.prepend(treeMaker.ClassDef(treeMaker.Modifiers(Flags.PUBLIC), names.fromString("GenerateEntity"), List.nil(), parameter.vartype, List.nil(), List.nil()));
-//
-//                                ListBuffer<JCTree.JCStatement> statements = new ListBuffer<>();
-//                                statements.append(treeMaker.Return(treeMaker.Select(treeMaker.Ident(names.fromString("this")), parameter.getName())));
-//                                JCTree.JCBlock body = treeMaker.Block(0, statements.toList());
-//
-//                                JCTree.JCMethodDecl methodDecl = treeMaker.MethodDef(treeMaker.Modifiers(Flags.PUBLIC), names.fromString("getTTT"), parameter.vartype, List.nil(), List.nil(), List.nil(), body, null);
-//                                jcClassDecl.defs = jcClassDecl.defs.prepend(methodDecl);
-//                            }
-//                            jcVariableDeclList = jcVariableDeclList.append(jcMethodDecl);
-//                        }
-//                    }
-//
-////                    jcVariableDeclList.forEach(jcVariableDecl -> {
-////                        messager.printMessage(Diagnostic.Kind.NOTE, jcVariableDecl.getName() + " has been processed");
-////                        jcClassDecl.defs = jcClassDecl.defs.prepend(makeGetterMethodDecl(jcVariableDecl));
-////                    });
-//                    super.visitClassDef(jcClassDecl);
-//                }
-//            });
-//        });
-//
-//        return true;
     }
 
     private JCTree.JCMethodDecl makeGetterMethodDecl(JCTree.JCVariableDecl jcVariableDecl) {
@@ -158,7 +119,8 @@ public class MGetterProcessor extends AbstractProcessor {
         JCTree.JCBlock body = treeMaker.Block(0, statements.toList());
 
 
-        return treeMaker.MethodDef(treeMaker.Modifiers(Flags.PUBLIC), getNewMethodName(jcVariableDecl.getName()), jcVariableDecl.vartype, List.nil(), List.nil(), List.nil(), body, null);
+        return treeMaker.MethodDef(treeMaker.Modifiers(Flags.PUBLIC), getNewMethodName(jcVariableDecl.getName()), jcVariableDecl.vartype, List.nil(), List.nil(), List.nil(), body,
+            null);
     }
 
     private Name getNewMethodName(Name name) {
