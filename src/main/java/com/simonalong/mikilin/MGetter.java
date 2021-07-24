@@ -10,4 +10,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.SOURCE)
 public @interface MGetter {
 
+    String[] value() default {};
 }

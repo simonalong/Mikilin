@@ -1,6 +1,6 @@
 package com.simonalong.mikilin;
 
-import com.simonalong.mikilin.MGetter;
+import com.simonalong.mikilin.annotation.AutoCheck;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.code.Flags;
@@ -21,7 +21,7 @@ import java.util.Set;
  * @author shizi
  * @since 2021-07-22 23:36:11
  */
-@SupportedAnnotationTypes("com.simonalong.mikilin.MGetter")
+@SupportedAnnotationTypes("com.simonalong.mikilin.annotation.AutoCheck")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class MGetterProcessor extends AbstractProcessor {
 
@@ -42,19 +42,28 @@ public class MGetterProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
-        Set<? extends Element> set = roundEnv.getElementsAnnotatedWith(MGetter.class);
+        Set<? extends Element> set = roundEnv.getElementsAnnotatedWith(AutoCheck.class);
         set.forEach(element -> {
             JCTree jcTree = trees.getTree(element);
             jcTree.accept(new TreeTranslator() {
                 @Override
                 public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
-                    List<JCTree.JCVariableDecl> jcVariableDeclList = List.nil();
+                    List<JCTree.JCMethodDecl> jcVariableDeclList = List.nil();
 
                     for (JCTree tree : jcClassDecl.defs) {
-                        if (tree.getKind().equals(Tree.Kind.VARIABLE)) {
-                            JCTree.JCVariableDecl jcVariableDecl = (JCTree.JCVariableDecl) tree;
-                            jcVariableDeclList = jcVariableDeclList.append(jcVariableDecl);
+                        if (tree.getKind().equals(Tree.Kind.METHOD)) {
+                            JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) tree;
+                            for (JCTree.JCVariableDecl parameter : jcMethodDecl.getParameters()) {
+                                System.out.println(parameter.pos);
+                                // JCModifiers mods,
+                                //Name name,
+                                //List<JCTypeParameter> typarams,
+                                //JCTree extending,
+                                //List<JCExpression> implementing,
+                                //List<JCTree> defs)
+                                jcClassDecl.defs = jcClassDecl.defs.prepend(treeMaker.ClassDef(treeMaker.Modifiers(Flags.PUBLIC), names.fromString("GenerateEntity"), List.nil(), parameter.vartype, List.nil(), List.nil()));
+                            }
+                            jcVariableDeclList = jcVariableDeclList.append(jcMethodDecl);
                         }
                     }
 
@@ -75,6 +84,8 @@ public class MGetterProcessor extends AbstractProcessor {
         ListBuffer<JCTree.JCStatement> statements = new ListBuffer<>();
         statements.append(treeMaker.Return(treeMaker.Select(treeMaker.Ident(names.fromString("this")), jcVariableDecl.getName())));
         JCTree.JCBlock body = treeMaker.Block(0, statements.toList());
+
+
         return treeMaker.MethodDef(treeMaker.Modifiers(Flags.PUBLIC), getNewMethodName(jcVariableDecl.getName()), jcVariableDecl.vartype, List.nil(), List.nil(), List.nil(), body, null);
     }
 
