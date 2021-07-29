@@ -17,7 +17,7 @@ public class ExpressParser {
 
     private final GroovyScriptFactory groovy = GroovyScriptFactory.getInstance();
 
-    private Binding binding;
+    private final Binding binding;
 
     public ExpressParser(){
         binding = new Binding();
