@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class SingleFactory {
 
-    private static Map<String, Object> dataMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> dataMap = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
     public static <T> T getSingle(Class<T> tClass) {
