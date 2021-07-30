@@ -411,6 +411,14 @@ public final class MkValidators {
             return;
         }
 
+        doCreateMap(cls, clsCanonicalName, object);
+    }
+
+    private synchronized void doCreateMap(Class<?> cls, String clsCanonicalName, Object object) {
+        // 若已经解析，则不再解析
+        if (objectFieldCheckMap.containsKey(clsCanonicalName)) {
+            return;
+        }
         Set<Field> fieldSet = ClassUtil.allFieldsOfClass(cls);
         if (!CollectionUtil.isEmpty(fieldSet)) {
             // 待核查类型用于获取注解的属性
