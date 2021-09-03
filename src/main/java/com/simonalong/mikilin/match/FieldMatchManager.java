@@ -61,7 +61,7 @@ public class FieldMatchManager {
      * @param value 待校验的数据，就是属性的值
      * @param context 核查上下文
      * @param whiteOrBlack 黑白名单类型
-     * @return true：匹配任何一个匹配器返回true，false：所有匹配器都没有匹配上
+     * @return true：任何一个匹配器匹配上，则认为匹配上，false：所有匹配器都没有匹配上
      */
     public Boolean match(Object object, Object value, MkContext context, Boolean whiteOrBlack) {
         List<String> errMsgList = new ArrayList<>();

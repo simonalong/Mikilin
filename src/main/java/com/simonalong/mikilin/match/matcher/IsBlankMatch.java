@@ -46,18 +46,18 @@ public class IsBlankMatch extends AbstractBlackWhiteMatch {
 
         if (isBlank) {
             if ("".equals(value)) {
-                setBlackMsg("属性 {0} 的值为非空字符", name);
+                setBlackMsg("属性 {0} 的值为空字符", name);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值为空字符", name);
+                setWhiteMsg("属性 {0} 的值为非空字符", name);
                 return false;
             }
         } else {
             if (!"".equals(value)) {
-                setBlackMsg("属性 {0} 的值为空字符", name);
+                setBlackMsg("属性 {0} 的值不为空", name);
                 return true;
             } else {
-                setWhiteMsg("属性 {0} 的值不为空", name);
+                setWhiteMsg("属性 {0} 的值为空字符", name);
                 return false;
             }
         }
