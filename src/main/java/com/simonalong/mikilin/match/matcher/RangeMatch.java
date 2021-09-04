@@ -67,7 +67,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 时间或者数字范围匹配
      */
-    private Pattern rangePattern = Pattern.compile("^(\\(|\\[)(.*),(\\s)*(.*)(\\)|\\])$");
+    private Pattern rangePattern = Pattern.compile("^(\\(|\\[)(.*)(,|，)(\\s)*(.*)(\\)|\\])$");
     /**
      * 时间的前后计算匹配：(-|+)yMd(h|H)msS
      */
@@ -258,8 +258,8 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         if (matcher.find()) {
             String beginAli = matcher.group(1);
             String begin = matcher.group(2);
-            String end = matcher.group(4);
-            String endAli = matcher.group(5);
+            String end = matcher.group(5);
+            String endAli = matcher.group(6);
 
             if ((begin.equals(NULL_STR) || "".equals(begin)) && (end.equals(NULL_STR) || "".equals(end))) {
                 log.error(MK_LOG_PRE + "range匹配器格式输入错误，start和end不可都为null或者空字符, input={}", input);
