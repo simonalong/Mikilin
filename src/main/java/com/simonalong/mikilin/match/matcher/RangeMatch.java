@@ -63,7 +63,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
     /**
      * 全是数字匹配（整数，浮点数，0，负数）
      */
-    private Pattern digitPattern = Pattern.compile("^[-+]?(0)|([1-9]+\\d*|0\\.(\\d*)|[1-9]\\d*\\.(\\d*))$");
+    private Pattern digitPattern = Pattern.compile("^(0)|^[-+]?([1-9]+\\d*|0\\.(\\d*)|[1-9]\\d*\\.(\\d*))$");
     /**
      * 时间或者数字范围匹配
      */
