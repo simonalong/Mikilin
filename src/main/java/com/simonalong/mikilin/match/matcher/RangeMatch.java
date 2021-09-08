@@ -398,6 +398,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
      * @return 时间范围的实体()
      */
     private RangeEntity parseRangeDate(String data) {
+        // todo 这里有问题
         if (data.equals(PAST)) {
             // 过去，则范围为(null, now)
             return RangeEntity.build(LEFT_BRACKET, null, System.currentTimeMillis(), RIGHT_BRACKET, true);
