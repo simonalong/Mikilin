@@ -9,8 +9,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
- * @author zhouzhenyong
- * @since 2019/8/3 下午5:52
+ * @author zhouzhenyong* @since 2019/8/3 下午5:52
  */
 class RangeTimeTest extends Specification {
 
@@ -31,7 +30,7 @@ class RangeTimeTest extends Specification {
         getDate(2019, 7, 24, 00, 00, 00) | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 150    | false
         getDate(2019, 7, 14, 00, 00, 00) | getDate(2019, 8, 14, 00, 00, 00).getTime() | 150    | false
         getDate(2019, 7, 14, 00, 00, 00) | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 400    | false
-        null | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 400    | false
+        null                             | getDate(2019, 8, 4, 00, 00, 00).getTime()  | 400    | false
     }
 
     /**
@@ -119,7 +118,7 @@ class RangeTimeTest extends Specification {
         Assert.assertEquals(result, actResult)
 
         where:
-        time  | result
+        time   | result
         200L   | true
         100L   | true
         99L    | false
@@ -211,7 +210,7 @@ class RangeTimeTest extends Specification {
         time                                       | result
         getDate(2019, 8, 01, 00, 00, 00).getTime() | true
         getDate(2019, 7, 31, 2, 7, 00).getTime()   | false
-        getDate(2019, 8, 01, 00, 00, 00).getTime()  | true
+        getDate(2019, 8, 01, 00, 00, 00).getTime() | true
     }
 
     /**
