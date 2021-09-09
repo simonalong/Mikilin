@@ -84,7 +84,7 @@ class ConditionTest extends Specification {
         1    | "b"  | true
         2    | "b"  | true
         2    | "c"  | false
-        3    | "b"  | false
+        3    | "b"  | true
     }
 
 
