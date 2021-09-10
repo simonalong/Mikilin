@@ -38,10 +38,10 @@ import static com.simonalong.mikilin.MkConstant.MK_LOG_PRE;
 @SuppressWarnings("all")
 public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<RangeMatch, String> {
 
-    private static final String LEFT_BRACKET_EQUAL = "[";
-    private static final String LEFT_BRACKET = "(";
-    private static final String RIGHT_BRACKET_EQUAL = "]";
-    private static final String RIGHT_BRACKET = ")";
+    private static final String LEFT_EQUAL = "[";
+    private static final String LEFT_UN_EQUAL = "(";
+    private static final String RIGHT_EQUAL = "]";
+    private static final String RIGHT_UN_EQUAL = ")";
     private static final String NULL_STR = "null";
     private static final String NOW = "now";
     private static final String PAST = "past";
@@ -212,31 +212,76 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                 parser.addBinding(Maps.of("begin", beginFinal, "end", endFinal));
             }
 
+            if (rangeEntity.getBeginNow()) {
+                parser.addBinding(Maps.of("begin", System.currentTimeMillis()));
+            }
+
+            if (rangeEntity.getEndNow()) {
+                parser.addBinding(Maps.of("end", System.currentTimeMillis()));
+            }
+
             if (null == beginFinal) {
                 if (null == endFinal) {
+                    if (rangeEntity.getBeginNow()) {
+                        if (LEFT_EQUAL.equals(beginAli)) {
+                            return parser.parse("begin <= o");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli)) {
+                            return parser.parse("begin < o");
+                        }
+                    } else if (rangeEntity.getEndNow()){
+                        if (RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("o <= end");
+                        } else if (RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("o < end");
+                        }
+                    }
                     return true;
                 } else {
-                    if (RIGHT_BRACKET_EQUAL.equals(endAli)) {
-                        return parser.parse("o <= end");
-                    } else if (RIGHT_BRACKET.equals(endAli)) {
-                        return parser.parse("o < end");
+                    if (rangeEntity.getBeginNow()) {
+                        if (LEFT_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("begin <= o && o <= end");
+                        } else if (LEFT_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("begin <= o && o < end");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("begin < o && o <= end");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("begin < o && o < end");
+                        }
+                    } else {
+                        if (RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("o <= end");
+                        } else if (RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("o < end");
+                        }
                     }
                 }
             } else {
                 if (null == endFinal) {
-                    if (LEFT_BRACKET_EQUAL.equals(beginAli)) {
-                        return parser.parse("begin <= o");
-                    } else if (LEFT_BRACKET.equals(beginAli)) {
-                        return parser.parse("begin < o");
+                    if (rangeEntity.getEndNow()) {
+                        if (LEFT_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("begin <= o && o <= end");
+                        } else if (LEFT_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("begin <= o && o < end");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
+                            return parser.parse("begin < o && o <= end");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
+                            return parser.parse("begin < o && o < end");
+                        }
+                    } else {
+                        if (LEFT_EQUAL.equals(beginAli)) {
+                            return parser.parse("begin <= o");
+                        } else if (LEFT_UN_EQUAL.equals(beginAli)) {
+                            return parser.parse("begin < o");
+                        }
                     }
                 } else {
-                    if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET_EQUAL.equals(endAli)) {
+                    if (LEFT_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
                         return parser.parse("begin <= o && o <= end");
-                    } else if (LEFT_BRACKET_EQUAL.equals(beginAli) && RIGHT_BRACKET.equals(endAli)) {
+                    } else if (LEFT_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
                         return parser.parse("begin <= o && o < end");
-                    } else if (LEFT_BRACKET.equals(beginAli) && RIGHT_BRACKET_EQUAL.equals(endAli)) {
+                    } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_EQUAL.equals(endAli)) {
                         return parser.parse("begin < o && o <= end");
-                    } else if (LEFT_BRACKET.equals(beginAli) && RIGHT_BRACKET.equals(endAli)) {
+                    } else if (LEFT_UN_EQUAL.equals(beginAli) && RIGHT_UN_EQUAL.equals(endAli)) {
                         return parser.parse("begin < o && o < end");
                     }
                 }
@@ -271,7 +316,7 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
 
             // 如果是数字，则按照数字解析
             if (digitPattern.matcher(begin).matches() || digitPattern.matcher(end).matches()) {
-                return RangeEntity.build(beginAli, parseNum(begin), parseNum(end), endAli, false);
+                return RangeEntity.buildData(beginAli, parseNum(begin), parseNum(end), endAli);
             } else if (timePlusPattern.matcher(begin).matches() || timePlusPattern.matcher(end).matches()) {
                 // 解析动态时间
                 DynamicTimeNum timeNumBegin = parseDynamicTime(begin);
@@ -295,11 +340,11 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
                         log.error(MK_LOG_PRE + "时间的范围起始点不正确，起点时间不应该大于终点时间");
                         return null;
                     }
-                    return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
+                    return RangeEntity.buildTime(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli);
                 } else if (null == beginDate && null == endDate) {
                     log.error(MK_LOG_PRE + "range 匹配器格式输入错误，解析数字或者日期失败, input={}", input);
                 } else {
-                    return RangeEntity.build(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli, true);
+                    return RangeEntity.buildTime(beginAli, LocalDateTimeUtil.dateToLong(beginDate), LocalDateTimeUtil.dateToLong(endDate), endAli);
                 }
                 return null;
             }
@@ -398,13 +443,12 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
      * @return 时间范围的实体()
      */
     private RangeEntity parseRangeDate(String data) {
-        // todo 这里有问题
         if (data.equals(PAST)) {
             // 过去，则范围为(null, now)
-            return RangeEntity.build(LEFT_BRACKET, null, System.currentTimeMillis(), RIGHT_BRACKET, true);
+            return RangeEntity.buildTime(LEFT_UN_EQUAL, null, null, RIGHT_UN_EQUAL, false, true);
         } else if (data.equals(FUTURE)) {
             // 未来，则范围为(now, null)
-            return RangeEntity.build(LEFT_BRACKET, System.currentTimeMillis(), null, RIGHT_BRACKET, true);
+            return RangeEntity.buildTime(LEFT_UN_EQUAL, null, null, RIGHT_UN_EQUAL, true, false);
         }
         return null;
     }
@@ -434,11 +478,25 @@ public class RangeMatch extends AbstractBlackWhiteMatch implements Builder<Range
         Object end;
         String endAli = null;
         Boolean dateFlag = false;
+        Boolean beginNow = false;
+        Boolean endNow = false;
         Boolean dynamicTime = false;
 
-        public static RangeEntity build(String beginAli, Object begin, Object end, String endAli, Boolean dateFlag) {
+        public static RangeEntity buildData(String beginAli, Object begin, Object end, String endAli) {
             RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
-            result.setDateFlag(dateFlag);
+            result.setDateFlag(false);
+            return result;
+        }
+
+        public static RangeEntity buildTime(String beginAli, Object begin, Object end, String endAli) {
+            RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli);
+            result.setDateFlag(true);
+            return result;
+        }
+
+        public static RangeEntity buildTime(String beginAli, Object begin, Object end, String endAli, Boolean beginNow, Boolean endNow) {
+            RangeEntity result = new RangeEntity().setBeginAli(beginAli).setBegin(begin).setEnd(end).setEndAli(endAli).setBeginNow(beginNow).setEndNow(endNow);
+            result.setDateFlag(true);
             return result;
         }
 

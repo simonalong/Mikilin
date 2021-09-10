@@ -2,6 +2,7 @@ package com.simonalong.mikilin.range.date
 
 import com.simonalong.mikilin.MkValidators
 import com.simonalong.mikilin.util.LocalDateTimeUtil
+import lombok.SneakyThrows
 import org.junit.Assert
 import spock.lang.Specification
 
@@ -54,6 +55,28 @@ class RangeTimeTest extends Specification {
         getDate(2009, 8, 24, 00, 00, 00) | getDate(2099, 8, 10, 00, 00, 00).getTime() | false
         getDate(2099, 8, 20, 00, 00, 00) | getDate(2009, 8, 14, 00, 00, 00).getTime() | false
         getDate(2009, 8, 20, 00, 00, 00) | getDate(2009, 8, 14, 00, 00, 00).getTime() | false
+    }
+
+    /**
+     * 测试解析现在
+     * @return
+     */
+    @SneakyThrows
+    def "测试past和future"() {
+        given:
+        RangeTimeEntity1 range = new RangeTimeEntity1().setDate(date)
+
+        expect:
+        boolean actResult = MkValidators.check("test3", range, "date")
+        if (!actResult) {
+            println MkValidators.getErrMsgChain()
+        }
+        Assert.assertEquals(result, actResult)
+
+        where:
+        date                             | result
+        getDate(1999, 8, 20, 00, 00, 00) | true
+        getDate(2021, 9, 10, 13, 9, 00)  | true
     }
 
     /**
