@@ -60,6 +60,27 @@ public class EnumTypeMatch extends AbstractBlackWhiteMatch implements
                     setWhiteMsg("属性 {0} 枚举下标 {1} 没有命中枚举 {2} 中的下标", name, value, getEnumStr(enumClass));
                 }
             }
+        } else if (null != value && value.getClass().isEnum()) {
+            if (enumClass.length > 0) {
+                boolean matchResult = Stream.of(enumClass).filter(Class::isEnum).anyMatch(e -> {
+                    Enum[] enums = e.getEnumConstants();
+                    for (Enum item : enums) {
+                        if (item == value) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (matchResult) {
+                    setBlackMsg("属性 {0} 枚举下标 {1} 命中不允许的枚举 {2} 中的下标", name, value, getEnumStr(enumClass));
+                    return true;
+                }else{
+                    setWhiteMsg("属性 {0} 枚举下标 {1} 没有命中枚举 {2} 中的下标", name, value, getEnumStr(enumClass));
+                }
+            }
+        } else {
+            setWhiteMsg("属性 {0} 值 {1} 没有命中枚举 {2} 对应信息", name, value, getEnumStr(enumClass));
         }
         return false;
     }

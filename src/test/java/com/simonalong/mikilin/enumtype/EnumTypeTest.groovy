@@ -99,4 +99,22 @@ class EnumTypeTest extends Specification {
         "D2" | true
         "D5" | false
     }
+
+    def "直接enum匹配"() {
+        given:
+        EnumTypeEntity4 entity4 = new EnumTypeEntity4().setName(name)
+
+        expect:
+        def act = MkValidators.check(entity4)
+        Assert.assertEquals(result, act)
+        if (!act) {
+            println MkValidators.errMsgChain
+        }
+
+        where:
+        name     | result
+        DEnum.D1 | true
+        DEnum.D2 | true
+        null     | false
+    }
 }
