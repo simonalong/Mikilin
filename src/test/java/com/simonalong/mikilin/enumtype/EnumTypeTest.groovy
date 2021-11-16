@@ -5,8 +5,7 @@ import org.junit.Assert
 import spock.lang.Specification
 
 /**
- * @author zhouzhenyong
- * @since 2019/4/13 下午9:29
+ * @author zhouzhenyong* @since 2019/4/13 下午9:29
  */
 class EnumTypeTest extends Specification {
 
@@ -39,7 +38,7 @@ class EnumTypeTest extends Specification {
         "A2" | "A3" | "C1"       | false
         "a"  | "A2" | "C5"       | false
         "c"  | "c"  | "C5"       | false
-        null  | "c"  | "C5"       | false
+        null | "c"  | "C5"       | false
     }
 
     def "枚举类型下标测试"() {
@@ -63,7 +62,7 @@ class EnumTypeTest extends Specification {
         4     | false
     }
 
-    def "下标的Integer测试"(){
+    def "下标的Integer测试"() {
         given:
         EnumTypeEntity2 entity2 = new EnumTypeEntity2().setName(name)
 
@@ -83,7 +82,7 @@ class EnumTypeTest extends Specification {
         4    | false
     }
 
-    def "直接enum名字匹配"(){
+    def "直接enum名字匹配"() {
         given:
         EnumTypeEntity3 entity3 = new EnumTypeEntity3().setName(name)
 
@@ -96,8 +95,8 @@ class EnumTypeTest extends Specification {
 
         where:
         name | result
-        "D1"    | true
-        "D2"    | true
-        "D5"    | false
+        "D1" | true
+        "D2" | true
+        "D5" | false
     }
 }
