@@ -7,7 +7,7 @@
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
 
     <name>Mikilin</name>
     <url>https://github.com/SimonAlong/Mikilin</url>
@@ -47,7 +47,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <groovy.version>2.4.8</groovy.version>
         <spring.version>5.1.5.RELEASE</spring.version>
-        <logback.version>1.2.3</logback.version>
+        <logback.version>1.2.10</logback.version>
         <aspectj.version>1.9.5</aspectj.version>
         <tomcat.version>9.0.48</tomcat.version>
     </properties>
