@@ -46,7 +46,7 @@
         <spock.version>1.2-groovy-2.4</spock.version>
         <slf4j.version>1.7.25</slf4j.version>
         <groovy.version>2.4.8</groovy.version>
-        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring.version>5.3.15</spring.version>
         <logback.version>1.2.10</logback.version>
         <aspectj.version>1.9.5</aspectj.version>
         <tomcat.version>9.0.48</tomcat.version>
