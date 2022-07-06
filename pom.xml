@@ -7,7 +7,7 @@
     <groupId>com.github.simonalong</groupId>
     <artifactId>mikilin</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.6</version>
+    <version>1.6.7</version>
 
     <name>Mikilin</name>
     <url>https://github.com/SimonAlong/Mikilin</url>
@@ -42,7 +42,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <lombok.version>1.18.0</lombok.version>
-        <fastjson.version>1.2.79</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <spock.version>1.2-groovy-2.4</spock.version>
         <slf4j.version>1.7.25</slf4j.version>
         <groovy.version>2.4.8</groovy.version>
