@@ -46,6 +46,7 @@ class FieldModelTest extends Specification {
         "1387772"     | "15700092345" | false
         "28712381"    | "28712381"    | false
         "15700092345" | "28712381"    | true
+        "14500092345" | "28712381"    | true
         "15700092345" | "15700092345" | false
         null | "15700092345" | false
     }
