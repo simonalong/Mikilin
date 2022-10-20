@@ -62,7 +62,6 @@ public class TestApplication {
         SpringApplication.run(TestApplication.class, args);
     }
 }
-
 ```
 
 controller中使用
